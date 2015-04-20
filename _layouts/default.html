@@ -15,6 +15,11 @@ Released for free under the Creative Commons Attribution 3.0 license (templated.
 	<script src="/assets/js/skel.min.js"></script>
 	<script src="/assets/js/skel-panels.min.js"></script>
 	<script src="/assets/js/init.js"></script>
+	<script type="text/javascript" src="http://webplayer.unity3d.com/download_webplayer-3.x/3.0/uo/UnityObject2.js"></script>
+	<script type="text/javascript">
+		var u = new UnityObject2();
+		u.initPlugin(jQuery("#unityPlayer")[0], "{{ page.gameurl }}");
+	</script>
 	<noscript>
 		<link rel="stylesheet" href="/assets/css/skel-noscript.css" />
 		<link rel="stylesheet" href="/assets/css/style.css" />

@@ -1,0 +1,24 @@
+---
+layout: post
+featured: images/NemoScrnShot.png
+title: Nemo Html Test
+gameurl: /assets/games/nemo/nemo.unity3d
+---
+
+
+<p>This is a test to see if we can use html </p>
+
+<script type="text/javascript" src="http://webplayer.unity3d.com/download_webplayer-3.x/3.0/uo/UnityObject2.js"></script>
+
+<script type="text/javascript">
+	var u = new UnityObject2();
+	u.initPlugin(jQuery("#unityPlayer")[0], "/assets/games/nemo/nemo.unity3d");
+</script>
+
+<div id="unityPlayer">
+    <div class="missing">
+        <a href="http://unity3d.com/webplayer/" title="Unity Web Player. Install now!">
+            <img alt="Unity Web Player. Install now!" src="http://webplayer.unity3d.com/installation/getunity.png" width="193" height="63" />
+        </a>
+    </div>
+</div>
