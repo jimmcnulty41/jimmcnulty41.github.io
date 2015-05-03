@@ -771,7 +771,7 @@
 	#header
 	{
 		position: relative;
-		background: url(../images/header.jpg) no-repeat bottom center;
+		background: url(../images/header.jpg) center top;
 		background-position: bottom;
 		background-attachment: fixed;
 		background-size: cover;
@@ -826,6 +826,11 @@
 /* Nav                                                                           */
 /*********************************************************************************/
 
+	.current
+	{
+		background-color: rgba(0,0,0,.2);
+	}
+
 	#nav
 	{
 	}
@@ -872,9 +877,9 @@
 				color: #FFF;
 			}
 
-			#nav li.active a
+			#nav li:active a
 			{
-				color: #FFF;
+				background-color: rgba(0,0,0,.2);
 			}
 
 			#nav > ul > li > ul
@@ -1018,3 +1023,13 @@
 			font-weight: 300;
 			color: rgba(255,255,255,.6);
 		}	
+
+
+/*********************************************************************************/
+/* Youtube                                                                     */
+/*********************************************************************************/
+	
+	iframe
+	{
+		position: center;
+	}

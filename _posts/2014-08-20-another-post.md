@@ -2,6 +2,7 @@
 title: Lorem Ipsum Dolor Sit Amet
 featured: images/pic01.jpg
 layout: post
+category: dummy
 ---
 
 <p>Integer volutpat ante et accumsan commophasellus sed aliquam feugiat lorem aliquet ut enim rutrum phasellus iaculis accumsan dolore magna aliquam veroeros.</p>

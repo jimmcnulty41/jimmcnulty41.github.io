@@ -15,10 +15,59 @@ Released for free under the Creative Commons Attribution 3.0 license (templated.
 	<script src="/assets/js/skel.min.js"></script>
 	<script src="/assets/js/skel-panels.min.js"></script>
 	<script src="/assets/js/init.js"></script>
-	<script type="text/javascript" src="http://webplayer.unity3d.com/download_webplayer-3.x/3.0/uo/UnityObject2.js"></script>
 	<script type="text/javascript">
-		var u = new UnityObject2();
-		u.initPlugin(jQuery("#unityPlayer")[0], "{{ page.gameurl }}");
+		var unityObjectUrl = "http://webplayer.unity3d.com/download_webplayer-3.x/3.0/uo/UnityObject2.js";
+		if (document.location.protocol == 'https:')
+			unityObjectUrl = unityObjectUrl.replace("http://", "https://ssl-");
+		document.write('<script type="text\/javascript" src="' + unityObjectUrl + '"><\/script>');
+	</script>
+	<script type="text/javascript">
+					var config = {
+				width: 960, 
+				height: 600,
+				params: { enableDebugging:"0" }
+				
+			};
+			var u = new UnityObject2(config);
+			console.log("Hello!");
+			jQuery(function() {
+
+				var $missingScreen = jQuery("#unityPlayer").find(".missing");
+				var $brokenScreen = jQuery("#unityPlayer").find(".broken");
+				$missingScreen.hide();
+				$brokenScreen.hide();
+
+				u.observeProgress(function (progress) {
+					switch(progress.pluginStatus) {
+						case "broken":
+							$brokenScreen.find("a").click(function (e) {
+								e.stopPropagation();
+								e.preventDefault();
+								u.installPlugin();
+								return false;
+							});
+
+							$brokenScreen.show();
+						break;
+						case "missing":
+							$missingScreen.find("a").click(function (e) {
+								e.stopPropagation();
+								e.preventDefault();
+								u.installPlugin();
+								return false;
+							});
+							console.log("Missing");
+							$missingScreen.show();
+						break;
+						case "installed":
+							$missingScreen.remove();
+						break;
+						case "first":
+						break;
+					}
+				});
+				u.initPlugin(jQuery("#unityPlayer")[0], "{{ page.gameurl }}");
+			});
 	</script>
 	<noscript>
 		<link rel="stylesheet" href="/assets/css/skel-noscript.css" />
@@ -47,7 +96,7 @@ Released for free under the Creative Commons Attribution 3.0 license (templated.
 	<div id="tweet">
 		<div class="container">
 			<section>
-				<blockquote>&ldquo;In posuere eleifend odio. Quisque semper augue mattis wisi. Maecenas ligula. Pellentesque viverra vulputate enim. Aliquam erat volutpat.&rdquo;</blockquote>
+				<blockquote>&ldquo;It's hard to stay mad, when there's so much beauty in the world...&rdquo;</blockquote>
 			</section>
 		</div>
 	</div>
@@ -59,13 +108,11 @@ Released for free under the Creative Commons Attribution 3.0 license (templated.
 		<section>
 			<header>
 				<h2>Get in touch</h2>
-				<span class="byline">Integer sit amet pede vel arcu aliquet pretium</span>
+				<span class="byline">jpmcnul@umich.edu</span>
 			</header>
 			<ul class="contact">
-				<li><a href="#" class="fa fa-twitter"><span>Twitter</span></a></li>
-				<li class="active"><a href="#" class="fa fa-facebook"><span>Facebook</span></a></li>
-				<li><a href="#" class="fa fa-dribbble"><span>Pinterest</span></a></li>
-				<li><a href="#" class="fa fa-tumblr"><span>Google+</span></a></li>
+				<li><a href="https://github.com/jimmcnulty41" class="fa fa-github"><span>Github</span></a></li>
+				<li><a href="mailto:jpmcnul@umich.edu" class="fa fa-envelope-o"><span>Email</span></a></li>
 			</ul>
 		</section>
 	</div>
