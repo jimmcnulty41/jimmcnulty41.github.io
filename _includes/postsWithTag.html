@@ -1,7 +1,7 @@
 <!-- Main -->
 	<div id="main">
 		<div id="content" class="container">
-			{% for post in site.posts offset: 0 limit: 4 where %}
+			{% for post in site.posts offset: 0 where %}
 			{% for tag in post.tags %}
 			{% if tag == page.tag %}
 				<div class="row">

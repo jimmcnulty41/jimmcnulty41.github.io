@@ -1,12 +1,11 @@
 <div id="nav-wrapper">
 	<!-- Nav -->
-	<nav id="nav">
+	<nav id="nav" class="navbar navbar-fixed-top">
 		<ul>
 			{% assign current = page.url | downcase | split: '/' %}
-			<li {% if current[1] == 'index.html' %}class='current'{% endif %}><a href="/index.html">Homepage</a></li>
+			<li {% if current[1] == 'index.html' %}class='current'{% endif %}><a href="/index.html">Home</a></li>
 			<li {% if current[1] == 'gamesandmedia.html' %}class='current'{% endif %}><a href="/gamesAndMedia.html">Games & Media</a></li>
 			<li {% if current[1] == 'businessandtechnical.html' %}class='current'{% endif %}><a href="/businessAndTechnical.html">business & Technical</a></li>
-			<li {% if current[1] == 'no-sidebar.html' %}class='current'{% endif %}><a href="/no-sidebar.html">No Sidebar</a></li>
 			<li {% if current[1] == 'blog' %}class='current'{% endif %}><a href="/blog">Blog</a></li>
 			
 		</ul>

@@ -12,6 +12,7 @@
 /* Basic                                                                         */
 /*********************************************************************************/
 
+
 	body
 	{
 		margin: 0;
@@ -37,6 +38,7 @@
 		h2
 		{
 			letter-spacing: -0.025em;
+			line-height: 100%;
 		}
 	
 		h1 a, h2 a, h3 a, h4 a, h5 a, h6 a
@@ -839,6 +841,7 @@
 		{
 			background: rgba(0,0,0,.1);
 			position: absolute;
+			z-index: 2;
 			top: 0;
 			left: 0;
 			width: 100%;
