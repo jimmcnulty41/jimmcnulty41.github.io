@@ -161,6 +161,10 @@
 		}
 
 	/* Images */
+		.featured 
+		{
+			height: 15em;
+		}
 
 		.image
 		{

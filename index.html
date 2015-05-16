@@ -38,7 +38,7 @@ layout: default
 			<div class="row">
 				{% for post in site.posts offset: 0 limit: 2 %}
 				<section class="6u">
-					<a href="{{ site.prefix }}{{ post.url }}" class="image full"><img src="/assets/{{ post.featured }}" alt=""></a>
+					<a href="{{ site.prefix }}{{ post.url }}" class="image full"><img src="/assets/{{ post.featured }}" class="featured" alt=""></a>
 					<header>
 						<h2>{{ post.title }}</h2>
 					</header>
@@ -51,7 +51,7 @@ layout: default
 			<div class="row">
 				{% for post in site.posts offset: 2 limit: 2 %}
 				<section class="6u">
-					<a href="{{ site.prefix }}{{ post.url }}" class="image full"><img src="/assets/{{ post.featured }}" alt=""></a>
+					<a href="{{ site.prefix }}{{ post.url }}" class="image full"><img src="/assets/{{ post.featured }}" class="featured" alt=""></a>
 					<header>
 						<h2>{{ post.title }}</h2>
 					</header>
