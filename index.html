@@ -3,33 +3,28 @@ title: Linear
 layout: default
 ---
 <!-- Featured -->
-<div id="featured">
-	<div class="container">
-		<header>
-			<h2>Let's Make Something Beautiful Together</h2>
-		</header>
-		<p>We live in a world where we really can make just about anything we dream of. I love crafting beautiful experiences for people. Whether that means a beautiful workflow, a beautiful peice of art, or a beautiful overuse of the word beautiful. Check out some of my projects and let me know if you might be interested in making something together. </p>
-		<hr />
-		<div class="row">
-			<section class="4u">
-				<span class="pennant"><span class="fa fa-gamepad"></span></span>
-				<h3>Games & Other Media</h3>
-				<a href="gamesAndMedia.html" class="button button-style1">See some projects</a>
-			</section>
-			<section class="4u">
-				<span class="pennant"><span class="fa fa-building"></span></span>
-				<h3>Business & Technical</h3>
-				<a href="businessAndTechnical.html" class="button button-style1">Read tutorials & reports</a>
-			</section>
-			<section class="4u">
-				<span class="pennant"><span class="fa fa-question"></span></span>
-				<h3>Miscellany</h3>
-				<a href="blog" class="button button-style1">See what else I've got here</a>
-			</section>
-
+<section class="introduction container-fluid">
+	<h2>Let's Make Something Beautiful Together</h2>
+	<p>We live in a world where we really can make just about anything we dream of. I love crafting beautiful experiences for people. Whether that means a beautiful workflow, a beautiful peice of art, or a beautiful overuse of the word beautiful. Check out some of my projects and let me know if you might be interested in making something together. </p>
+	<hr />
+	<div class="row">
+		<div class="col-sm-4 section_icon">
+			<span class="symbol fa fa-gamepad"></span>
+			<h3>Games & Other Media</h3>
+			<a href="gamesAndMedia.html" class="button button-style1">See some projects</a>
+		</div>
+		<div class="col-sm-4 section_icon">
+			<span class="symbol fa fa-building"></span>
+			<h3>Business & Technical</h3>
+			<a href="businessAndTechnical.html" class="button button-style1">Read tutorials & reports</a>
+		</div>
+		<div class="col-sm-4 section_icon">
+			<span class="symbol fa fa-question"></span>
+			<h3>Miscellany</h3>
+			<a href="blog" class="button button-style1">See what else I've got here</a>
 		</div>
 	</div>
-</div>
+</section>
 
 <!-- Main -->
 	<div id="main">
@@ -37,26 +32,30 @@ layout: default
 
 			<div class="row">
 				{% for post in site.posts offset: 0 limit: 2 %}
-				<section class="6u">
-					<a href="{{ site.prefix }}{{ post.url }}" class="image full"><img src="/assets/{{ post.featured }}" class="featured" alt=""></a>
+				<section class="col-md-6">
+					<a href="{{ site.prefix }}{{ post.url }}" class="image full"><img src="/assets/{{ post.featured }}" class="featured img-responsive" alt=""></a>
 					<header>
 						<h2>{{ post.title }}</h2>
 					</header>
 					{{ post.excerpt }}
-					<a href="{{ site.prefix }}{{ post.url }}" class="button button-style1">Read More</a>
+					<div class="text-centered">
+						<a href="{{ site.prefix }}{{ post.url }}" class="button">Read More</a>
+					</div>
 				</section>		
 				{% endfor %}		
 			</div>
 
 			<div class="row">
 				{% for post in site.posts offset: 2 limit: 2 %}
-				<section class="6u">
-					<a href="{{ site.prefix }}{{ post.url }}" class="image full"><img src="/assets/{{ post.featured }}" class="featured" alt=""></a>
+				<section class="col-md-6">
+					<a href="{{ site.prefix }}{{ post.url }}" class="image full"><img src="/assets/{{ post.featured }}" class="featured img-responsive" alt=""></a>
 					<header>
 						<h2>{{ post.title }}</h2>
 					</header>
 					{{ post.excerpt }}
-					<a href="{{ site.prefix }}{{ post.url }}" class="button button-style1">Read More</a>
+					<div class="text-centered">
+						<a href="{{ site.prefix }}{{ post.url }}" class="button">Read More</a>
+					</div>
 				</section>
 				{% endfor %}
 			</div>

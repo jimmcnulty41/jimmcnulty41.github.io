@@ -8,13 +8,16 @@ layout: default
 		<div id="content" class="container">
 			{% for post in site.posts offset: 0 %}
 			<div class="row">
-				<section class="8u -2u">
+				<div class="col-md-2"></div>
+				<section class="col-md-8">
 					<a href="{{ site.prefix }}{{ post.url }}" class="image full"><img src="/assets/{{ post.featured }}" alt=""></a>
 					<header>
 						<h2>{{ post.title }}</h2>
 					</header>
 					{{ post.excerpt }}
-					<a href="{{ site.prefix }}{{ post.url }}" class="button button-style1">Read More</a>
+					<div class="text-centered">
+						<a href="{{ site.prefix }}{{ post.url }}" class="button button-style1">Read More</a>
+					</div>
 				</section>
 			</div>
 			{% endfor %}
