@@ -48,7 +48,7 @@ jQuery(function() {
                     break;
             }
         });
-        u.initPlugin(jQuery("#unityPlayer")[0], {{ post.gameurl }});
+        u.initPlugin(jQuery("#unityPlayer")[0], gameurl);
  
     });
 });
