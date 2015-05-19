@@ -14,13 +14,12 @@ tags: businessAndTechnical
 <header><h2>.gitignore</h1></header>
 <br>
 <p>The .gitignore file tells git which files to ignore when staging changes. I start off with the default <a href="https://github.com/github/gitignore/blob/master/Unity.gitignore">Unity .gitignore</a> from github and simply add the following lines:
-	<!-- HTML generated using hilite.me -->
-	<div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;">
-	<pre style="margin: 0; line-height: 125%">
+	<div class="code-block">
+	<pre>
 
-		<span style="color: #888888"># ArtAssets Folder</span>
-		Assets/ArtAssets
-		Assets/ArtAssets.meta
+	<span style="color: #888888"># ArtAssets Folder</span>
+	Assets/ArtAssets
+	Assets/ArtAssets.meta
 	</pre>
 	</div>
 	<br>
@@ -29,10 +28,41 @@ tags: businessAndTechnical
 <header><h2>Symlinks</h2></header>
 <p>The heart of the solution lies in symbolic links, or symlinks. These act like shortcuts, so we can store some of our data in a location outside of the Unity Assets folder, but still access the data as if it were in the Assets folder. These are implemented differently on different systems, so the hardest part of this workflow is setting up these different folders on your different devices. Fortunately, we only have to do this one time per device and the process should take less than five minutes for each of those.</p>
 <ol>
-	<li>1.	Navigate to the appropriate Dropbox (or other cloud storage) folder. This is the shared folder where your team is putting its art assets (E.g. in this example case, using dropbox, the shared folder is called “SymLinkTestFolder”, and the full path on my laptop is “C:\Users\James\Dropbox\SymLinkTestFolder”).
-	<br><br>
-	<b>On Windows</b>, copy the path from the top bar in the file explorer
-	<img src="/assets/images/2015-05-05-WindowsPath.png"></img>
+	<li>
+		Navigate to the appropriate Dropbox (or other cloud storage) folder. This is the shared folder where your team is putting its art assets (E.g. in this example case, using dropbox, the shared folder is called “SymLinkTestFolder”, and the full path on my laptop is “C:\Users\James\Dropbox\SymLinkTestFolder”).
+		<br><br>
+		<b>On Windows</b>, copy the path from the top bar in the file explorer
+		<br/>
+		<img src="/assets/images/2015-05-05-WindowsPath.png"></img>
+		<br />
+
+		<b>On a Mac,</b> select the shared folder in a Finder window and press command-I to bring up the info window. Copy the path next to “Where:”. 
+	</li>
+	<br/>
+	<li>
+		Navigate to the Assets folder in your Unity project. 
+		<br/><br/>
+		<b>On Windows,</b> open up an administrator command window in the assets folder (alt, f, m, a in Windows 8) and create a symbolic link to the shared cloud folder:
+
+		<div class="code-block">
+			<pre>
+
+	mklink /d ArtAssets &#60;shared_folder_path&#62;
+			</pre>
+		</div>
+		<br/>
+		<b>On Mac/Linux,</b> navigate to the Assets folder in a terminal and create a symbolic link to the shared cloud folder:
+
+		<div class="code-block">
+			<pre>
+
+	ln -s &#60;shared_folder_path&#62; ArtAssets
+			</pre>
+		</div>
+
 	</li>
 
+
 </ol>
+<br/>
+Again, “ArtAssets” could be named something else, but has to be named the same thing on every machine. And that’s it! Now you can simply save art assets in the shared folder and use them as if they were stored in the assets folder!
