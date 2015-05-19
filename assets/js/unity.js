@@ -48,7 +48,7 @@ jQuery(function() {
                     break;
             }
         });
-        u.initPlugin(jQuery("#unityPlayer")[0], "gSphere.unity3d");
+        u.initPlugin(jQuery("#unityPlayer")[0], {{ post.gameurl }});
  
     });
 });
