@@ -90,8 +90,8 @@
 	}
 
 	a {
-		text-decoration: none;
-		color: #80BA8E;
+		text-decoration: underline;
+		color: blue;
 	}
 	
 	a:hover	{
@@ -99,7 +99,7 @@
 	}
 
 	section {
-	    padding: 60px 0px 0px 0px;
+	    padding: 100px 0px 0px 0px;
 	}
 
 	sub	{
@@ -349,6 +349,7 @@
 	
 	ul.contact li a
 	{
+		text-decoration: none;
 		color: inherit;
 		font-size: 1.75em;
 		display: inline-block;
@@ -695,10 +696,15 @@
 /* Youtube                                                                     */
 /*********************************************************************************/
 	
-	iframe
-	{
-		position: center;
-	}
+iframe
+{	
+	display: block;
+	margin: 0 auto;
+}
+
+.youtubeContainer {
+	width: 100%;
+}
 
 /*********************************************************************************/
 /* Unity                                                                     */
