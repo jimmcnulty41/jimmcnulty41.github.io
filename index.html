@@ -11,17 +11,17 @@ layout: default
 		<div class="col-sm-4 section_icon">
 			<span class="symbol fa fa-gamepad"></span>
 			<h3>Games & Other Media</h3>
-			<a href="gamesAndMedia.html" class="button button-style1">See some works</a>
+			<a href="gamesAndMedia" class="button button-style1">See some works</a>
 		</div>
 		<div class="col-sm-4 section_icon">
 			<span class="symbol fa fa-building"></span>
 			<h3>Business & Management</h3>
-			<a href="businessAndTechnical.html" class="button button-style1">Check out projects</a>
+			<a href="businessAndManagement" class="button button-style1">Check out projects</a>
 		</div>
 		<div class="col-sm-4 section_icon">
 			<span class="symbol fa fa-pencil-square-o"></span>
 			<h3>Tutorials</h3>
-			<a href="tutorials.html" class="button button-style1">Learn something new</a>
+			<a href="tutorials" class="button button-style1">Learn something new</a>
 		</div>
 	</div>
 </section>
@@ -29,6 +29,8 @@ layout: default
 <!-- Main -->
 	<div id="main">
 		<div id="content" class="container">
+
+
 
 			<div class="row">
 				{% for post in site.posts offset: 0 limit: 2 %}
@@ -41,9 +43,10 @@ layout: default
 					<div class="text-centered">
 						<a href="{{ site.prefix }}{{ post.url }}" class="button">Read More</a>
 					</div>
-				</section>		
-				{% endfor %}		
+				</section>
+				{% endfor %}
 			</div>
+
 
 			<div class="row">
 				{% for post in site.posts offset: 2 limit: 2 %}
