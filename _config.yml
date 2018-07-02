@@ -1,7 +1,0 @@
-name: Linear
-description: Linear template for Jekyll
-paginate: 10
-
-
-primary_color: rgba(91,0,124,.6)
-secondary_color: rgba(91,0,124,.9)

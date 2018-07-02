@@ -1,9 +1,0 @@
-	<nav class="nav">
-		<ul>
-			{% assign current = page.url | downcase | split: '/' %}
-			<li {% if current[1] == 'index.html' %}class='current'{% endif %}><a class='navlink' href="/index.html">Home</a></li>
-			<li {% if current[1] == 'gamesandmedia/index.html' %}class='current'{% endif %}><a class='navlink' href="/gamesAndMedia">Games & Media</a></li>
-			<li {% if current[1] == 'businessAndManagement/index.html' %}class='current'{% endif %}><a class='navlink' href="/businessAndManagement">Business & Management</a></li>
-			<li {% if current[1] == 'tutorials/index.html' %}class='current'{% endif %}><a class='navlink' href="/tutorials">Tutorials</a></li>
-		</ul>
-	</nav>
