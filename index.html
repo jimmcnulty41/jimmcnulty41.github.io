@@ -1,67 +1,69 @@
----
-title: Linear
-layout: default
----
-<!-- Featured -->
-<section class="introduction container-fluid">
-	<h2>Let's Make Something Beautiful Together</h2>
-	<p>We live in a world where we really can make just about anything we dream of. I love crafting beautiful experiences for people. Whether that means a beautiful workflow, a beautiful peice of art, or a beautiful overuse of the word beautiful. Check out some of my projects and let me know if you might be interested in making something together. </p>
-	<hr />
-	<div class="row">
-		<div class="col-sm-4 section_icon">
-			<span class="symbol fa fa-gamepad"></span>
-			<h3>Games & Other Media</h3>
-			<a href="gamesAndMedia" class="button button-style1">See some works</a>
-		</div>
-		<div class="col-sm-4 section_icon">
-			<span class="symbol fa fa-building"></span>
-			<h3>Business & Management</h3>
-			<a href="businessAndManagement" class="button button-style1">Check out projects</a>
-		</div>
-		<div class="col-sm-4 section_icon">
-			<span class="symbol fa fa-pencil-square-o"></span>
-			<h3>Tutorials</h3>
-			<a href="tutorials" class="button button-style1">Learn something new</a>
-		</div>
+<html>
+
+<head>
+	<link href="https://fonts.googleapis.com/css?family=Alegreya+Sans:900" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="reset.css" />
+	<link rel="stylesheet" type="text/css" href="style.css" />
+</head>
+
+<body>
+	<div class="column">
+		<h1>
+			<span class="large">T</span>his
+			<span class="small">is</span> my Website
+		</h1>
+		<h2>by Jim McNulty</h2>
+		<p>
+			<img class="inline" src="assets/drawing.png"></img>
+			Jim McNulty is a
+			<img class="inline" src="assets/front_end.png"></img>
+			front-end engineer and an
+			<img class="inline" src="assets/animator.png"></img>
+			animator and a folk songwriter and a
+			<img class="inline" src="assets/fam.png"></img>
+			friend and a brother and a son and a grandson and a
+			<img class="inline" src="assets/runner.png"></img>
+			runner and the main character of Home Box Office’s the Wire.
+		</p>
+		<p>Jim made designs and animations for the Mobile game
+			<img class="inline" src="assets/squatbot.png"></img>
+			Squatbot, and he worked on some nifty open-source code, like a
+			<img class="inline" src="assets/duckling.png"></img>
+			game editor and a
+			<img class="inline" src="assets/molt.png"></img>
+			tool for After Effects.
+		</p>
+
+
+		<p> He has learned a lot about JavaScript and
+
+			<img class="inline" src="assets/typescript.png"></img>
+			TypeScript and the modern web from some wonderful people at
+
+			<img class="inline" src="assets/extrahop.png"></img>
+			Extrahop Networks and
+
+			<img class="inline" src="assets/epic.png"></img>
+			Epic (the healthcare company).
+		</p>
+
+		<p> Sometimes he rambles on his
+			<img class="inline" src="assets/blog.png"></img>
+			blog, and posts stuff on
+			<img class="inline" src="assets/dribbble.png"></img>
+			dribbble
+		</p>
+		<p>
+			Jim wants to bring
+			<img class="inline" src="assets/joy.png"></img>
+			joy and
+			<img class="inline" src="assets/understanding.png"></img>
+			understanding to the world. If you want to too, he would
+			<img class="inline" src="assets/love.png"></img>
+			love to talk to you!
+		</p>
 	</div>
-</section>
 
-<!-- Main -->
-	<div id="main">
-		<div id="content" class="container">
+</body>
 
-
-
-			<div class="row">
-				{% for post in site.posts offset: 0 limit: 2 %}
-				<section class="col-md-6">
-					<a href="{{ site.prefix }}{{ post.url }}" class="image full"><img src="/assets/{{ post.featured }}" class="featured img-responsive" alt=""></a>
-					<header>
-						<h2>{{ post.title }}</h2>
-					</header>
-					{{ post.excerpt }}
-					<div class="text-centered">
-						<a href="{{ site.prefix }}{{ post.url }}" class="button">Read More</a>
-					</div>
-				</section>
-				{% endfor %}
-			</div>
-
-
-			<div class="row">
-				{% for post in site.posts offset: 2 limit: 2 %}
-				<section class="col-md-6">
-					<a href="{{ site.prefix }}{{ post.url }}" class="image full"><img src="/assets/{{ post.featured }}" class="featured img-responsive" alt=""></a>
-					<header>
-						<h2>{{ post.title }}</h2>
-					</header>
-					{{ post.excerpt }}
-					<div class="text-centered">
-						<a href="{{ site.prefix }}{{ post.url }}" class="button">Read More</a>
-					</div>
-				</section>
-				{% endfor %}
-			</div>
-
-		</div>
-	</div>
+</html>
