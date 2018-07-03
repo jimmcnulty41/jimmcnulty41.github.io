@@ -3,6 +3,9 @@ body {
     flex-direction: column;
     align-items: center;
     margin: 20px;
+
+    font-family: "Alegreya Sans", sans-serif;
+    font-weight: 200;
 }
 
 .column {
@@ -39,8 +42,7 @@ p {
 }
 
 .inline {
-    width: 40px;
-    height: 40px;
+    height: 162px;
 
     vertical-align: middle;
 }
