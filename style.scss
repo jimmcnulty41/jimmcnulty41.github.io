@@ -48,8 +48,12 @@ a {
     text-decoration: none;
 
     img {
-        border: 1px solid rgb(202, 205, 231);
+        border: 2px dashed rgb(202, 205, 231);
         border-radius: 2px;
+
+        &:hover {
+            border-width: 3px;
+        }
     }
 }
 
@@ -61,10 +65,12 @@ img {
     height: $image-size;
     vertical-align: baseline;
 
-    transition: 0.2s;
+    @media screen and (min-width: 760px) {
+        transition: 0.2s;
 
-    &:hover {
-        height: $hovered-size;
+        &:hover {
+            height: $hovered-size;
+        }
     }
 }
 
@@ -72,6 +78,8 @@ img {
     display: flex;
     justify-content: space-around;
     width: 100%;
+
+    margin: $vertical-margin / 2 0;
 }
 
 .staticPositioner {

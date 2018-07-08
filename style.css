@@ -39,23 +39,31 @@ a {
   text-decoration: none;
 }
 a img {
-  border: 1px solid #cacde7;
+  border: 2px dashed #cacde7;
   border-radius: 2px;
+}
+a img:hover {
+  border-width: 3px;
 }
 
 img {
   height: 50px;
   vertical-align: baseline;
-  transition: 0.2s;
 }
-img:hover {
-  height: 75px;
+@media screen and (min-width: 760px) {
+  img {
+    transition: 0.2s;
+  }
+  img:hover {
+    height: 75px;
+  }
 }
 
 .images {
   display: flex;
   justify-content: space-around;
   width: 100%;
+  margin: 12px 0;
 }
 
 .staticPositioner {
