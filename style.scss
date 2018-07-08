@@ -2,6 +2,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
 
     font-family: "Alegreya Sans", sans-serif;
 }
@@ -16,11 +17,11 @@ $border-size: 12px;
     align-items: center;
 
     max-width: 30vw;
-    height: calc(100% - #{2 * $vertical-margin + $border-size});
 
     margin: $vertical-margin $horizontal-margin;
 
     border: 12px solid black;
+    padding: $vertical-margin $horizontal-margin;
 }
 
 h1 {
