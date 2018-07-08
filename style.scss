@@ -1,27 +1,24 @@
-body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    font-family: "Alegreya Sans", sans-serif;
-}
+$tablet-breakpoint: 426px;
+$desktop-breakpoint: 769px;
 
 $vertical-margin: 24px;
-$horizontal-margin: 48px;
+$horizontal-margin: 24px;
 $border-size: 12px;
+$image-size: 34px;
+$hover-growth: $image-size / 2;
+$hovered-size: $image-size + $hover-growth;
 
-.container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+a {
+    text-decoration: none;
 
-    max-width: 30vw;
+    img {
+        border: 2px dashed rgb(202, 205, 231);
+        border-radius: 2px;
+    }
+}
 
-    margin: $vertical-margin $horizontal-margin;
-
-    border: 12px solid black;
-    padding: $vertical-margin $horizontal-margin;
+body {
+    font-family: "Alegreya Sans", sans-serif;
 }
 
 h1 {
@@ -44,38 +41,26 @@ p {
     font-family: sans-serif;
 }
 
-a {
-    text-decoration: none;
-
-    img {
-        border: 2px dashed rgb(202, 205, 231);
-        border-radius: 2px;
-
-        &:hover {
-            border-width: 3px;
-        }
-    }
-}
-
-$image-size: 50px;
-$hover-growth: $image-size / 2;
-$hovered-size: $image-size + $hover-growth;
-
 img {
     height: $image-size;
     vertical-align: baseline;
+    &.linkedHover {
+        border-width: 3px;
+        height: $hovered-size;
 
-    @media screen and (min-width: 760px) {
-        transition: 0.2s;
-
-        &:hover {
-            height: $hovered-size;
-        }
+        transition: 0.1s;
     }
+}
+.container {
+    display: flex;
+    flex-direction: column;
+
+    margin: $vertical-margin $horizontal-margin;
 }
 
 .images {
     display: flex;
+    flex-flow: wrap;
     justify-content: space-around;
     width: 100%;
 
@@ -90,4 +75,32 @@ img {
 
     height: $hovered-size;
     width: $hovered-size;
+}
+
+:not(img).linkedHover {
+    color: blue;
+}
+
+@media only screen and (min-width: #{$tablet-breakpoint}) {
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .container {
+        max-width: $tablet-breakpoint;
+    }
+}
+
+@media only screen and (min-width: #{$desktop-breakpoint}) {
+    .container {
+        align-items: center;
+
+        max-width: 30vw;
+
+        border: 12px solid black;
+        padding: $vertical-margin $horizontal-margin;
+    }
 }

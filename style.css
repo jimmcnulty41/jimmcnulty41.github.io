@@ -1,78 +1,72 @@
-body {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-family: "Alegreya Sans", sans-serif;
-}
+a {
+  text-decoration: none; }
+  a img {
+    border: 2px dashed #cacde7;
+    border-radius: 2px; }
 
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  max-width: 30vw;
-  margin: 24px 48px;
-  border: 12px solid black;
-  padding: 24px 48px;
-}
+body {
+  font-family: "Alegreya Sans", sans-serif; }
 
 h1 {
   font-family: "Alegreya Sans", sans-serif;
   font-size: 48px;
-  margin-bottom: 12px;
-}
+  margin-bottom: 12px; }
 
 h1 > .large {
-  font-size: 52px;
-}
+  font-size: 52px; }
 
 h1 > .small {
-  font-size: 44px;
-}
+  font-size: 44px; }
 
 p {
   align-self: flex-start;
-  font-family: sans-serif;
-}
-
-a {
-  text-decoration: none;
-}
-a img {
-  border: 2px dashed #cacde7;
-  border-radius: 2px;
-}
-a img:hover {
-  border-width: 3px;
-}
+  font-family: sans-serif; }
 
 img {
-  height: 50px;
-  vertical-align: baseline;
-}
-@media screen and (min-width: 760px) {
-  img {
-    transition: 0.2s;
-  }
-  img:hover {
-    height: 75px;
-  }
-}
+  height: 34px;
+  vertical-align: baseline; }
+  img.linkedHover {
+    border-width: 3px;
+    height: 51px;
+    transition: 0.1s; }
+
+.container {
+  display: flex;
+  flex-direction: column;
+  margin: 24px 24px; }
 
 .images {
   display: flex;
+  flex-flow: wrap;
   justify-content: space-around;
   width: 100%;
-  margin: 12px 0;
-}
+  margin: 12px 0; }
 
 .staticPositioner {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 75px;
-  width: 75px;
-}
+  height: 51px;
+  width: 51px; }
+
+:not(img).linkedHover {
+  color: blue; }
+
+@media only screen and (min-width: 426px) {
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; }
+
+  .container {
+    max-width: 426px; } }
+@media only screen and (min-width: 769px) {
+  .container {
+    align-items: center;
+    max-width: 30vw;
+    border: 12px solid black;
+    padding: 24px 24px; } }
 
 /*# sourceMappingURL=style.css.map */
