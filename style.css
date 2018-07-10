@@ -1,72 +1,100 @@
 a {
-  text-decoration: none; }
-  a img {
-    border: 2px dashed #cacde7;
-    border-radius: 2px; }
+  text-decoration: underline;
+}
+a img {
+  border-bottom: 1px dotted blue;
+}
 
 body {
-  font-family: "Alegreya Sans", sans-serif; }
+  font-family: "Annie Use Your Telescope", cursive;
+}
 
 h1 {
-  font-family: "Alegreya Sans", sans-serif;
   font-size: 48px;
-  margin-bottom: 12px; }
+  margin-bottom: 12px;
+}
 
 h1 > .large {
-  font-size: 52px; }
+  font-size: 52px;
+}
 
 h1 > .small {
-  font-size: 44px; }
+  font-size: 44px;
+}
 
 p {
+  font-size: 24px;
   align-self: flex-start;
-  font-family: sans-serif; }
+}
 
 img {
   height: 34px;
-  vertical-align: baseline; }
-  img.linkedHover {
-    border-width: 3px;
-    height: 51px;
-    transition: 0.1s; }
+  vertical-align: baseline;
+}
+img.linkedHover {
+  border-width: 3px;
+  height: 34px;
+  transition: 0.1s;
+}
 
 .container {
   display: flex;
   flex-direction: column;
-  margin: 24px 24px; }
+  margin: 24px 24px;
+}
 
 .images {
   display: flex;
   flex-flow: wrap;
   justify-content: space-around;
   width: 100%;
-  margin: 12px 0; }
+  margin: 12px 0;
+}
 
 .staticPositioner {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 51px;
-  width: 51px; }
+  height: 34px;
+  width: 34px;
+}
 
 :not(img).linkedHover {
-  color: blue; }
+  color: blue;
+}
 
 @media only screen and (min-width: 426px) {
   body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center; }
+    justify-content: center;
+  }
 
   .container {
-    max-width: 426px; } }
+    max-width: 426px;
+  }
+}
 @media only screen and (min-width: 769px) {
   .container {
     align-items: center;
-    max-width: 30vw;
-    border: 12px solid black;
-    padding: 24px 24px; } }
+    max-width: 40vw;
+    border: 12px dotted black;
+    padding: 24px 24px;
+  }
+
+  .staticPositioner {
+    height: 47.6px;
+    width: 47.6px;
+  }
+
+  img {
+    height: 47.6px;
+  }
+  img.linkedHover {
+    height: 47.6px;
+  }
+}
 
 /*# sourceMappingURL=style.css.map */

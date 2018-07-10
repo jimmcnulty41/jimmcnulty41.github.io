@@ -1,44 +1,46 @@
 $tablet-breakpoint: 426px;
 $desktop-breakpoint: 769px;
+$desktop-image-size-increase: 1.4;
 
 $vertical-margin: 24px;
 $horizontal-margin: 24px;
 $border-size: 12px;
 $image-size: 34px;
-$hover-growth: $image-size / 2;
+$hover-growth: 0px;
 $hovered-size: $image-size + $hover-growth;
 
-a {
-    text-decoration: none;
+$title-size: 48px;
+$body-size: 24px;
 
+a {
+    text-decoration: underline;
     img {
-        border: 2px dashed rgb(202, 205, 231);
-        border-radius: 2px;
+        border-bottom: 1px dotted blue;
     }
 }
 
 body {
-    font-family: "Alegreya Sans", sans-serif;
+    font-family: "Annie Use Your Telescope", cursive;
 }
 
 h1 {
-    font-family: "Alegreya Sans", sans-serif;
-    font-size: 48px;
+    //font-family: "Alegreya Sans", sans-serif;
+    font-size: $title-size;
 
     margin-bottom: 12px;
 }
 
 h1 > .large {
-    font-size: 52px;
+    font-size: $title-size + 4px;
 }
 
 h1 > .small {
-    font-size: 44px;
+    font-size: $title-size - 4px;
 }
 
 p {
+    font-size: $body-size;
     align-self: flex-start;
-    font-family: sans-serif;
 }
 
 img {
@@ -98,9 +100,21 @@ img {
     .container {
         align-items: center;
 
-        max-width: 30vw;
+        max-width: 40vw;
 
-        border: 12px solid black;
+        border: 12px dotted black;
         padding: $vertical-margin $horizontal-margin;
+    }
+
+    .staticPositioner {
+        height: $hovered-size * $desktop-image-size-increase;
+        width: $hovered-size * $desktop-image-size-increase;
+    }
+    img {
+        height: $image-size * $desktop-image-size-increase;
+
+        &.linkedHover {
+            height: $hovered-size * $desktop-image-size-increase;
+        }
     }
 }
