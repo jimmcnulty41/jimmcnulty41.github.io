@@ -1,5 +1,5 @@
 $tablet-breakpoint: 426px;
-$desktop-breakpoint: 769px;
+$desktop-breakpoint: 709px;
 $desktop-image-size-increase: 1.4;
 
 $vertical-margin: 24px;
@@ -100,7 +100,7 @@ img {
     .container {
         align-items: center;
 
-        max-width: 40vw;
+        max-width: $desktop-breakpoint;
 
         border: 12px dotted black;
         padding: $vertical-margin $horizontal-margin;

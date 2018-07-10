@@ -76,10 +76,10 @@ img.linkedHover {
     max-width: 426px;
   }
 }
-@media only screen and (min-width: 769px) {
+@media only screen and (min-width: 709px) {
   .container {
     align-items: center;
-    max-width: 40vw;
+    max-width: 709px;
     border: 12px dotted black;
     padding: 24px 24px;
   }
