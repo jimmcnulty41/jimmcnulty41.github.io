@@ -12,6 +12,12 @@ $hovered-size: $image-size + $hover-growth;
 $title-size: 48px;
 $body-size: 24px;
 
+$face-size: 200px;
+.face {
+    width: $face-size;
+    height: $face-size;
+}
+
 a {
     text-decoration: underline;
     img {
