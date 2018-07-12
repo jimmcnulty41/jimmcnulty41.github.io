@@ -1,0 +1,32 @@
+@import "variables.scss";
+
+$title-size: 48px;
+$body-size: 24px;
+
+$face-size: 200px;
+
+.face {
+    width: $face-size;
+    height: $face-size;
+}
+
+h1 {
+    font-family: "Shrikhand", cursive;
+    font-size: $title-size;
+
+    margin-bottom: 12px;
+}
+
+h1 > .large {
+    font-size: $title-size + 4px;
+}
+
+h1 > .small {
+    font-size: $title-size - 4px;
+}
+
+p {
+    font-family: "Abel", sans-serif;
+    font-size: $body-size;
+    align-self: flex-start;
+}

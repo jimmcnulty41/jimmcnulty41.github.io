@@ -1,0 +1,53 @@
+$hover-growth: 0px;
+$image-size: 34px;
+$hovered-size: $image-size + $hover-growth;
+
+$desktop-image-size-increase: 1.4;
+
+img {
+    height: $image-size;
+    vertical-align: baseline;
+    &.linkedHover {
+        border-width: 3px;
+        height: $hovered-size;
+
+        transition: 0.1s;
+    }
+}
+
+.images {
+    display: flex;
+    flex-flow: wrap;
+    justify-content: space-around;
+    width: 100%;
+
+    margin: $vertical-margin / 2 0;
+}
+
+.staticPositioner {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    height: $hovered-size;
+    width: $hovered-size;
+}
+
+:not(img).linkedHover {
+    color: blue;
+}
+
+@media only screen and (min-width: #{$desktop-breakpoint}) {
+    .staticPositioner {
+        height: $hovered-size * $desktop-image-size-increase;
+        width: $hovered-size * $desktop-image-size-increase;
+    }
+    img {
+        height: $image-size * $desktop-image-size-increase;
+
+        &.linkedHover {
+            height: $hovered-size * $desktop-image-size-increase;
+        }
+    }
+}
