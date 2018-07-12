@@ -1,3 +1,6 @@
+@import "variables.scss";
+
+$vertical-margin: 12px;
 $hover-growth: 0px;
 $image-size: 34px;
 $hovered-size: $image-size + $hover-growth;
@@ -21,7 +24,7 @@ img {
     justify-content: space-around;
     width: 100%;
 
-    margin: $vertical-margin / 2 0;
+    margin: $vertical-margin 0;
 }
 
 .staticPositioner {
@@ -35,7 +38,8 @@ img {
 }
 
 :not(img).linkedHover {
-    color: blue;
+    color: $color-0;
+    transition: 0.4s 2s;
 }
 
 @media only screen and (min-width: #{$desktop-breakpoint}) {

@@ -1,0 +1,48 @@
+body {
+  background-color: #c57b57;
+}
+
+.face {
+  width: 200px;
+  border: 1px solid #ebc68c;
+  border-radius: 4px;
+  padding: 6px;
+  margin-bottom: 12px;
+}
+
+h1 {
+  font-family: "Shrikhand", cursive;
+  font-size: 40px;
+  color: #1e2d2f;
+  margin-bottom: 20px;
+}
+
+h1 > .large {
+  font-size: 44px;
+}
+
+h1 > .small {
+  font-size: 36px;
+}
+
+p {
+  font-family: "Abel", sans-serif;
+  font-size: 16px;
+  align-self: flex-start;
+  margin: 12px 0 6px;
+  line-height: 1.3;
+}
+
+a {
+  color: #ebc68c;
+  text-decoration: none;
+}
+
+.secret {
+  color: #c57b57;
+}
+.secret:hover {
+  color: #1e2d2f;
+}
+
+/*# sourceMappingURL=style.css.map */

@@ -1,0 +1,47 @@
+img {
+  height: 34px;
+  vertical-align: baseline;
+}
+img.linkedHover {
+  border-width: 3px;
+  height: 34px;
+  transition: 0.1s;
+}
+
+.images {
+  display: flex;
+  flex-flow: wrap;
+  justify-content: space-around;
+  width: 100%;
+  margin: 12px 0;
+}
+
+.staticPositioner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 34px;
+  width: 34px;
+}
+
+:not(img).linkedHover {
+  color: #c57b57;
+  transition: 0.4s 2s;
+}
+
+@media only screen and (min-width: 709px) {
+  .staticPositioner {
+    height: 47.6px;
+    width: 47.6px;
+  }
+
+  img {
+    height: 47.6px;
+  }
+  img.linkedHover {
+    height: 47.6px;
+  }
+}
+
+/*# sourceMappingURL=imageRow.css.map */

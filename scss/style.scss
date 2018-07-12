@@ -1,20 +1,30 @@
 @import "variables.scss";
 
-$title-size: 48px;
-$body-size: 24px;
+$title-size: 40px;
+$body-size: 16px;
 
 $face-size: 200px;
 
+body {
+    background-color: $color-0;
+}
+
 .face {
     width: $face-size;
-    height: $face-size;
+
+    border: 1px solid $color-2;
+    border-radius: 4px;
+    padding: 6px;
+
+    margin-bottom: 12px;
 }
 
 h1 {
     font-family: "Shrikhand", cursive;
     font-size: $title-size;
 
-    margin-bottom: 12px;
+    color: $color-1;
+    margin-bottom: 20px;
 }
 
 h1 > .large {
@@ -29,4 +39,21 @@ p {
     font-family: "Abel", sans-serif;
     font-size: $body-size;
     align-self: flex-start;
+
+    margin: 12px 0 6px;
+    line-height: 1.3;
+}
+
+a {
+    color: $color-2;
+
+    text-decoration: none;
+}
+
+.secret {
+    color: $color-0;
+
+    &:hover {
+        color: $color-1;
+    }
 }

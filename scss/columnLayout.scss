@@ -1,33 +1,34 @@
+@import "variables.scss";
+
 $vertical-margin: 24px;
 $horizontal-margin: 24px;
 $border-size: 12px;
 
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
 .container {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
 
     margin: $vertical-margin $horizontal-margin;
 }
 
 @media only screen and (min-width: #{$desktop-breakpoint}) {
     .container {
-        align-items: center;
-
         max-width: $desktop-breakpoint;
 
-        border: 12px dotted black;
+        border: 6px double $color-3;
         padding: $vertical-margin $horizontal-margin;
     }
 }
 
 @media only screen and (min-width: #{$tablet-breakpoint}) {
-    body {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-    }
-
     .container {
         max-width: $tablet-breakpoint;
     }
