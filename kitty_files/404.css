@@ -1,0 +1,57 @@
+#frame {
+  overflow: hidden;
+  top: 0px;
+  left: 0px;
+  position: fixed;
+}
+
+#image {
+  position: relative;
+  z-index: -1;
+}
+
+h1 {
+  margin: 0;
+  font-size: 50vw;
+}
+@media (min-width: 480px) {
+  h1 {
+    font-size: 50vh;
+  }
+}
+
+a {
+  color: #dbffff;
+}
+
+.content {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+
+body {
+  align-items: center;
+  color: white;
+  display: flex;
+  justify-content: center;
+
+  font-family: sans-serif;
+  /* Makes a starry background */
+  /* https://leaverou.github.io/css3patterns/#starry-night  */
+  background-color: black;
+  background-image: radial-gradient(
+      #b47cff,
+      rgba(255, 255, 255, 0.2) 2px,
+      transparent 4px
+    ),
+    radial-gradient(#dbffff, rgba(255, 255, 255, 0.15) 1px, transparent 1px),
+    radial-gradient(#a7ffeb, rgba(255, 255, 255, 0.1) 2px, transparent 2px),
+    radial-gradient(
+      rgba(255, 255, 255, 0.4),
+      rgba(255, 255, 255, 0.1) 2px,
+      transparent 3px
+    );
+  background-size: 181px 179px, 350px 350px, 250px 250px, 150px 150px;
+  background-position: 0 0, 40px 60px, 130px 270px, 70px 100px;
+}
