@@ -141,8 +141,7 @@ const sources = [
 
 sources.forEach((s) => {
   const sound = new Howl({ src: s });
-  const link = document.createElement("a");
-  link.setAttribute("href", s);
+  const link = document.createElement("p");
   link.innerText = s;
   link.onclick = (e) => {
     e.preventDefault;
