@@ -46,3 +46,12 @@ a {
 }
 
 /*# sourceMappingURL=style.css.map */
+.pane {
+  width: 100vw;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.pane > img {
+  width: 50vw;
+}
