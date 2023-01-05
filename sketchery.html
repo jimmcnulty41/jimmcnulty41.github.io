@@ -5,7 +5,56 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sketchery</title>
+    <link rel="stylesheet" type="text/css" href="/styles/reset.css" />
+
+    <script type="module" src="/vendor/three.js"></script>
+
 </head>
 <body>
+    <script type="module">
+      function createScene() {
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+        camera.position.z = 5;
+
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(
+          window.innerWidth,
+          window.innerHeight
+        );
+        document.body.appendChild(
+          renderer.domElement
+        );
+        return { scene, camera, renderer };
+      }
+
+      function getPage({ratio, mat}) {
+        const geometry = new THREE.PlaneGeometry(ratio,1);
+        const mesh = new THREE.Mesh( geometry, mat );
+        return {mesh, geometry};
+      }
+
+      const textureLoader = new THREE.TextureLoader();
+      textureLoader.crossOrigin = 'anonymous';
+
+      const scene = createScene();
+
+      textureLoader
+        .load('https://sketchery-store.nyc3.digitaloceanspaces.com/10.png',
+            tex => {
+                const mat = new THREE.MeshBasicMaterial({map: tex});
+                const ratio = tex.image.width / tex.image.height;
+                const page = getPage({ratio, mat});
+                scene.scene.add( page.mesh );
+            }
+        );
+
+      function animate(scene) {
+        window.requestAnimationFrame( () => animate(scene) );
+        scene.renderer.render( scene.scene, scene.camera );
+      }
+      animate(scene);
+
+    </script>
 </body>
 </html>
