@@ -74,10 +74,10 @@
     <div>
       <h1>Buildings go through different looks too.</h1>
       <div class="pane">
-        <img src="/assets/Buildings/b1.JPG" />
-        <img src="/assets/Buildings/b2.JPG" />
-        <img src="/assets/Buildings/b3.JPG" />
-        <img src="/assets/Buildings/b4.JPG" />
+        <img src="/assets/buildings/b1.JPG" />
+        <img src="/assets/buildings/b2.JPG" />
+        <img src="/assets/buildings/b3.JPG" />
+        <img src="/assets/buildings/b4.JPG" />
       </div>
     </div>
 
@@ -90,7 +90,6 @@
       field-of-view="35.58deg"
       >
     </model-viewer>
-    <img id="letters" src="/assets/ConsolasLetters.jpg" />
     <canvas></canvas>
     <script src="/vendor/three.js"></script>
     <script>
@@ -177,7 +176,7 @@
       function animate(scene) {
         window.requestAnimationFrame( () => animate(scene) );
         scene.renderer.render( scene.scene, scene.camera );
-     //   cube.cube.rotation.y = lerpAmt * cube.cube.rotation.y + (1-lerpAmt) * targetRot;
+        plane.plane.rotation.y = lerpAmt * plane.plane.rotation.y + (1-lerpAmt) * targetRot;
       }
       animate(scene);
     </script>
