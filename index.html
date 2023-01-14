@@ -175,8 +175,9 @@
 
       function animate(scene) {
         window.requestAnimationFrame( () => animate(scene) );
-        scene.renderer.render( scene.scene, scene.camera );
         plane.plane.rotation.y = lerpAmt * plane.plane.rotation.y + (1-lerpAmt) * targetRot;
+        console.log(scene.scene);
+        scene.renderer.render( scene.scene, scene.camera );
       }
       animate(scene);
     </script>
