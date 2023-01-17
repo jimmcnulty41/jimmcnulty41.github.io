@@ -122,6 +122,8 @@ let model = {
   sceneMapping: {},
 };
 
+const disabledSystems = ["report"];
+
 let systems = {
   advanceTimeSystem: (model) => ({
     ...model,
@@ -245,9 +247,11 @@ function newDefaultEntity(id) {
 function update() {
   window.requestAnimationFrame(() => update());
 
-  Object.keys(systems).forEach((s) => {
-    model = systems[s](model);
-  });
+  Object.keys(systems)
+    .filter((s) => !disabledSystems.includes(s))
+    .forEach((s) => {
+      model = systems[s](model);
+    });
 
   updateScene();
 
