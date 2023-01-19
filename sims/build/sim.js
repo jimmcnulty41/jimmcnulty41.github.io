@@ -1,3 +1,14 @@
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 import * as THREE from "./vendor/three.js";
 import { OrbitControls } from "./vendor/OrbitControls.js";
 let scene = new THREE.Scene();
@@ -9,7 +20,14 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.set(100, 100, 100);
 camera.lookAt(0, 0, 0);
-const blah = new OrbitControls(camera, canvas);
+const orbitControls = new OrbitControls(camera, canvas);
+function updateStateMachine(machine, roll) {
+    const transition = machine.edges.find((t) => t.fromStateName === machine.current && t.shouldTransition(roll));
+    if (!transition) {
+        return machine;
+    }
+    return Object.assign(Object.assign({}, machine), { current: transition.toStateName });
+}
 function start() {
     console.log("Simulation begins");
     update();
@@ -29,6 +47,12 @@ function createObject({ type }) {
             return getGrid();
     }
 }
+const dirs = [
+    [0, 0, 1],
+    [0, 0, -1],
+    [1, 0, 0],
+    [-1, 0, 0],
+];
 function isRenderable(entity) {
     return (entity.components.render !== undefined &&
         entity.components.position !== undefined);
@@ -40,52 +64,34 @@ function canWander(entity) {
 function isPositioned(entity) {
     return entity.components.position !== undefined;
 }
-let model = {
-    time: 0,
-    entities: [
-        {
-            id: "0",
-            components: {
-                render: {
-                    type: "grid",
-                },
-                position: { x: 0, y: 0, z: 0 },
-            },
-        },
-    ],
-    idCounter: 1,
-    sceneMapping: {},
-};
 const disabledSystems = ["report"];
 let systems = {
     advanceTimeSystem: (model) => (Object.assign(Object.assign({}, model), { time: model.time + 1 })),
-    addEntityEveryNTicks: (model) => model.time % 3 || model.entities.length > 1000
+    addEntityEveryNTicks: (model) => model.time % 3 || model.entities.length > 100
         ? model
         : Object.assign(Object.assign({}, model), { entities: [...model.entities, newDefaultEntity(`${model.idCounter}`)], idCounter: model.idCounter + 1 }),
     wander: (model) => {
-        return Object.assign(Object.assign({}, model), { entities: model.entities.map((e, i) => {
-                if (!canWander(e))
-                    return e;
-                const roll = Math.random();
-                const c = e.components.wander;
-                const p = e.components.position;
-                const distances = [
-                    Math.abs(c.x - roll),
-                    Math.abs(c.y - roll),
-                    Math.abs(c.z - roll),
-                ];
-                const dir = distances[0] < distances[1] && distances[0] < distances[2]
-                    ? 0
-                    : distances[1] < distances[0] && distances[1] < distances[2]
-                        ? 1
-                        : 2;
-                const sign = [p.x, p.y, p.z][dir] > c.sign * 50 ? -1 : 12;
-                return Object.assign(Object.assign({}, e), { components: Object.assign(Object.assign({}, e.components), { position: {
-                            x: p.x + Number(dir === 0) * sign,
-                            y: p.y + Number(dir === 1) * sign,
-                            z: p.z + Number(dir === 2) * sign,
-                        } }) });
-            }) });
+        function entityWander(e, i) {
+            let _a = e.components, { position, wander } = _a, unaffectedComponents = __rest(_a, ["position", "wander"]);
+            const dix = wander.directionIndex;
+            if (wander.fsm.current === "forward") {
+                position = {
+                    x: position.x + wander.speed * dirs[dix][0],
+                    y: position.y + wander.speed * dirs[dix][1],
+                    z: position.z + wander.speed * dirs[dix][2],
+                };
+            }
+            else if (wander.fsm.current === "turning") {
+                wander = Object.assign(Object.assign({}, wander), { directionIndex: (dix + 1) % dirs.length });
+            }
+            wander.fsm = updateStateMachine(e.components.wander.fsm, Math.random());
+            return Object.assign(Object.assign({}, e), { components: Object.assign(Object.assign({}, unaffectedComponents), { position,
+                    wander }) });
+        }
+        return Object.assign(Object.assign({}, model), { entities: [
+                ...model.entities.filter(canWander).map(entityWander),
+                ...model.entities.filter((x) => !canWander(x)),
+            ] });
     },
     report: (model) => {
         const positions = model.entities
@@ -101,7 +107,7 @@ let systems = {
     },
     updateTHREEScene: (model) => {
         const sceneMapping = Object.assign({}, model.sceneMapping);
-        model.entities.forEach((e) => {
+        model.entities.filter(isRenderable).forEach((e) => {
             if (!isRenderable(e)) {
                 return;
             }
@@ -116,9 +122,25 @@ let systems = {
                 scene.children[childIdx].position.set(e.components.position.x, e.components.position.y, e.components.position.z);
             }
         });
-        blah.update();
+        orbitControls.update();
         return Object.assign(Object.assign({}, model), { sceneMapping });
     },
+};
+let model = {
+    time: 0,
+    entities: [
+    // {
+    //   id: "0",
+    //   components: {
+    //     render: {
+    //       type: "grid",
+    //     },
+    //     position: { x: 0, y: 0, z: 0 },
+    //   },
+    // },
+    ],
+    idCounter: 1,
+    sceneMapping: {},
 };
 function newDefaultEntity(id) {
     return {
@@ -127,10 +149,28 @@ function newDefaultEntity(id) {
             render: { type: "sphere" },
             position: { x: 0, y: 0, z: 0 },
             wander: {
-                x: Math.random(),
-                y: Math.random(),
-                z: Math.random(),
-                sign: Math.pow(Math.random(), 12),
+                speed: Math.random(),
+                directionIndex: 0,
+                fsm: {
+                    nodes: ["forward", "turning"],
+                    edges: [
+                        {
+                            fromStateName: "forward",
+                            toStateName: "turning",
+                            shouldTransition: (roll) => {
+                                return roll < Math.random();
+                            },
+                        },
+                        {
+                            fromStateName: "turning",
+                            toStateName: "forward",
+                            shouldTransition: (roll) => {
+                                return roll < Math.random();
+                            },
+                        },
+                    ],
+                    current: "forward",
+                },
             },
         },
     };

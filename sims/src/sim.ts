@@ -16,7 +16,31 @@ const camera = new THREE.PerspectiveCamera(
 );
 camera.position.set(100, 100, 100);
 camera.lookAt(0, 0, 0);
-const blah = new OrbitControls(camera, canvas);
+const orbitControls = new OrbitControls(camera, canvas);
+
+interface StateMachine<States> {
+  nodes: States[];
+  edges: StateTransition<States>[];
+  current: States;
+}
+interface StateTransition<States> {
+  fromStateName: States;
+  toStateName: States;
+  shouldTransition: (roll: number) => Boolean;
+}
+
+function updateStateMachine(machine: StateMachine<any>, roll: number) {
+  const transition = machine.edges.find(
+    (t) => t.fromStateName === machine.current && t.shouldTransition(roll)
+  );
+  if (!transition) {
+    return machine;
+  }
+  return {
+    ...machine,
+    current: transition.toStateName,
+  };
+}
 
 function start() {
   console.log("Simulation begins");
@@ -32,7 +56,7 @@ function getGrid() {
   return new THREE.GridHelper(100, 10, 0xff0000);
 }
 
-function createObject({ type }: RenderComponent): THREE.Object3D {
+function createObject({ type }: RenderComponent) {
   switch (type) {
     case "sphere":
       const mesh = new THREE.Mesh(
@@ -45,12 +69,24 @@ function createObject({ type }: RenderComponent): THREE.Object3D {
   }
 }
 
+const dirs = [
+  [0, 0, 1],
+  [0, 0, -1],
+  [1, 0, 0],
+  [-1, 0, 0],
+] as const;
+
+type Dirs = typeof dirs[0];
+
+type WanderStates = "forward" | "turning";
+
 interface WanderComponent {
-  x: number;
-  y: number;
-  z: number;
-  sign: number;
+  directionIndex: number;
+  speed: number;
+
+  fsm: StateMachine<WanderStates>;
 }
+
 interface PositionComponent {
   x: number;
   y: number;
@@ -126,23 +162,6 @@ interface Model {
   };
 }
 
-let model: Model = {
-  time: 0,
-  entities: [
-    {
-      id: "0",
-      components: {
-        render: {
-          type: "grid",
-        },
-        position: { x: 0, y: 0, z: 0 },
-      },
-    },
-  ],
-  idCounter: 1,
-  sceneMapping: {},
-};
-
 const disabledSystems = ["report"];
 
 let systems: { [systemName: string]: (model: Model) => Model } = {
@@ -151,50 +170,49 @@ let systems: { [systemName: string]: (model: Model) => Model } = {
     time: model.time + 1,
   }),
   addEntityEveryNTicks: (model) =>
-    model.time % 3 || model.entities.length > 1000
+    model.time % 3 || model.entities.length > 100
       ? model
       : {
           ...model,
           entities: [...model.entities, newDefaultEntity(`${model.idCounter}`)],
           idCounter: model.idCounter + 1,
         },
-  wander: (model) => {
+  wander: (model): Model => {
+    function entityWander(e: WanderingEntity, i: number): Entity {
+      let { position, wander, ...unaffectedComponents } = e.components;
+      const dix = wander.directionIndex;
+
+      if (wander.fsm.current === "forward") {
+        position = {
+          x: position.x + wander.speed * dirs[dix][0],
+          y: position.y + wander.speed * dirs[dix][1],
+          z: position.z + wander.speed * dirs[dix][2],
+        };
+      } else if (wander.fsm.current === "turning") {
+        wander = {
+          ...wander,
+          directionIndex: (dix + 1) % dirs.length,
+        };
+      }
+
+      wander.fsm = updateStateMachine(e.components.wander.fsm, Math.random());
+
+      return {
+        ...e,
+        components: {
+          ...unaffectedComponents,
+          position,
+          wander,
+        },
+      };
+    }
+
     return {
       ...model,
-      entities: model.entities.map((e, i) => {
-        if (!canWander(e)) return e;
-
-        const roll = Math.random();
-
-        const c = e.components.wander;
-        const p = e.components.position;
-
-        const distances = [
-          Math.abs(c.x - roll),
-          Math.abs(c.y - roll),
-          Math.abs(c.z - roll),
-        ];
-
-        const dir =
-          distances[0] < distances[1] && distances[0] < distances[2]
-            ? 0
-            : distances[1] < distances[0] && distances[1] < distances[2]
-            ? 1
-            : 2;
-        const sign = [p.x, p.y, p.z][dir] > c.sign * 50 ? -1 : 12;
-
-        return {
-          ...e,
-          components: {
-            ...e.components,
-            position: {
-              x: p.x + Number(dir === 0) * sign,
-              y: p.y + Number(dir === 1) * sign,
-              z: p.z + Number(dir === 2) * sign,
-            },
-          },
-        };
-      }),
+      entities: [
+        ...model.entities.filter(canWander).map(entityWander),
+        ...model.entities.filter((x) => !canWander(x)),
+      ],
     };
   },
   report: (model) => {
@@ -221,7 +239,7 @@ let systems: { [systemName: string]: (model: Model) => Model } = {
   updateTHREEScene: (model) => {
     const sceneMapping = { ...model.sceneMapping };
 
-    model.entities.forEach((e) => {
+    model.entities.filter(isRenderable).forEach((e) => {
       if (!isRenderable(e)) {
         return;
       }
@@ -242,7 +260,7 @@ let systems: { [systemName: string]: (model: Model) => Model } = {
       }
     });
 
-    blah.update();
+    orbitControls.update();
     return {
       ...model,
       sceneMapping,
@@ -250,6 +268,22 @@ let systems: { [systemName: string]: (model: Model) => Model } = {
   },
 };
 
+let model: Model = {
+  time: 0,
+  entities: [
+    // {
+    //   id: "0",
+    //   components: {
+    //     render: {
+    //       type: "grid",
+    //     },
+    //     position: { x: 0, y: 0, z: 0 },
+    //   },
+    // },
+  ],
+  idCounter: 1,
+  sceneMapping: {},
+};
 function newDefaultEntity(id: string): Entity {
   return {
     id,
@@ -257,10 +291,28 @@ function newDefaultEntity(id: string): Entity {
       render: { type: "sphere" },
       position: { x: 0, y: 0, z: 0 },
       wander: {
-        x: Math.random(),
-        y: Math.random(),
-        z: Math.random(),
-        sign: Math.pow(Math.random(), 12),
+        speed: Math.random(),
+        directionIndex: 0,
+        fsm: {
+          nodes: ["forward", "turning"],
+          edges: [
+            {
+              fromStateName: "forward",
+              toStateName: "turning",
+              shouldTransition: (roll) => {
+                return roll < Math.random();
+              },
+            },
+            {
+              fromStateName: "turning",
+              toStateName: "forward",
+              shouldTransition: (roll) => {
+                return roll < Math.random();
+              },
+            },
+          ],
+          current: "forward",
+        },
       },
     },
   };

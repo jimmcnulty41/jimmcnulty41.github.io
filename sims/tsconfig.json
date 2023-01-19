@@ -11,7 +11,12 @@
     "outDir": "./build",
     "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "skipLibCheck": true,
-    "extendedDiagnostics": true
+    "watch": true,
+    "skipLibCheck": true
+    //"extendedDiagnostics": true
+  },
+  "watchOptions": {
+    "watchDirectory": "useFsEvents",
+    "excludeDirectories": ["src/vendor"]
   }
 }
