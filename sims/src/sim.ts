@@ -1,143 +1,23 @@
 import * as THREE from "./vendor/three.js";
 import { OrbitControls } from "./vendor/OrbitControls.js";
-import { StateMachine } from "./StateMachine.js";
 import { Model } from "./Model.js";
-import { updateTHREEScene } from "./systems/updateTHREESceneSystem.js";
+import {
+  initThreeScene,
+  updateTHREEScene,
+} from "./systems/updateTHREESceneSystem.js";
 import { reportSystem } from "./systems/reportSystem.js";
 import { wanderSystem } from "./systems/wanderSystem.js";
 import { addEntityEveryNTicksSystem } from "./systems/addEntityEveryNTicksSystem.js";
-
-export let scene = new THREE.Scene();
-const canvas = document.querySelector("canvas");
-if (!canvas) throw new Error("canvas not found on page");
-
-const renderer = new THREE.WebGLRenderer({ canvas });
-
-renderer.setSize(window.innerWidth, window.innerHeight);
-const camera = new THREE.PerspectiveCamera(
-  70,
-  window.innerWidth / window.innerHeight,
-  0.1,
-  1000
-);
-camera.position.set(100, 100, 100);
-camera.lookAt(0, 0, 0);
-export const orbitControls = new OrbitControls(camera, canvas);
-
-function start() {
-  console.log("Simulation begins");
-  update();
-}
+import { Entity } from "./Entity.js";
 
 function remap(min: number, max: number, newMin: number, newMax: number) {
   return (input: number) =>
     newMin + ((input - min) / (max - min)) * (newMax - newMin);
 }
 
-function getGrid() {
-  return new THREE.GridHelper(100, 10, 0xff0000);
-}
-
-export function createObject({ type }: RenderComponent) {
-  switch (type) {
-    case "sphere":
-      const mesh = new THREE.Mesh(
-        new THREE.SphereGeometry(1, 16, 8),
-        new THREE.MeshBasicMaterial({ color: 0xffffff })
-      );
-      return mesh;
-    case "grid":
-      return getGrid();
-  }
-}
-
-export const dirs = [
-  [0, 0, 1],
-  [0, 0, -1],
-  [1, 0, 0],
-  [-1, 0, 0],
-] as const;
-
-type Dirs = typeof dirs[0];
-
-type WanderStates = "forward" | "turning";
-
-interface WanderComponent {
-  directionIndex: number;
-  speed: number;
-
-  fsm: StateMachine<WanderStates>;
-}
-
-interface PositionComponent {
-  x: number;
-  y: number;
-  z: number;
-}
-
-interface SphereRenderComponent {
-  type: "sphere";
-}
-interface GridRenderComponent {
-  type: "grid";
-}
-
-type RenderComponent = SphereRenderComponent | GridRenderComponent;
-
-type RenderableEntity = Entity & {
-  components: Components & {
-    render: RenderComponent;
-    position: PositionComponent;
-  };
-};
-
-export type WanderingEntity = Entity & {
-  components: Components & {
-    wander: WanderComponent;
-    position: PositionComponent;
-  };
-};
-
-type PositionedEntity = Entity & {
-  components: Components & { position: PositionComponent };
-};
-
-export function isRenderable(entity: Entity): entity is RenderableEntity {
-  return (
-    entity.components.render !== undefined &&
-    entity.components.position !== undefined
-  );
-}
-
-export function canWander(entity: Entity): entity is WanderingEntity {
-  return (
-    entity.components.wander !== undefined &&
-    entity.components.position !== undefined
-  );
-}
-
-export function isPositioned(entity: Entity): entity is PositionedEntity {
-  return entity.components.position !== undefined;
-}
-
-type ComponentTypes = {
-  wander: WanderComponent;
-  position: PositionComponent;
-  render: RenderComponent;
-};
-
-type Components = {
-  [K in keyof ComponentTypes]?: ComponentTypes[K];
-};
-
-export interface Entity {
-  id: string;
-  components: Components;
-}
-
 const disabledSystems = ["report"];
 
-let systems: { [systemName: string]: (model: Model) => Model } = {
+let systems: { [systemName: string]: System } = {
   advanceTimeSystem: (model) => ({
     ...model,
     time: model.time + 1,
@@ -198,16 +78,32 @@ export function newDefaultEntity(id: string): Entity {
   };
 }
 
-function update() {
-  window.requestAnimationFrame(() => update());
+function update(globz: Globals) {
+  window.requestAnimationFrame(() => update(globz));
 
   Object.keys(systems)
     .filter((s) => !disabledSystems.includes(s))
     .forEach((s) => {
-      model = systems[s](model);
+      model = systems[s](model, globz);
     });
-
-  renderer.render(scene, camera);
 }
 
-start();
+export interface Globals {
+  window: Window;
+  three: {
+    scene: THREE.Scene;
+    orbitControls: OrbitControls;
+    renderer: THREE.Renderer;
+    camera: THREE.Camera;
+  };
+}
+
+type System = (model: Model, globz?: Globals) => Model;
+type Systems = { [name: string]: System };
+
+export function RunECS() {
+  console.log("Simulation begins");
+  update({ window, three: initThreeScene() });
+}
+
+RunECS();

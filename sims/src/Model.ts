@@ -1,4 +1,4 @@
-import { Entity } from "./sim.js";
+import { Entity } from "./Entity.js";
 
 export interface Model {
   time: number;

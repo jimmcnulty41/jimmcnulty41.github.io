@@ -1,4 +1,4 @@
-import { isPositioned } from "../sim.js";
+import { isPositioned } from "../components/Components.js";
 export function reportSystem(model) {
     const positions = model.entities
         .filter(isPositioned)

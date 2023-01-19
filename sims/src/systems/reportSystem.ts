@@ -1,5 +1,5 @@
 import { Model } from "../Model.js";
-import { isPositioned } from "../sim.js";
+import { isPositioned } from "../components/Components.js";
 
 export function reportSystem(model: Model): Model {
   const positions = model.entities
