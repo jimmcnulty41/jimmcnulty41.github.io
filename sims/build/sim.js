@@ -1,4 +1,4 @@
-import { initThreeScene, updateTHREEScene, } from "./systems/updateTHREESceneSystem.js";
+import { updateTHREEScene } from "./systems/updateTHREESceneSystem.js";
 import { reportSystem } from "./systems/reportSystem.js";
 import { wanderSystem } from "./systems/wanderSystem.js";
 import { addEntityEveryNTicksSystem } from "./systems/addEntityEveryNTicksSystem.js";
@@ -6,13 +6,6 @@ function remap(min, max, newMin, newMax) {
     return (input) => newMin + ((input - min) / (max - min)) * (newMax - newMin);
 }
 const disabledSystems = ["report"];
-let systems = {
-    advanceTimeSystem: (model) => (Object.assign(Object.assign({}, model), { time: model.time + 1 })),
-    addEntityEveryNTicksSystem,
-    wanderSystem,
-    updateTHREEScene,
-    reportSystem,
-};
 let model = {
     time: 0,
     entities: [
@@ -29,7 +22,7 @@ let model = {
     idCounter: 1,
     sceneMapping: {},
 };
-export function newDefaultEntity(id) {
+function newDefaultEntity(id) {
     return {
         id,
         components: {
@@ -62,16 +55,23 @@ export function newDefaultEntity(id) {
         },
     };
 }
-function update(globz) {
-    window.requestAnimationFrame(() => update(globz));
+let systems = {
+    advanceTimeSystem: (model) => (Object.assign(Object.assign({}, model), { time: model.time + 1 })),
+    addEntityEveryNTicksSystem: addEntityEveryNTicksSystem(newDefaultEntity, 10),
+    wanderSystem,
+    updateTHREEScene,
+    reportSystem,
+};
+function RunECS() {
+    console.log("Simulation begins");
+    update();
+}
+function update() {
+    window.requestAnimationFrame(() => update());
     Object.keys(systems)
         .filter((s) => !disabledSystems.includes(s))
         .forEach((s) => {
-        model = systems[s](model, globz);
+        model = systems[s](model);
     });
-}
-export function RunECS() {
-    console.log("Simulation begins");
-    update({ window, three: initThreeScene() });
 }
 RunECS();

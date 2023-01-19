@@ -1,10 +1,7 @@
 import * as THREE from "./vendor/three.js";
 import { OrbitControls } from "./vendor/OrbitControls.js";
 import { Model } from "./Model.js";
-import {
-  initThreeScene,
-  updateTHREEScene,
-} from "./systems/updateTHREESceneSystem.js";
+import { updateTHREEScene } from "./systems/updateTHREESceneSystem.js";
 import { reportSystem } from "./systems/reportSystem.js";
 import { wanderSystem } from "./systems/wanderSystem.js";
 import { addEntityEveryNTicksSystem } from "./systems/addEntityEveryNTicksSystem.js";
@@ -16,17 +13,6 @@ function remap(min: number, max: number, newMin: number, newMax: number) {
 }
 
 const disabledSystems = ["report"];
-
-let systems: { [systemName: string]: System } = {
-  advanceTimeSystem: (model) => ({
-    ...model,
-    time: model.time + 1,
-  }),
-  addEntityEveryNTicksSystem,
-  wanderSystem,
-  updateTHREEScene,
-  reportSystem,
-};
 
 let model: Model = {
   time: 0,
@@ -44,7 +30,8 @@ let model: Model = {
   idCounter: 1,
   sceneMapping: {},
 };
-export function newDefaultEntity(id: string): Entity {
+
+function newDefaultEntity(id: string): Entity {
   return {
     id,
     components: {
@@ -78,32 +65,32 @@ export function newDefaultEntity(id: string): Entity {
   };
 }
 
-function update(globz: Globals) {
-  window.requestAnimationFrame(() => update(globz));
+type System = (model: Model) => Model;
+type Systems = { [name: string]: System };
+let systems: Systems = {
+  advanceTimeSystem: (model) => ({
+    ...model,
+    time: model.time + 1,
+  }),
+  addEntityEveryNTicksSystem: addEntityEveryNTicksSystem(newDefaultEntity, 10),
+  wanderSystem,
+  updateTHREEScene,
+  reportSystem,
+};
+
+function RunECS() {
+  console.log("Simulation begins");
+  update();
+}
+
+function update() {
+  window.requestAnimationFrame(() => update());
 
   Object.keys(systems)
     .filter((s) => !disabledSystems.includes(s))
     .forEach((s) => {
-      model = systems[s](model, globz);
+      model = systems[s](model);
     });
-}
-
-export interface Globals {
-  window: Window;
-  three: {
-    scene: THREE.Scene;
-    orbitControls: OrbitControls;
-    renderer: THREE.Renderer;
-    camera: THREE.Camera;
-  };
-}
-
-type System = (model: Model, globz?: Globals) => Model;
-type Systems = { [name: string]: System };
-
-export function RunECS() {
-  console.log("Simulation begins");
-  update({ window, three: initThreeScene() });
 }
 
 RunECS();

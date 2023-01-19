@@ -2,7 +2,6 @@ import * as THREE from "../vendor/three.js";
 
 import { Model } from "../Model.js";
 import { RenderComponent } from "../components/RenderComponent.js";
-import { Globals } from "../sim.js";
 import { OrbitControls } from "../vendor/OrbitControls.js";
 import { isRenderable } from "../components/Components.js";
 
@@ -23,10 +22,7 @@ export function createObject({ type }: RenderComponent) {
   }
 }
 
-export function updateTHREEScene(model: Model, globz?: Globals): Model {
-  if (!globz) throw new Error("Three renderer requires access to globals");
-
-  const { scene, camera, renderer, orbitControls } = globz.three;
+export function updateTHREEScene(model: Model): Model {
   const sceneMapping = { ...model.sceneMapping };
 
   model.entities.filter(isRenderable).forEach((e) => {
@@ -58,23 +54,21 @@ export function updateTHREEScene(model: Model, globz?: Globals): Model {
   };
 }
 
-export function initThreeScene() {
-  let scene = new THREE.Scene();
-  const canvas = document.querySelector("canvas");
-  if (!canvas) throw new Error("canvas not found on page");
+let scene = new THREE.Scene();
 
-  const renderer = new THREE.WebGLRenderer({ canvas });
+const canvas = document.querySelector("canvas");
+if (!canvas) throw new Error("canvas not found on page");
 
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  const camera = new THREE.PerspectiveCamera(
-    70,
-    window.innerWidth / window.innerHeight,
-    0.1,
-    1000
-  );
-  camera.position.set(100, 100, 100);
-  camera.lookAt(0, 0, 0);
+const renderer = new THREE.WebGLRenderer({ canvas });
+renderer.setSize(window.innerWidth, window.innerHeight);
 
-  const orbitControls = new OrbitControls(camera, canvas);
-  return { scene, orbitControls, camera, renderer };
-}
+const camera = new THREE.PerspectiveCamera(
+  70,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  1000
+);
+camera.position.set(100, 100, 100);
+camera.lookAt(0, 0, 0);
+
+const orbitControls = new OrbitControls(camera, canvas);
