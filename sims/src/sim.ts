@@ -1,7 +1,13 @@
 import * as THREE from "./vendor/three.js";
 import { OrbitControls } from "./vendor/OrbitControls.js";
+import { StateMachine } from "./StateMachine.js";
+import { Model } from "./Model.js";
+import { updateTHREEScene } from "./systems/updateTHREESceneSystem.js";
+import { reportSystem } from "./systems/reportSystem.js";
+import { wanderSystem } from "./systems/wanderSystem.js";
+import { addEntityEveryNTicksSystem } from "./systems/addEntityEveryNTicksSystem.js";
 
-let scene = new THREE.Scene();
+export let scene = new THREE.Scene();
 const canvas = document.querySelector("canvas");
 if (!canvas) throw new Error("canvas not found on page");
 
@@ -16,31 +22,7 @@ const camera = new THREE.PerspectiveCamera(
 );
 camera.position.set(100, 100, 100);
 camera.lookAt(0, 0, 0);
-const orbitControls = new OrbitControls(camera, canvas);
-
-interface StateMachine<States> {
-  nodes: States[];
-  edges: StateTransition<States>[];
-  current: States;
-}
-interface StateTransition<States> {
-  fromStateName: States;
-  toStateName: States;
-  shouldTransition: (roll: number) => Boolean;
-}
-
-function updateStateMachine(machine: StateMachine<any>, roll: number) {
-  const transition = machine.edges.find(
-    (t) => t.fromStateName === machine.current && t.shouldTransition(roll)
-  );
-  if (!transition) {
-    return machine;
-  }
-  return {
-    ...machine,
-    current: transition.toStateName,
-  };
-}
+export const orbitControls = new OrbitControls(camera, canvas);
 
 function start() {
   console.log("Simulation begins");
@@ -56,7 +38,7 @@ function getGrid() {
   return new THREE.GridHelper(100, 10, 0xff0000);
 }
 
-function createObject({ type }: RenderComponent) {
+export function createObject({ type }: RenderComponent) {
   switch (type) {
     case "sphere":
       const mesh = new THREE.Mesh(
@@ -69,7 +51,7 @@ function createObject({ type }: RenderComponent) {
   }
 }
 
-const dirs = [
+export const dirs = [
   [0, 0, 1],
   [0, 0, -1],
   [1, 0, 0],
@@ -109,7 +91,7 @@ type RenderableEntity = Entity & {
   };
 };
 
-type WanderingEntity = Entity & {
+export type WanderingEntity = Entity & {
   components: Components & {
     wander: WanderComponent;
     position: PositionComponent;
@@ -120,21 +102,21 @@ type PositionedEntity = Entity & {
   components: Components & { position: PositionComponent };
 };
 
-function isRenderable(entity: Entity): entity is RenderableEntity {
+export function isRenderable(entity: Entity): entity is RenderableEntity {
   return (
     entity.components.render !== undefined &&
     entity.components.position !== undefined
   );
 }
 
-function canWander(entity: Entity): entity is WanderingEntity {
+export function canWander(entity: Entity): entity is WanderingEntity {
   return (
     entity.components.wander !== undefined &&
     entity.components.position !== undefined
   );
 }
 
-function isPositioned(entity: Entity): entity is PositionedEntity {
+export function isPositioned(entity: Entity): entity is PositionedEntity {
   return entity.components.position !== undefined;
 }
 
@@ -148,18 +130,9 @@ type Components = {
   [K in keyof ComponentTypes]?: ComponentTypes[K];
 };
 
-interface Entity {
+export interface Entity {
   id: string;
   components: Components;
-}
-
-interface Model {
-  time: number;
-  entities: Entity[];
-  idCounter: number;
-  sceneMapping: {
-    [entityID: string]: number;
-  };
 }
 
 const disabledSystems = ["report"];
@@ -169,103 +142,10 @@ let systems: { [systemName: string]: (model: Model) => Model } = {
     ...model,
     time: model.time + 1,
   }),
-  addEntityEveryNTicks: (model) =>
-    model.time % 3 || model.entities.length > 100
-      ? model
-      : {
-          ...model,
-          entities: [...model.entities, newDefaultEntity(`${model.idCounter}`)],
-          idCounter: model.idCounter + 1,
-        },
-  wander: (model): Model => {
-    function entityWander(e: WanderingEntity, i: number): Entity {
-      let { position, wander, ...unaffectedComponents } = e.components;
-      const dix = wander.directionIndex;
-
-      if (wander.fsm.current === "forward") {
-        position = {
-          x: position.x + wander.speed * dirs[dix][0],
-          y: position.y + wander.speed * dirs[dix][1],
-          z: position.z + wander.speed * dirs[dix][2],
-        };
-      } else if (wander.fsm.current === "turning") {
-        wander = {
-          ...wander,
-          directionIndex: (dix + 1) % dirs.length,
-        };
-      }
-
-      wander.fsm = updateStateMachine(e.components.wander.fsm, Math.random());
-
-      return {
-        ...e,
-        components: {
-          ...unaffectedComponents,
-          position,
-          wander,
-        },
-      };
-    }
-
-    return {
-      ...model,
-      entities: [
-        ...model.entities.filter(canWander).map(entityWander),
-        ...model.entities.filter((x) => !canWander(x)),
-      ],
-    };
-  },
-  report: (model) => {
-    const positions = model.entities
-      .filter(isPositioned)
-      .map((e) => e.components.position);
-
-    const posSum = positions.reduce(
-      (sum, p) => ({
-        x: sum.x + p.x,
-        y: sum.y + p.y,
-        z: sum.z + p.z,
-      }),
-      { x: 0, y: 0, z: 0 }
-    );
-
-    console.log(
-      `${(posSum.x / positions.length).toFixed(2)} ${(
-        posSum.y / positions.length
-      ).toFixed(2)} ${(posSum.z / positions.length).toFixed(2)}`
-    );
-    return model;
-  },
-  updateTHREEScene: (model) => {
-    const sceneMapping = { ...model.sceneMapping };
-
-    model.entities.filter(isRenderable).forEach((e) => {
-      if (!isRenderable(e)) {
-        return;
-      }
-      if (!sceneMapping[e.id]) {
-        // instance in scene
-        const object = createObject(e.components.render);
-        scene.add(object);
-        sceneMapping[e.id] = object.id;
-      } else {
-        const childIdx = scene.children.findIndex(
-          (c) => c.id === sceneMapping[e.id]
-        );
-        scene.children[childIdx].position.set(
-          e.components.position.x,
-          e.components.position.y,
-          e.components.position.z
-        );
-      }
-    });
-
-    orbitControls.update();
-    return {
-      ...model,
-      sceneMapping,
-    };
-  },
+  addEntityEveryNTicksSystem,
+  wanderSystem,
+  updateTHREEScene,
+  reportSystem,
 };
 
 let model: Model = {
@@ -284,7 +164,7 @@ let model: Model = {
   idCounter: 1,
   sceneMapping: {},
 };
-function newDefaultEntity(id: string): Entity {
+export function newDefaultEntity(id: string): Entity {
   return {
     id,
     components: {
