@@ -1,9 +1,6 @@
 import { updateTHREEScene } from "./systems/updateTHREESceneSystem.js";
 import { wanderSystem } from "./systems/wanderSystem.js";
 import { addEntityEveryNTicksSystem } from "./systems/addEntityEveryNTicksSystem.js";
-function remap(min, max, newMin, newMax) {
-    return (input) => newMin + ((input - min) / (max - min)) * (newMax - newMin);
-}
 const disabledSystems = ["report"];
 let model = {
     time: 0,
@@ -21,6 +18,7 @@ let model = {
     idCounter: 1,
 };
 function newDefaultEntity(id) {
+    const internalRoll = Math.random();
     return {
         id,
         components: {
@@ -29,6 +27,7 @@ function newDefaultEntity(id) {
             wander: {
                 speed: Math.random(),
                 directionIndex: 0,
+                internalRoll,
                 fsm: {
                     nodes: ["forward", "turning"],
                     edges: [
@@ -36,14 +35,14 @@ function newDefaultEntity(id) {
                             fromStateName: "forward",
                             toStateName: "turning",
                             shouldTransition: (roll) => {
-                                return roll < Math.random();
+                                return roll < internalRoll;
                             },
                         },
                         {
                             fromStateName: "turning",
                             toStateName: "forward",
                             shouldTransition: (roll) => {
-                                return roll < Math.random();
+                                return roll < 1 - internalRoll;
                             },
                         },
                     ],

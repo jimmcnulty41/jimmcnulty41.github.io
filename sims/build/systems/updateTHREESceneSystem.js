@@ -1,6 +1,7 @@
 import * as THREE from "../vendor/three.js";
 import { OrbitControls } from "../vendor/OrbitControls.js";
 import { isRenderable } from "../components/Components.js";
+import { remap } from "../utils.js";
 let entityIdToSceneChild = {};
 let entityIdToInstanceId = {};
 let scene = new THREE.Scene();
@@ -21,17 +22,6 @@ scene.add(instancedMesh);
 let instanceIdCounter = 0;
 const matrix_reg = new THREE.Matrix4();
 const color_reg = new THREE.Color(1, 1, 1);
-function remap(min, max, newMin, newMax, clamp) {
-    return (input) => {
-        const val = newMin + ((input - min) / (max - min)) * (newMax - newMin);
-        if (clamp) {
-            return Math.max(newMin, Math.min(newMax, val));
-        }
-        else {
-            return val;
-        }
-    };
-}
 function updateSphere(sphereEntity) {
     const id = entityIdToInstanceId[sphereEntity.id];
     matrix_reg.identity();
@@ -46,11 +36,10 @@ function updateSphere(sphereEntity) {
         const { x, y, z } = sphereEntity.components.position;
         matrix_reg.setPosition(x, y, z);
         instancedMesh.setMatrixAt(id, matrix_reg);
-        const dist = Math.sqrt(x * x + z * z);
-        //color_reg.r = remap(0, 10, 0, 1, true)(dist);
         const w = sphereEntity.components.wander;
         if (w) {
-            color_reg.g = remap(0, 1, 0, 1, true)(w.speed);
+            color_reg.r = w.internalRoll;
+            color_reg.g = remap(0, 1, 1, 0, true)(w.speed);
         }
         instancedMesh.setColorAt(id, color_reg);
     }

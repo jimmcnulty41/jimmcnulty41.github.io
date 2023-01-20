@@ -5,11 +5,6 @@ import { wanderSystem } from "./systems/wanderSystem.js";
 import { addEntityEveryNTicksSystem } from "./systems/addEntityEveryNTicksSystem.js";
 import { Entity } from "./Entity.js";
 
-function remap(min: number, max: number, newMin: number, newMax: number) {
-  return (input: number) =>
-    newMin + ((input - min) / (max - min)) * (newMax - newMin);
-}
-
 const disabledSystems = ["report"];
 
 let model: Model = {
@@ -29,6 +24,7 @@ let model: Model = {
 };
 
 function newDefaultEntity(id: string): Entity {
+  const internalRoll = Math.random();
   return {
     id,
     components: {
@@ -37,6 +33,7 @@ function newDefaultEntity(id: string): Entity {
       wander: {
         speed: Math.random(),
         directionIndex: 0,
+        internalRoll,
         fsm: {
           nodes: ["forward", "turning"],
           edges: [
@@ -44,14 +41,14 @@ function newDefaultEntity(id: string): Entity {
               fromStateName: "forward",
               toStateName: "turning",
               shouldTransition: (roll) => {
-                return roll < Math.random();
+                return roll < internalRoll;
               },
             },
             {
               fromStateName: "turning",
               toStateName: "forward",
               shouldTransition: (roll) => {
-                return roll < Math.random();
+                return roll < 1 - internalRoll;
               },
             },
           ],
