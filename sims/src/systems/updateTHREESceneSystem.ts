@@ -1,58 +1,15 @@
 import * as THREE from "../vendor/three.js";
 
 import { Model } from "../Model.js";
-import { RenderComponent } from "../components/RenderComponent.js";
 import { OrbitControls } from "../vendor/OrbitControls.js";
-import { isRenderable } from "../components/Components.js";
+import { RenderableEntity, isRenderable } from "../components/Components.js";
 
-function getGrid() {
-  return new THREE.GridHelper(100, 10, 0xff0000);
-}
+type EntityIdToThreeId = {
+  [entityID: string]: number | undefined;
+};
 
-export function createObject({ type }: RenderComponent) {
-  switch (type) {
-    case "sphere":
-      const mesh = new THREE.Mesh(
-        new THREE.SphereGeometry(1, 16, 8),
-        new THREE.MeshBasicMaterial({ color: 0xffffff })
-      );
-      return mesh;
-    case "grid":
-      return getGrid();
-  }
-}
-
-export function updateTHREEScene(model: Model): Model {
-  const sceneMapping = { ...model.sceneMapping };
-
-  model.entities.filter(isRenderable).forEach((e) => {
-    if (!isRenderable(e)) {
-      return;
-    }
-    if (!sceneMapping[e.id]) {
-      // instance in scene
-      const object = createObject(e.components.render);
-      scene.add(object);
-      sceneMapping[e.id] = object.id;
-    } else {
-      const childIdx = scene.children.findIndex(
-        (c: any) => c.id === sceneMapping[e.id]
-      );
-      scene.children[childIdx].position.set(
-        e.components.position.x,
-        e.components.position.y,
-        e.components.position.z
-      );
-    }
-  });
-
-  orbitControls.update();
-  renderer.render(scene, camera);
-  return {
-    ...model,
-    sceneMapping,
-  };
-}
+let entityIdToSceneChild: EntityIdToThreeId = {};
+let entityIdToInstanceId: EntityIdToThreeId = {};
 
 let scene = new THREE.Scene();
 
@@ -72,3 +29,64 @@ camera.position.set(100, 100, 100);
 camera.lookAt(0, 0, 0);
 
 const orbitControls = new OrbitControls(camera, canvas);
+const geometry = new THREE.IcosahedronGeometry(0.5, 3);
+const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+const instancedMesh = new THREE.InstancedMesh(geometry, material, 100);
+instancedMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage); // will be updated every frame
+scene.add(instancedMesh);
+
+let instanceId = 0;
+const matrix_reg = new THREE.Matrix4();
+
+function updateSphere(sphereEntity: RenderableEntity): void {
+  const id = entityIdToInstanceId[sphereEntity.id];
+
+  matrix_reg.identity();
+  if (id === undefined) {
+    matrix_reg.setPosition(0, 0, 0);
+    entityIdToInstanceId[sphereEntity.id] = instanceId;
+    instancedMesh.setMatrixAt(instanceId++, matrix_reg);
+  } else {
+    const { x, y, z } = sphereEntity.components.position;
+    matrix_reg.setPosition(x, y, z);
+    instancedMesh.setMatrixAt(id, matrix_reg);
+  }
+}
+
+function updateGrid(gridEntity: RenderableEntity) {
+  const id = entityIdToSceneChild[gridEntity.id];
+  if (id === undefined) {
+    const grid = new THREE.GridHelper(100, 10, 0xff0000);
+    scene.add(grid);
+    entityIdToSceneChild[gridEntity.id] = grid.id;
+  } else {
+    const childIdx = scene.children.findIndex(
+      (c: any) => c.id === entityIdToSceneChild[gridEntity.id]
+    );
+    scene.children[childIdx].position.set(
+      gridEntity.components.position.x,
+      gridEntity.components.position.y,
+      gridEntity.components.position.z
+    );
+  }
+}
+
+export function updateTHREEScene(model: Model): Model {
+  const renderables = model.entities.filter(isRenderable);
+
+  renderables
+    .filter((e) => e.components.render.type === "sphere")
+    .forEach(updateSphere);
+  instancedMesh.instanceMatrix.needsUpdate = true;
+
+  renderables
+    .filter((e) => e.components.render.type === "grid")
+    .forEach(updateGrid);
+
+  orbitControls.update();
+  renderer.render(scene, camera);
+
+  return {
+    ...model,
+  };
+}

@@ -1,5 +1,4 @@
 import { updateTHREEScene } from "./systems/updateTHREESceneSystem.js";
-import { reportSystem } from "./systems/reportSystem.js";
 import { wanderSystem } from "./systems/wanderSystem.js";
 import { addEntityEveryNTicksSystem } from "./systems/addEntityEveryNTicksSystem.js";
 function remap(min, max, newMin, newMax) {
@@ -9,18 +8,17 @@ const disabledSystems = ["report"];
 let model = {
     time: 0,
     entities: [
-    // {
-    //   id: "0",
-    //   components: {
-    //     render: {
-    //       type: "grid",
-    //     },
-    //     position: { x: 0, y: 0, z: 0 },
-    //   },
-    // },
+        {
+            id: "0",
+            components: {
+                render: {
+                    type: "grid",
+                },
+                position: { x: 0, y: 0, z: 0 },
+            },
+        },
     ],
     idCounter: 1,
-    sceneMapping: {},
 };
 function newDefaultEntity(id) {
     return {
@@ -57,10 +55,10 @@ function newDefaultEntity(id) {
 }
 let systems = {
     advanceTimeSystem: (model) => (Object.assign(Object.assign({}, model), { time: model.time + 1 })),
-    addEntityEveryNTicksSystem: addEntityEveryNTicksSystem(newDefaultEntity, 10),
+    addEntityEveryNTicksSystem: addEntityEveryNTicksSystem(newDefaultEntity, 1),
     wanderSystem,
+    //reportSystem,
     updateTHREEScene,
-    reportSystem,
 };
 function RunECS() {
     console.log("Simulation begins");

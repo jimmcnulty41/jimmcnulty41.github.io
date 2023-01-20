@@ -1,5 +1,3 @@
-import * as THREE from "./vendor/three.js";
-import { OrbitControls } from "./vendor/OrbitControls.js";
 import { Model } from "./Model.js";
 import { updateTHREEScene } from "./systems/updateTHREESceneSystem.js";
 import { reportSystem } from "./systems/reportSystem.js";
@@ -17,18 +15,17 @@ const disabledSystems = ["report"];
 let model: Model = {
   time: 0,
   entities: [
-    // {
-    //   id: "0",
-    //   components: {
-    //     render: {
-    //       type: "grid",
-    //     },
-    //     position: { x: 0, y: 0, z: 0 },
-    //   },
-    // },
+    {
+      id: "0",
+      components: {
+        render: {
+          type: "grid",
+        },
+        position: { x: 0, y: 0, z: 0 },
+      },
+    },
   ],
   idCounter: 1,
-  sceneMapping: {},
 };
 
 function newDefaultEntity(id: string): Entity {
@@ -72,10 +69,10 @@ let systems: Systems = {
     ...model,
     time: model.time + 1,
   }),
-  addEntityEveryNTicksSystem: addEntityEveryNTicksSystem(newDefaultEntity, 10),
+  addEntityEveryNTicksSystem: addEntityEveryNTicksSystem(newDefaultEntity, 1),
   wanderSystem,
+  //reportSystem,
   updateTHREEScene,
-  reportSystem,
 };
 
 function RunECS() {
