@@ -2,9 +2,9 @@
   "include": ["./src/**/*"],
   "exclude": [],
   "compilerOptions": {
-    "target": "ES6",
+    "target": "es2022",
     "lib": ["ES2016", "DOM"],
-    "module": "ES6",
+    "module": "es2022",
     "rootDir": "./src",
     "moduleResolution": "Node",
     "allowJs": true,

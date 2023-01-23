@@ -1,12 +1,3 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 /**
  * @license
  * Copyright 2010-2022 Three.js Authors
@@ -3044,7 +3035,7 @@ class Vector3 {
         // Derived from https://mathworld.wolfram.com/SpherePointPicking.html
         const u = (Math.random() - 0.5) * 2;
         const t = Math.random() * Math.PI * 2;
-        const f = Math.sqrt(1 - Math.pow(u, 2));
+        const f = Math.sqrt(1 - u ** 2);
         this.x = f * Math.cos(t);
         this.y = f * Math.sin(t);
         this.z = u;
@@ -15836,78 +15827,76 @@ class WebXRManager extends EventDispatcher {
         this.getSession = function () {
             return session;
         };
-        this.setSession = function (value) {
-            return __awaiter(this, void 0, void 0, function* () {
-                session = value;
-                if (session !== null) {
-                    initialRenderTarget = renderer.getRenderTarget();
-                    session.addEventListener('select', onSessionEvent);
-                    session.addEventListener('selectstart', onSessionEvent);
-                    session.addEventListener('selectend', onSessionEvent);
-                    session.addEventListener('squeeze', onSessionEvent);
-                    session.addEventListener('squeezestart', onSessionEvent);
-                    session.addEventListener('squeezeend', onSessionEvent);
-                    session.addEventListener('end', onSessionEnd);
-                    session.addEventListener('inputsourceschange', onInputSourcesChange);
-                    if (attributes.xrCompatible !== true) {
-                        yield gl.makeXRCompatible();
-                    }
-                    if ((session.renderState.layers === undefined) || (renderer.capabilities.isWebGL2 === false)) {
-                        const layerInit = {
-                            antialias: (session.renderState.layers === undefined) ? attributes.antialias : true,
-                            alpha: attributes.alpha,
-                            depth: attributes.depth,
-                            stencil: attributes.stencil,
-                            framebufferScaleFactor: framebufferScaleFactor
-                        };
-                        glBaseLayer = new XRWebGLLayer(session, gl, layerInit);
-                        session.updateRenderState({ baseLayer: glBaseLayer });
-                        newRenderTarget = new WebGLRenderTarget(glBaseLayer.framebufferWidth, glBaseLayer.framebufferHeight, {
-                            format: RGBAFormat,
-                            type: UnsignedByteType,
-                            encoding: renderer.outputEncoding,
-                            stencilBuffer: attributes.stencil
-                        });
-                    }
-                    else {
-                        let depthFormat = null;
-                        let depthType = null;
-                        let glDepthFormat = null;
-                        if (attributes.depth) {
-                            glDepthFormat = attributes.stencil ? 35056 : 33190;
-                            depthFormat = attributes.stencil ? DepthStencilFormat : DepthFormat;
-                            depthType = attributes.stencil ? UnsignedInt248Type : UnsignedIntType;
-                        }
-                        const projectionlayerInit = {
-                            colorFormat: 32856,
-                            depthFormat: glDepthFormat,
-                            scaleFactor: framebufferScaleFactor
-                        };
-                        glBinding = new XRWebGLBinding(session, gl);
-                        glProjLayer = glBinding.createProjectionLayer(projectionlayerInit);
-                        session.updateRenderState({ layers: [glProjLayer] });
-                        newRenderTarget = new WebGLRenderTarget(glProjLayer.textureWidth, glProjLayer.textureHeight, {
-                            format: RGBAFormat,
-                            type: UnsignedByteType,
-                            depthTexture: new DepthTexture(glProjLayer.textureWidth, glProjLayer.textureHeight, depthType, undefined, undefined, undefined, undefined, undefined, undefined, depthFormat),
-                            stencilBuffer: attributes.stencil,
-                            encoding: renderer.outputEncoding,
-                            samples: attributes.antialias ? 4 : 0
-                        });
-                        const renderTargetProperties = renderer.properties.get(newRenderTarget);
-                        renderTargetProperties.__ignoreDepthValues = glProjLayer.ignoreDepthValues;
-                    }
-                    newRenderTarget.isXRRenderTarget = true; // TODO Remove this when possible, see #23278
-                    // Set foveation to maximum.
-                    this.setFoveation(1.0);
-                    customReferenceSpace = null;
-                    referenceSpace = yield session.requestReferenceSpace(referenceSpaceType);
-                    animation.setContext(session);
-                    animation.start();
-                    scope.isPresenting = true;
-                    scope.dispatchEvent({ type: 'sessionstart' });
+        this.setSession = async function (value) {
+            session = value;
+            if (session !== null) {
+                initialRenderTarget = renderer.getRenderTarget();
+                session.addEventListener('select', onSessionEvent);
+                session.addEventListener('selectstart', onSessionEvent);
+                session.addEventListener('selectend', onSessionEvent);
+                session.addEventListener('squeeze', onSessionEvent);
+                session.addEventListener('squeezestart', onSessionEvent);
+                session.addEventListener('squeezeend', onSessionEvent);
+                session.addEventListener('end', onSessionEnd);
+                session.addEventListener('inputsourceschange', onInputSourcesChange);
+                if (attributes.xrCompatible !== true) {
+                    await gl.makeXRCompatible();
                 }
-            });
+                if ((session.renderState.layers === undefined) || (renderer.capabilities.isWebGL2 === false)) {
+                    const layerInit = {
+                        antialias: (session.renderState.layers === undefined) ? attributes.antialias : true,
+                        alpha: attributes.alpha,
+                        depth: attributes.depth,
+                        stencil: attributes.stencil,
+                        framebufferScaleFactor: framebufferScaleFactor
+                    };
+                    glBaseLayer = new XRWebGLLayer(session, gl, layerInit);
+                    session.updateRenderState({ baseLayer: glBaseLayer });
+                    newRenderTarget = new WebGLRenderTarget(glBaseLayer.framebufferWidth, glBaseLayer.framebufferHeight, {
+                        format: RGBAFormat,
+                        type: UnsignedByteType,
+                        encoding: renderer.outputEncoding,
+                        stencilBuffer: attributes.stencil
+                    });
+                }
+                else {
+                    let depthFormat = null;
+                    let depthType = null;
+                    let glDepthFormat = null;
+                    if (attributes.depth) {
+                        glDepthFormat = attributes.stencil ? 35056 : 33190;
+                        depthFormat = attributes.stencil ? DepthStencilFormat : DepthFormat;
+                        depthType = attributes.stencil ? UnsignedInt248Type : UnsignedIntType;
+                    }
+                    const projectionlayerInit = {
+                        colorFormat: 32856,
+                        depthFormat: glDepthFormat,
+                        scaleFactor: framebufferScaleFactor
+                    };
+                    glBinding = new XRWebGLBinding(session, gl);
+                    glProjLayer = glBinding.createProjectionLayer(projectionlayerInit);
+                    session.updateRenderState({ layers: [glProjLayer] });
+                    newRenderTarget = new WebGLRenderTarget(glProjLayer.textureWidth, glProjLayer.textureHeight, {
+                        format: RGBAFormat,
+                        type: UnsignedByteType,
+                        depthTexture: new DepthTexture(glProjLayer.textureWidth, glProjLayer.textureHeight, depthType, undefined, undefined, undefined, undefined, undefined, undefined, depthFormat),
+                        stencilBuffer: attributes.stencil,
+                        encoding: renderer.outputEncoding,
+                        samples: attributes.antialias ? 4 : 0
+                    });
+                    const renderTargetProperties = renderer.properties.get(newRenderTarget);
+                    renderTargetProperties.__ignoreDepthValues = glProjLayer.ignoreDepthValues;
+                }
+                newRenderTarget.isXRRenderTarget = true; // TODO Remove this when possible, see #23278
+                // Set foveation to maximum.
+                this.setFoveation(1.0);
+                customReferenceSpace = null;
+                referenceSpace = await session.requestReferenceSpace(referenceSpaceType);
+                animation.setContext(session);
+                animation.start();
+                scope.isPresenting = true;
+                scope.dispatchEvent({ type: 'sessionstart' });
+            }
         };
         function onInputSourcesChange(event) {
             // Notify disconnected
@@ -26212,23 +26201,21 @@ class ObjectLoader extends Loader {
             scope.parse(json, onLoad);
         }, onProgress, onError);
     }
-    loadAsync(url, onProgress) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const scope = this;
-            const path = (this.path === '') ? LoaderUtils.extractUrlBase(url) : this.path;
-            this.resourcePath = this.resourcePath || path;
-            const loader = new FileLoader(this.manager);
-            loader.setPath(this.path);
-            loader.setRequestHeader(this.requestHeader);
-            loader.setWithCredentials(this.withCredentials);
-            const text = yield loader.loadAsync(url, onProgress);
-            const json = JSON.parse(text);
-            const metadata = json.metadata;
-            if (metadata === undefined || metadata.type === undefined || metadata.type.toLowerCase() === 'geometry') {
-                throw new Error('THREE.ObjectLoader: Can\'t load ' + url);
-            }
-            return yield scope.parseAsync(json);
-        });
+    async loadAsync(url, onProgress) {
+        const scope = this;
+        const path = (this.path === '') ? LoaderUtils.extractUrlBase(url) : this.path;
+        this.resourcePath = this.resourcePath || path;
+        const loader = new FileLoader(this.manager);
+        loader.setPath(this.path);
+        loader.setRequestHeader(this.requestHeader);
+        loader.setWithCredentials(this.withCredentials);
+        const text = await loader.loadAsync(url, onProgress);
+        const json = JSON.parse(text);
+        const metadata = json.metadata;
+        if (metadata === undefined || metadata.type === undefined || metadata.type.toLowerCase() === 'geometry') {
+            throw new Error('THREE.ObjectLoader: Can\'t load ' + url);
+        }
+        return await scope.parseAsync(json);
     }
     parse(json, onLoad) {
         const animations = this.parseAnimations(json.animations);
@@ -26257,19 +26244,17 @@ class ObjectLoader extends Loader {
         }
         return object;
     }
-    parseAsync(json) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const animations = this.parseAnimations(json.animations);
-            const shapes = this.parseShapes(json.shapes);
-            const geometries = this.parseGeometries(json.geometries, shapes);
-            const images = yield this.parseImagesAsync(json.images);
-            const textures = this.parseTextures(json.textures, images);
-            const materials = this.parseMaterials(json.materials, textures);
-            const object = this.parseObject(json.object, geometries, materials, textures, animations);
-            const skeletons = this.parseSkeletons(json.skeletons, object);
-            this.bindSkeletons(object, skeletons);
-            return object;
-        });
+    async parseAsync(json) {
+        const animations = this.parseAnimations(json.animations);
+        const shapes = this.parseShapes(json.shapes);
+        const geometries = this.parseGeometries(json.geometries, shapes);
+        const images = await this.parseImagesAsync(json.images);
+        const textures = this.parseTextures(json.textures, images);
+        const materials = this.parseMaterials(json.materials, textures);
+        const object = this.parseObject(json.object, geometries, materials, textures, animations);
+        const skeletons = this.parseSkeletons(json.skeletons, object);
+        this.bindSkeletons(object, skeletons);
+        return object;
     }
     parseShapes(json) {
         const shapes = {};
@@ -26421,65 +26406,61 @@ class ObjectLoader extends Loader {
         }
         return images;
     }
-    parseImagesAsync(json) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const scope = this;
-            const images = {};
-            let loader;
-            function deserializeImage(image) {
-                return __awaiter(this, void 0, void 0, function* () {
-                    if (typeof image === 'string') {
-                        const url = image;
-                        const path = /^(\/\/)|([a-z]+:(\/\/)?)/i.test(url) ? url : scope.resourcePath + url;
-                        return yield loader.loadAsync(path);
-                    }
-                    else {
-                        if (image.data) {
-                            return {
-                                data: getTypedArray(image.type, image.data),
-                                width: image.width,
-                                height: image.height
-                            };
-                        }
-                        else {
-                            return null;
-                        }
-                    }
-                });
+    async parseImagesAsync(json) {
+        const scope = this;
+        const images = {};
+        let loader;
+        async function deserializeImage(image) {
+            if (typeof image === 'string') {
+                const url = image;
+                const path = /^(\/\/)|([a-z]+:(\/\/)?)/i.test(url) ? url : scope.resourcePath + url;
+                return await loader.loadAsync(path);
             }
-            if (json !== undefined && json.length > 0) {
-                loader = new ImageLoader(this.manager);
-                loader.setCrossOrigin(this.crossOrigin);
-                for (let i = 0, il = json.length; i < il; i++) {
-                    const image = json[i];
-                    const url = image.url;
-                    if (Array.isArray(url)) {
-                        // load array of images e.g CubeTexture
-                        const imageArray = [];
-                        for (let j = 0, jl = url.length; j < jl; j++) {
-                            const currentUrl = url[j];
-                            const deserializedImage = yield deserializeImage(currentUrl);
-                            if (deserializedImage !== null) {
-                                if (deserializedImage instanceof HTMLImageElement) {
-                                    imageArray.push(deserializedImage);
-                                }
-                                else {
-                                    // special case: handle array of data textures for cube textures
-                                    imageArray.push(new DataTexture(deserializedImage.data, deserializedImage.width, deserializedImage.height));
-                                }
-                            }
-                        }
-                        images[image.uuid] = new Source(imageArray);
-                    }
-                    else {
-                        // load single image
-                        const deserializedImage = yield deserializeImage(image.url);
-                        images[image.uuid] = new Source(deserializedImage);
-                    }
+            else {
+                if (image.data) {
+                    return {
+                        data: getTypedArray(image.type, image.data),
+                        width: image.width,
+                        height: image.height
+                    };
+                }
+                else {
+                    return null;
                 }
             }
-            return images;
-        });
+        }
+        if (json !== undefined && json.length > 0) {
+            loader = new ImageLoader(this.manager);
+            loader.setCrossOrigin(this.crossOrigin);
+            for (let i = 0, il = json.length; i < il; i++) {
+                const image = json[i];
+                const url = image.url;
+                if (Array.isArray(url)) {
+                    // load array of images e.g CubeTexture
+                    const imageArray = [];
+                    for (let j = 0, jl = url.length; j < jl; j++) {
+                        const currentUrl = url[j];
+                        const deserializedImage = await deserializeImage(currentUrl);
+                        if (deserializedImage !== null) {
+                            if (deserializedImage instanceof HTMLImageElement) {
+                                imageArray.push(deserializedImage);
+                            }
+                            else {
+                                // special case: handle array of data textures for cube textures
+                                imageArray.push(new DataTexture(deserializedImage.data, deserializedImage.width, deserializedImage.height));
+                            }
+                        }
+                    }
+                    images[image.uuid] = new Source(imageArray);
+                }
+                else {
+                    // load single image
+                    const deserializedImage = await deserializeImage(image.url);
+                    images[image.uuid] = new Source(deserializedImage);
+                }
+            }
+        }
+        return images;
     }
     parseTextures(json, images) {
         function parseConstant(value, type) {
