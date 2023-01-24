@@ -9,7 +9,7 @@ export function addEntityEveryNTicksSystem(
   n: number
 ): Systemx {
   function addEntityEveryNTicksSystem_inner(model: Model): Model {
-    return model.time % n || model.entities.length > 100
+    return model.time % n || model.entities.length > 10000
       ? model
       : {
           ...model,

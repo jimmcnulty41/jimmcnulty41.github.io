@@ -24,7 +24,11 @@ function newDefaultEntity(id) {
         id,
         components: {
             render: { type: "3d model", refName: "rat" },
-            position: { x: 0, y: 0, z: 0 },
+            position: {
+                x: Math.random() * 100 - 50,
+                y: 2,
+                z: Math.random() * 100 - 50,
+            },
             wander: {
                 speed: Math.random(),
                 directionIndex: 0,
@@ -36,14 +40,14 @@ function newDefaultEntity(id) {
                             fromStateName: "forward",
                             toStateName: "turning",
                             shouldTransition: (roll) => {
-                                return roll < internalRoll;
+                                return roll < internalRoll / 12;
                             },
                         },
                         {
                             fromStateName: "turning",
                             toStateName: "forward",
                             shouldTransition: (roll) => {
-                                return roll < internalRoll;
+                                return roll < internalRoll * 2;
                             },
                         },
                     ],

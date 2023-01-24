@@ -4,6 +4,7 @@ import { GLTFLoader } from "../vendor/GLTFLoader.js";
 import { OrbitControls } from "../vendor/OrbitControls.js";
 import { isRenderable, isRenderableGrid, isRenderableModel, isRenderableSphere, } from "../components/Components.js";
 import { remap } from "../utils.js";
+import { Euler } from "../vendor/three.js";
 import { HemisphereLight } from "../vendor/three.js";
 import { MeshLambertMaterial } from "../vendor/three.js";
 let entityIdToSceneChild = {};
@@ -38,11 +39,11 @@ const instanceMeshes = {
         },
     },
 };
-//scene.add(instanceMeshes.sphere.inst);
+scene.add(instanceMeshes.sphere.inst);
 scene.add(instanceMeshes.rat.inst);
 scene.add(new HemisphereLight(0xffffff, 0xff0033, 1));
 function getInstancedSphere() {
-    const instancedMesh = new InstancedMesh(new IcosahedronGeometry(10, 3), new MeshBasicMaterial({ color: 0xffffff }), 1000);
+    const instancedMesh = new InstancedMesh(new IcosahedronGeometry(10, 3), new MeshBasicMaterial({ color: 0xffffff }), 10000);
     instancedMesh.instanceMatrix.setUsage(DynamicDrawUsage); // will be updated every frame
     instancedMesh.count = 0;
     return instancedMesh;
@@ -59,10 +60,10 @@ function groupToBuffer(group) {
     return bufferGeometry;
 }
 function getInstancedModel() {
-    const geo = groupToBuffer(GLTFs["rat"].scene).clone();
+    const geo = groupToBuffer(GLTFs["rat"].scene);
     geo.computeVertexNormals();
-    geo.scale(1, 50, 1);
-    const instancedMesh = new InstancedMesh(geo, new MeshLambertMaterial({ color: 0xff00ff }), 1000);
+    //geo.scale(10, 10, 10);
+    const instancedMesh = new InstancedMesh(geo, new MeshLambertMaterial({ color: 0xff00ff }), 10000);
     instancedMesh.instanceMatrix.setUsage(DynamicDrawUsage); // will be updated every frame
     instancedMesh.count = 0;
     return instancedMesh;
@@ -109,6 +110,7 @@ function updateSphere(sphereEntity) {
     }
 }
 const v = new Vector3();
+const rotations = [0, Math.PI, Math.PI / 2, (3 * Math.PI) / 2].map((r) => new Euler(0, r, 0));
 function update3DModel(value) {
     const id = entityIdToInstanceId[value.id];
     const { inst, idCounter, registers: { matrix, color }, } = instanceMeshes.rat;
@@ -119,18 +121,18 @@ function update3DModel(value) {
         instanceMeshes.rat.idCounter = idCounter + 1;
     }
     else {
-        const { x, y, z } = value.components.position;
-        inst.getMatrixAt(id, matrix);
-        v.setFromMatrixPosition(matrix);
-        matrix.setPosition(x, v.y, z);
-        inst.setMatrixAt(id, matrix);
         const w = value.components.wander;
         if (w) {
             color.r = 0;
             color.g = 0;
             color.b = 0;
             inst.setColorAt(id, color);
+            matrix.makeRotationFromEuler(rotations[w.directionIndex]);
         }
+        const { x, y, z } = value.components.position;
+        //v.setFromMatrixPosition(matrix);
+        matrix.setPosition(x, y, z);
+        inst.setMatrixAt(id, matrix);
     }
 }
 function updateGrid(gridEntity) {

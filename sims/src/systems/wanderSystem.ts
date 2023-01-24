@@ -33,6 +33,7 @@ function entityWander(e: WanderingEntity, i: number): Entity {
   };
 }
 export function wanderSystem(model: Model): Model {
+  if (model.time % 3) return model;
   return {
     ...model,
     entities: [
