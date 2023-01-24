@@ -136,7 +136,7 @@ function getInstancedModel() {
     1000
   );
   instancedMesh.instanceMatrix.setUsage(DynamicDrawUsage); // will be updated every frame
-  instancedMesh.count = 1;
+  instancedMesh.count = 0;
   return instancedMesh;
 }
 
@@ -216,7 +216,7 @@ function update3DModel(value: RenderableEntity<GLTFRenderComponent>): void {
   color.setRGB(1, 1, 1);
   if (id === undefined) {
     entityIdToInstanceId[value.id] = idCounter;
-    inst.count = idCounter + 1;
+    inst.count = idCounter;
     instanceMeshes.rat.idCounter = idCounter + 1;
   } else {
     const { x, y, z } = value.components.position;
