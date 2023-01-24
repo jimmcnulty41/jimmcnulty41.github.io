@@ -4,6 +4,7 @@ import { reportSystem } from "./systems/reportSystem.js";
 import { wanderSystem } from "./systems/wanderSystem.js";
 import { addEntityEveryNTicksSystem } from "./systems/addEntityEveryNTicksSystem.js";
 import { Entity } from "./Entity.js";
+import { remap } from "./utils.js";
 
 const disabledSystems = ["report"];
 
@@ -24,11 +25,11 @@ let model: Model = {
 };
 
 function newDefaultEntity(id: string): Entity {
-  const internalRoll = Math.random();
+  const internalRoll = remap(0, 1, 0.1, 0.4)(Math.random());
   return {
     id,
     components: {
-      render: { type: "sphere" },
+      render: { type: "3d model", refName: "rat" },
       position: { x: 0, y: 0, z: 0 },
       wander: {
         speed: Math.random(),
@@ -40,15 +41,15 @@ function newDefaultEntity(id: string): Entity {
             {
               fromStateName: "forward",
               toStateName: "turning",
-              shouldTransition: (roll) => {
+              shouldTransition: (roll: number) => {
                 return roll < internalRoll;
               },
             },
             {
               fromStateName: "turning",
               toStateName: "forward",
-              shouldTransition: (roll) => {
-                return roll < 1 - internalRoll;
+              shouldTransition: (roll: number) => {
+                return roll < internalRoll;
               },
             },
           ],

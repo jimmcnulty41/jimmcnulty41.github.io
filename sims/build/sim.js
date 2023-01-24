@@ -1,6 +1,7 @@
 import { updateTHREEScene } from "./systems/updateTHREESceneSystem.js";
 import { wanderSystem } from "./systems/wanderSystem.js";
 import { addEntityEveryNTicksSystem } from "./systems/addEntityEveryNTicksSystem.js";
+import { remap } from "./utils.js";
 const disabledSystems = ["report"];
 let model = {
     time: 0,
@@ -18,11 +19,11 @@ let model = {
     idCounter: 1,
 };
 function newDefaultEntity(id) {
-    const internalRoll = Math.random();
+    const internalRoll = remap(0, 1, 0.1, 0.4)(Math.random());
     return {
         id,
         components: {
-            render: { type: "sphere" },
+            render: { type: "3d model", refName: "rat" },
             position: { x: 0, y: 0, z: 0 },
             wander: {
                 speed: Math.random(),
@@ -42,7 +43,7 @@ function newDefaultEntity(id) {
                             fromStateName: "turning",
                             toStateName: "forward",
                             shouldTransition: (roll) => {
-                                return roll < 1 - internalRoll;
+                                return roll < internalRoll;
                             },
                         },
                     ],
@@ -53,7 +54,10 @@ function newDefaultEntity(id) {
     };
 }
 let systems = {
-    advanceTimeSystem: (model) => (Object.assign(Object.assign({}, model), { time: model.time + 1 })),
+    advanceTimeSystem: (model) => ({
+        ...model,
+        time: model.time + 1,
+    }),
     addEntityEveryNTicksSystem: addEntityEveryNTicksSystem(newDefaultEntity, 1),
     wanderSystem,
     //reportSystem,

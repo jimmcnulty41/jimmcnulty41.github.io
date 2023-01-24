@@ -3,5 +3,8 @@ export function updateStateMachine(machine, args) {
     if (!transition) {
         return machine;
     }
-    return Object.assign(Object.assign({}, machine), { current: transition.toStateName });
+    return {
+        ...machine,
+        current: transition.toStateName,
+    };
 }

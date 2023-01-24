@@ -1,53 +1,142 @@
-import * as THREE from "../vendor/three.js";
+import { InstancedMesh, Color, GridHelper, DynamicDrawUsage, MeshBasicMaterial, Scene, WebGLRenderer, sRGBEncoding, PerspectiveCamera, Matrix4, IcosahedronGeometry, Vector3, } from "../vendor/three.js";
+import { mergeBufferGeometries } from "../vendor/BufferGeometryUtils.js";
+import { GLTFLoader } from "../vendor/GLTFLoader.js";
 import { OrbitControls } from "../vendor/OrbitControls.js";
-import { isRenderable } from "../components/Components.js";
+import { isRenderable, isRenderableGrid, isRenderableModel, isRenderableSphere, } from "../components/Components.js";
 import { remap } from "../utils.js";
+import { HemisphereLight } from "../vendor/three.js";
+import { MeshLambertMaterial } from "../vendor/three.js";
 let entityIdToSceneChild = {};
 let entityIdToInstanceId = {};
-let scene = new THREE.Scene();
+let scene = new Scene();
 const canvas = document.querySelector("canvas");
 if (!canvas)
     throw new Error("canvas not found on page");
-const renderer = new THREE.WebGLRenderer({ canvas });
+const renderer = new WebGLRenderer({ canvas });
 renderer.setSize(window.innerWidth, window.innerHeight);
-const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
+renderer.outputEncoding = sRGBEncoding;
+const camera = new PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.set(100, 100, 100);
 camera.lookAt(0, 0, 0);
 const orbitControls = new OrbitControls(camera, canvas);
-const geometry = new THREE.IcosahedronGeometry(1, 3);
-const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
-const instancedMesh = new THREE.InstancedMesh(geometry, material, 100);
-instancedMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage); // will be updated every frame
-scene.add(instancedMesh);
-let instanceIdCounter = 0;
-const matrix_reg = new THREE.Matrix4();
-const color_reg = new THREE.Color(1, 1, 1);
+const GLTFs = await loadModels();
+const instanceMeshes = {
+    sphere: {
+        inst: getInstancedSphere(),
+        idCounter: 0,
+        registers: {
+            matrix: new Matrix4(),
+            color: new Color(1, 0, 0.5),
+        },
+    },
+    rat: {
+        inst: getInstancedModel(),
+        idCounter: 0,
+        registers: {
+            matrix: new Matrix4(),
+            color: new Color(1, 0, 0.5),
+        },
+    },
+};
+//scene.add(instanceMeshes.sphere.inst);
+scene.add(instanceMeshes.rat.inst);
+scene.add(new HemisphereLight(0xffffff, 0xff0033, 1));
+function getInstancedSphere() {
+    const instancedMesh = new InstancedMesh(new IcosahedronGeometry(10, 3), new MeshBasicMaterial({ color: 0xffffff }), 1000);
+    instancedMesh.instanceMatrix.setUsage(DynamicDrawUsage); // will be updated every frame
+    instancedMesh.count = 0;
+    return instancedMesh;
+}
+function groupToBuffer(group) {
+    const meshes = [];
+    group.traverse((c) => {
+        if (c.isMesh) {
+            meshes.push(c);
+        }
+    });
+    const geos = meshes.map((m) => m.geometry);
+    const bufferGeometry = mergeBufferGeometries(geos);
+    return bufferGeometry;
+}
+function getInstancedModel() {
+    const geo = groupToBuffer(GLTFs["rat"].scene).clone();
+    geo.computeVertexNormals();
+    geo.scale(1, 50, 1);
+    const instancedMesh = new InstancedMesh(geo, new MeshLambertMaterial({ color: 0xff00ff }), 1000);
+    instancedMesh.instanceMatrix.setUsage(DynamicDrawUsage); // will be updated every frame
+    instancedMesh.count = 1;
+    return instancedMesh;
+}
+async function loadModels() {
+    const gltfPaths = [
+        {
+            path: "/assets/models/rat_2.2.gltf",
+            refName: "rat",
+        },
+    ];
+    const gltfLoader = new GLTFLoader();
+    return (await Promise.all(gltfPaths.map(async ({ path, refName, }) => ({
+        model: await gltfLoader.loadAsync(path),
+        refName,
+    })))).reduce((memo, x) => ({
+        ...memo,
+        [x.refName]: x.model,
+    }), {});
+}
 function updateSphere(sphereEntity) {
     const id = entityIdToInstanceId[sphereEntity.id];
-    matrix_reg.identity();
-    color_reg.setRGB(1, 1, 1);
+    const { inst, idCounter, registers: { matrix, color }, } = instanceMeshes.sphere;
+    matrix.identity();
+    color.setRGB(1, 1, 1);
     if (id === undefined) {
-        matrix_reg.setPosition(0, 0, 0);
-        entityIdToInstanceId[sphereEntity.id] = instanceIdCounter;
-        instancedMesh.setMatrixAt(instanceIdCounter++, matrix_reg);
-        instancedMesh.setColorAt(instanceIdCounter, new THREE.Color(0xffffff));
+        matrix.setPosition(0, 0, 0);
+        entityIdToInstanceId[sphereEntity.id] = idCounter;
+        inst.setMatrixAt(idCounter, matrix);
+        inst.setColorAt(idCounter, new Color(0xffffff));
+        instanceMeshes.sphere.idCounter = idCounter + 1;
     }
     else {
         const { x, y, z } = sphereEntity.components.position;
-        matrix_reg.setPosition(x, y, z);
-        instancedMesh.setMatrixAt(id, matrix_reg);
+        matrix.setPosition(x, y, z);
+        inst.setMatrixAt(id, matrix);
         const w = sphereEntity.components.wander;
         if (w) {
-            color_reg.r = w.internalRoll;
-            color_reg.g = remap(0, 1, 1, 0, true)(w.speed);
+            color.r = remap(0, 1, 0, 1, true)(w.speed);
+            color.g = w.internalRoll;
+            color.b = 0.8;
         }
-        instancedMesh.setColorAt(id, color_reg);
+        inst.setColorAt(id, color);
+    }
+}
+const v = new Vector3();
+function update3DModel(value) {
+    const id = entityIdToInstanceId[value.id];
+    const { inst, idCounter, registers: { matrix, color }, } = instanceMeshes.rat;
+    color.setRGB(1, 1, 1);
+    if (id === undefined) {
+        entityIdToInstanceId[value.id] = idCounter;
+        inst.count = idCounter + 1;
+        instanceMeshes.rat.idCounter = idCounter + 1;
+    }
+    else {
+        const { x, y, z } = value.components.position;
+        inst.getMatrixAt(id, matrix);
+        v.setFromMatrixPosition(matrix);
+        matrix.setPosition(x, v.y, z);
+        inst.setMatrixAt(id, matrix);
+        const w = value.components.wander;
+        if (w) {
+            color.r = 0;
+            color.g = 0;
+            color.b = 0;
+            inst.setColorAt(id, color);
+        }
     }
 }
 function updateGrid(gridEntity) {
     const id = entityIdToSceneChild[gridEntity.id];
     if (id === undefined) {
-        const grid = new THREE.GridHelper(100, 10, 0xff0000);
+        const grid = new GridHelper(100, 10, 0xff0000);
         scene.add(grid);
         entityIdToSceneChild[gridEntity.id] = grid.id;
     }
@@ -58,17 +147,20 @@ function updateGrid(gridEntity) {
 }
 export function updateTHREEScene(model) {
     const renderables = model.entities.filter(isRenderable);
-    renderables
-        .filter((e) => e.components.render.type === "sphere")
-        .forEach(updateSphere);
-    instancedMesh.instanceMatrix.needsUpdate = true;
-    if (instancedMesh.instanceColor) {
-        instancedMesh.instanceColor.needsUpdate = true;
-    }
-    renderables
-        .filter((e) => e.components.render.type === "grid")
-        .forEach(updateGrid);
+    renderables.filter(isRenderableSphere).forEach(updateSphere);
+    setInstUpdate(instanceMeshes.sphere.inst);
+    renderables.filter(isRenderableGrid).forEach(updateGrid);
+    renderables.filter(isRenderableModel).forEach(update3DModel);
+    setInstUpdate(instanceMeshes.rat.inst);
     orbitControls.update();
     renderer.render(scene, camera);
-    return Object.assign({}, model);
+    return {
+        ...model,
+    };
+}
+function setInstUpdate(inst) {
+    inst.instanceMatrix.needsUpdate = true;
+    if (inst.instanceColor) {
+        inst.instanceColor.needsUpdate = true;
+    }
 }
