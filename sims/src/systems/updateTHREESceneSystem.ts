@@ -1,19 +1,22 @@
 import {
-  InstancedMesh,
   BufferGeometry,
-  Mesh,
-  Group,
   Color,
-  GridHelper,
   DynamicDrawUsage,
-  MeshBasicMaterial,
-  Scene,
-  WebGLRenderer,
-  sRGBEncoding,
-  PerspectiveCamera,
-  Matrix4,
+  GridHelper,
+  Group,
   IcosahedronGeometry,
+  InstancedMesh,
+  Matrix4,
+  Mesh,
+  MeshBasicMaterial,
+  PerspectiveCamera,
+  Scene,
   Vector3,
+  WebGLRenderer,
+  Euler,
+  HemisphereLight,
+  MeshLambertMaterial,
+  sRGBEncoding,
 } from "../vendor/three.js";
 
 import { mergeBufferGeometries } from "../vendor/BufferGeometryUtils.js";
@@ -28,18 +31,12 @@ import {
   isRenderableModel,
   isRenderableSphere,
 } from "../components/Components.js";
-import { remap } from "../utils.js";
 import {
   GLTFRenderComponent,
   GridRenderComponent,
   SphereRenderComponent,
 } from "../components/RenderComponent.js";
-import { Quaternion } from "../vendor/three.js";
-import { dirs } from "../components/WanderComponent.js";
-import { Euler } from "../vendor/three.js";
-import { MeshPhongMaterial } from "../vendor/three.js";
-import { HemisphereLight } from "../vendor/three.js";
-import { MeshLambertMaterial } from "../vendor/three.js";
+import { remap } from "../utils.js";
 
 type EntityIdToThreeId = {
   [entityID: string]: number | undefined;
