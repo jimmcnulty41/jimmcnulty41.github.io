@@ -64,7 +64,7 @@ function getInstancedModel() {
     geo.scale(1, 50, 1);
     const instancedMesh = new InstancedMesh(geo, new MeshLambertMaterial({ color: 0xff00ff }), 1000);
     instancedMesh.instanceMatrix.setUsage(DynamicDrawUsage); // will be updated every frame
-    instancedMesh.count = 1;
+    instancedMesh.count = 0;
     return instancedMesh;
 }
 async function loadModels() {
@@ -115,7 +115,7 @@ function update3DModel(value) {
     color.setRGB(1, 1, 1);
     if (id === undefined) {
         entityIdToInstanceId[value.id] = idCounter;
-        inst.count = idCounter + 1;
+        inst.count = idCounter;
         instanceMeshes.rat.idCounter = idCounter + 1;
     }
     else {
