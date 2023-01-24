@@ -6,17 +6,17 @@ const disabledSystems = ["report"];
 let model = {
     time: 0,
     entities: [
-        {
-            id: "0",
-            components: {
-                render: {
-                    type: "grid",
-                },
-                position: { x: 0, y: 0, z: 0 },
-            },
-        },
+    // {
+    //   id: "0",
+    //   components: {
+    //     render: {
+    //       type: "grid",
+    //     },
+    //     position: { x: 0, y: 0, z: 0 },
+    //   },
+    // },
     ],
-    idCounter: 1,
+    idCounter: 0,
 };
 function newDefaultEntity(id) {
     const internalRoll = remap(0, 1, 0.1, 0.4)(Math.random());
@@ -26,7 +26,7 @@ function newDefaultEntity(id) {
             render: { type: "3d model", refName: "rat" },
             position: {
                 x: Math.random() * 100 - 50,
-                y: 2,
+                y: 0,
                 z: Math.random() * 100 - 50,
             },
             wander: {

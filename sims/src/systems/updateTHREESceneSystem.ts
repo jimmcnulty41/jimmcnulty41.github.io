@@ -129,7 +129,7 @@ function groupToBuffer(group: Group): BufferGeometry {
 function getInstancedModel() {
   const geo = groupToBuffer(GLTFs["rat"].scene);
   geo.computeVertexNormals();
-  //geo.scale(10, 10, 10);
+  geo.scale(2, 2, 2);
   const instancedMesh = new InstancedMesh(
     geo,
     new MeshLambertMaterial({ color: 0xff00ff }),
