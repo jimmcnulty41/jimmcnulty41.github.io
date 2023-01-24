@@ -14,9 +14,9 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-
-    margin: $vertical-margin $horizontal-margin;
+    justify-content:center;
+    width: 100vw;
+    padding: $vertical-margin;
 }
 
 @media only screen and (min-width: #{$desktop-breakpoint}) {
@@ -25,6 +25,7 @@ body {
 
         border: 6px double $color-3;
         padding: $vertical-margin $horizontal-margin;
+        margin: $vertical-margin $horizontal-margin;
     }
 }
 

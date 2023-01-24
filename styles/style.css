@@ -1,6 +1,12 @@
 body {
   background-color: #c57b57; }
 
+img.hero {
+  width: 100vw; }
+
+@media only screen and (min-width: 709px) {
+  img.hero {
+    margin-top: -206px; } }
 .face {
   width: 200px;
   border: 1px solid #ebc68c;
@@ -23,7 +29,6 @@ h1 > .small {
 p {
   font-family: "Abel", sans-serif;
   font-size: 16px;
-  align-self: flex-start;
   margin: 12px 0 6px;
   line-height: 1.3; }
 
@@ -35,5 +40,13 @@ a {
   color: #c57b57; }
   .secret:hover {
     color: #1e2d2f; }
+
+.pane {
+  width: 100vw;
+  display: flex;
+  flex-wrap: wrap; }
+
+.pane > img {
+  width: 50vw; }
 
 /*# sourceMappingURL=style.css.map */
