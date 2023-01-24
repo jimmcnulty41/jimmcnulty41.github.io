@@ -1,0 +1,58 @@
+.row:nth-child(1) {
+  transition: .1s;
+  background: #dd00aa; }
+  .row:nth-child(1) a {
+    transition: .1s;
+    color: #fff; }
+
+.row:nth-child(2) {
+  transition: .1s;
+  background: #fff; }
+  .row:nth-child(2) a {
+    transition: .1s;
+    color: #fff; }
+
+.row:nth-child(3) {
+  transition: .1s;
+  background: #2222aa; }
+  .row:nth-child(3) a {
+    transition: .1s;
+    color: #ddd; }
+
+.row:nth-child(4) {
+  transition: .1s;
+  background: #aa22bb; }
+  .row:nth-child(4) a {
+    transition: .1s;
+    color: #ddd; }
+
+.row:nth-child(5) {
+  transition: .1s;
+  background: #ffff55; }
+  .row:nth-child(5) a {
+    transition: .1s;
+    color: #222; }
+
+a {
+  font-size: x-large;
+  font-weight: 800;
+  margin-top: 7px; }
+
+.container {
+  margin-top: 30vw; }
+
+.row {
+  height: 40px;
+  margin-top: 6px;
+  width: 120vw;
+  transform: rotate(30deg);
+  display: flex;
+  justify-content: center;
+  border-radius: 8px; }
+
+.row:hover {
+  background: grey; }
+  .row:hover a {
+    color: black; }
+
+/*# sourceMappingURL=bookShelf.css.map */

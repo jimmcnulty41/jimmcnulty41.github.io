@@ -2,28 +2,22 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
-}
+  align-items: center; }
 
 .container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: 24px 24px;
-}
+  margin: 24px 24px; }
 
 @media only screen and (min-width: 709px) {
   .container {
     max-width: 709px;
     border: 6px double #211405;
-    padding: 24px 24px;
-  }
-}
+    padding: 24px 24px; } }
 @media only screen and (min-width: 426px) {
   .container {
-    max-width: 426px;
-  }
-}
+    max-width: 426px; } }
 
 /*# sourceMappingURL=columnLayout.css.map */
