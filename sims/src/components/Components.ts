@@ -1,10 +1,10 @@
 import { Entity } from "../Entity";
+import { RotationComponent } from "./RotationComponent";
 import { PositionComponent } from "./PositionComponent";
 import {
   GLTFRenderComponent,
   GridRenderComponent,
   RenderComponent,
-  RenderTypes,
   SphereRenderComponent,
 } from "./RenderComponent";
 import { WanderComponent } from "./WanderComponent";
@@ -14,6 +14,7 @@ export type Components = {
   position?: PositionComponent;
   wander?: WanderComponent;
   render?: RenderComponent;
+  rotation?: RotationComponent;
 };
 
 export type PositionedEntity = Entity & {
@@ -36,6 +37,19 @@ export function canWander(entity: Entity): entity is WanderingEntity {
     entity.components.wander !== undefined &&
     entity.components.position !== undefined
   );
+}
+
+export type RotatingEntity<T extends RenderComponent> = Entity & {
+  components: Components & {
+    render: T;
+    position: PositionComponent;
+    rotation: RotationComponent;
+  };
+};
+export function hasRotation(
+  entity: Entity
+): entity is RotatingEntity<RenderComponent> {
+  return isPositioned(entity) && entity.components.rotation !== undefined;
 }
 
 export type RenderableEntity<T extends RenderComponent> = Entity & {

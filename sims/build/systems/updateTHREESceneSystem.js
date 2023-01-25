@@ -1,12 +1,11 @@
-import { InstancedMesh, Color, GridHelper, DynamicDrawUsage, MeshBasicMaterial, Scene, WebGLRenderer, sRGBEncoding, PerspectiveCamera, Matrix4, IcosahedronGeometry, Vector3, } from "../vendor/three.js";
+import { Color, DynamicDrawUsage, GridHelper, IcosahedronGeometry, InstancedMesh, Matrix4, MeshBasicMaterial, PerspectiveCamera, Scene, WebGLRenderer, Euler, HemisphereLight, MeshLambertMaterial, sRGBEncoding, DoubleSide, } from "../vendor/three.js";
 import { mergeBufferGeometries } from "../vendor/BufferGeometryUtils.js";
 import { GLTFLoader } from "../vendor/GLTFLoader.js";
 import { OrbitControls } from "../vendor/OrbitControls.js";
-import { isRenderable, isRenderableGrid, isRenderableModel, isRenderableSphere, } from "../components/Components.js";
-import { remap } from "../utils.js";
-import { Euler } from "../vendor/three.js";
-import { HemisphereLight } from "../vendor/three.js";
-import { MeshLambertMaterial } from "../vendor/three.js";
+import { hasRotation, isRenderable, isRenderableGrid, isRenderableModel, isRenderableSphere, } from "../components/Components.js";
+import { PlaneGeometry } from "../vendor/three.js";
+import { rots } from "../components/RotationComponent.js";
+const eulers = rots.map((r) => new Euler(r[0], r[1], r[2]));
 let entityIdToSceneChild = {};
 let entityIdToInstanceId = {};
 let scene = new Scene();
@@ -38,9 +37,18 @@ const instanceMeshes = {
             color: new Color(1, 0, 0.5),
         },
     },
+    plane: {
+        inst: getInstancedPlane(),
+        idCounter: 0,
+        registers: {
+            matrix: new Matrix4(),
+            color: new Color(1, 0, 0.5),
+        },
+    },
 };
-scene.add(instanceMeshes.sphere.inst);
-scene.add(instanceMeshes.rat.inst);
+Object.keys(instanceMeshes).forEach((k) => {
+    scene.add(instanceMeshes[k].inst);
+});
 scene.add(new HemisphereLight(0xffffff, 0xff0033, 1));
 function getInstancedSphere() {
     const instancedMesh = new InstancedMesh(new IcosahedronGeometry(10, 3), new MeshBasicMaterial({ color: 0xffffff }), 10000);
@@ -84,76 +92,62 @@ async function loadModels() {
         [x.refName]: x.model,
     }), {});
 }
+function getInstancedPlane() {
+    const instancedMesh = new InstancedMesh(new PlaneGeometry(100, 100, 2, 2), new MeshBasicMaterial({ color: 0xffffff, side: DoubleSide }), 10000);
+    instancedMesh.instanceMatrix.setUsage(DynamicDrawUsage); // will be updated every frame
+    instancedMesh.count = 0;
+    return instancedMesh;
+}
 function updateSphere(sphereEntity) {
-    const id = entityIdToInstanceId[sphereEntity.id];
-    const { inst, idCounter, registers: { matrix, color }, } = instanceMeshes.sphere;
+    return instancedUpdate(sphereEntity, "sphere");
+}
+function instancedUpdate(entity, instanceKey) {
+    const id = entityIdToInstanceId[entity.id];
+    const { inst, idCounter, registers: { matrix, color }, } = instanceMeshes[instanceKey];
     matrix.identity();
-    color.setRGB(1, 1, 1);
     if (id === undefined) {
         matrix.setPosition(0, 0, 0);
-        entityIdToInstanceId[sphereEntity.id] = idCounter;
+        entityIdToInstanceId[entity.id] = idCounter;
         inst.setMatrixAt(idCounter, matrix);
-        inst.setColorAt(idCounter, new Color(0xffffff));
-        instanceMeshes.sphere.idCounter = idCounter + 1;
+        const newCount = idCounter + 1;
+        instanceMeshes[instanceKey].idCounter = newCount;
+        instanceMeshes[instanceKey].inst.count = newCount;
     }
     else {
-        const { x, y, z } = sphereEntity.components.position;
+        if (hasRotation(entity)) {
+            matrix.makeRotationFromEuler(eulers[entity.components.rotation.dix]);
+        }
+        const { x, y, z } = entity.components.position;
         matrix.setPosition(x, y, z);
         inst.setMatrixAt(id, matrix);
-        const w = sphereEntity.components.wander;
-        if (w) {
-            color.r = remap(0, 1, 0, 1, true)(w.speed);
-            color.g = w.internalRoll;
-            color.b = 0.8;
-        }
-        inst.setColorAt(id, color);
     }
 }
-const v = new Vector3();
-const rotations = [0, Math.PI, Math.PI / 2, (3 * Math.PI) / 2].map((r) => new Euler(0, r, 0));
 function update3DModel(value) {
-    const id = entityIdToInstanceId[value.id];
-    const { inst, idCounter, registers: { matrix, color }, } = instanceMeshes.rat;
-    color.setRGB(1, 1, 1);
+    return instancedUpdate(value, value.components.render.refName);
+}
+function basicUpdate(entity, createObjFn) {
+    const id = entityIdToSceneChild[entity.id];
     if (id === undefined) {
-        entityIdToInstanceId[value.id] = idCounter;
-        inst.count = idCounter;
-        instanceMeshes.rat.idCounter = idCounter + 1;
+        const o = createObjFn();
+        scene.add(o);
+        entityIdToSceneChild[entity.id] = o.id;
     }
     else {
-        const w = value.components.wander;
-        if (w) {
-            color.r = 0;
-            color.g = 0;
-            color.b = 0;
-            inst.setColorAt(id, color);
-            matrix.makeRotationFromEuler(rotations[w.directionIndex]);
-        }
-        const { x, y, z } = value.components.position;
-        //v.setFromMatrixPosition(matrix);
-        matrix.setPosition(x, y, z);
-        inst.setMatrixAt(id, matrix);
+        const childIdx = scene.children.findIndex((c) => c.id === entityIdToSceneChild[entity.id]);
+        scene.children[childIdx].position.set(entity.components.position.x, entity.components.position.y, entity.components.position.z);
     }
 }
 function updateGrid(gridEntity) {
-    const id = entityIdToSceneChild[gridEntity.id];
-    if (id === undefined) {
-        const grid = new GridHelper(100, 10, 0xff0000);
-        scene.add(grid);
-        entityIdToSceneChild[gridEntity.id] = grid.id;
-    }
-    else {
-        const childIdx = scene.children.findIndex((c) => c.id === entityIdToSceneChild[gridEntity.id]);
-        scene.children[childIdx].position.set(gridEntity.components.position.x, gridEntity.components.position.y, gridEntity.components.position.z);
-    }
+    basicUpdate(gridEntity, () => new GridHelper(100, 10, 0xff0000));
 }
 export function updateTHREEScene(model) {
     const renderables = model.entities.filter(isRenderable);
     renderables.filter(isRenderableSphere).forEach(updateSphere);
-    setInstUpdate(instanceMeshes.sphere.inst);
     renderables.filter(isRenderableGrid).forEach(updateGrid);
     renderables.filter(isRenderableModel).forEach(update3DModel);
-    setInstUpdate(instanceMeshes.rat.inst);
+    Object.keys(instanceMeshes).forEach((k) => {
+        setInstUpdate(instanceMeshes[k].inst);
+    });
     orbitControls.update();
     renderer.render(scene, camera);
     return {

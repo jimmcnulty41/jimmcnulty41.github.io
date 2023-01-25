@@ -5,6 +5,9 @@ export function canWander(entity) {
     return (entity.components.wander !== undefined &&
         entity.components.position !== undefined);
 }
+export function hasRotation(entity) {
+    return isPositioned(entity) && entity.components.rotation !== undefined;
+}
 export function isRenderable(entity) {
     return (entity.components.render !== undefined &&
         entity.components.position !== undefined);

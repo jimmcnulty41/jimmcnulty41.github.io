@@ -1,11 +1,11 @@
 import { updateStateMachine } from "../StateMachine.js";
 import { Model } from "../Model.js";
 import { Entity } from "../Entity.js";
-import { dirs } from "../components/WanderComponent.js";
 import { WanderingEntity, canWander } from "../components/Components.js";
+import { dirs, rots } from "../components/RotationComponent.js";
 
 function entityWander(e: WanderingEntity, i: number): Entity {
-  let { position, wander, ...unaffectedComponents } = e.components;
+  let { position, wander, rotation, ...unaffectedComponents } = e.components;
   const dix = wander.directionIndex;
 
   if (wander.fsm.current === "forward") {
@@ -15,10 +15,12 @@ function entityWander(e: WanderingEntity, i: number): Entity {
       z: position.z + wander.speed * dirs[dix][2],
     };
   } else if (wander.fsm.current === "turning") {
+    const newDix = (dix + 1) % dirs.length;
     wander = {
       ...wander,
-      directionIndex: (dix + 1) % dirs.length,
+      directionIndex: newDix,
     };
+    rotation = { dix };
   }
 
   wander.fsm = updateStateMachine(e.components.wander.fsm, Math.random());
@@ -29,9 +31,11 @@ function entityWander(e: WanderingEntity, i: number): Entity {
       ...unaffectedComponents,
       position,
       wander,
+      rotation,
     },
   };
 }
+
 export function wanderSystem(model: Model): Model {
   if (model.time % 3) return model;
   return {

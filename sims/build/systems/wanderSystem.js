@@ -1,8 +1,8 @@
 import { updateStateMachine } from "../StateMachine.js";
-import { dirs } from "../components/WanderComponent.js";
 import { canWander } from "../components/Components.js";
+import { dirs } from "../components/RotationComponent.js";
 function entityWander(e, i) {
-    let { position, wander, ...unaffectedComponents } = e.components;
+    let { position, wander, rotation, ...unaffectedComponents } = e.components;
     const dix = wander.directionIndex;
     if (wander.fsm.current === "forward") {
         position = {
@@ -12,10 +12,12 @@ function entityWander(e, i) {
         };
     }
     else if (wander.fsm.current === "turning") {
+        const newDix = (dix + 1) % dirs.length;
         wander = {
             ...wander,
-            directionIndex: (dix + 1) % dirs.length,
+            directionIndex: newDix,
         };
+        rotation = { dix };
     }
     wander.fsm = updateStateMachine(e.components.wander.fsm, Math.random());
     return {
@@ -24,6 +26,7 @@ function entityWander(e, i) {
             ...unaffectedComponents,
             position,
             wander,
+            rotation,
         },
     };
 }

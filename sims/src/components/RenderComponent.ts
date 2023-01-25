@@ -3,7 +3,8 @@ export type RenderComponent =
   | GridRenderComponent
   | GLTFRenderComponent;
 
-export type RenderTypes = "sphere" | "grid" | "3d model";
+export type SupportSceneParent = GridRenderComponent;
+export type SupportInstance = SphereRenderComponent | GLTFRenderComponent;
 
 export interface SphereRenderComponent {
   type: "sphere";
