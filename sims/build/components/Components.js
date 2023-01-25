@@ -1,3 +1,6 @@
+export function levitates(entity) {
+    return isPositioned(entity) && entity.components.levitate !== undefined;
+}
 export function isPositioned(entity) {
     return entity.components.position !== undefined;
 }

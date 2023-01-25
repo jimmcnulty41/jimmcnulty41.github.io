@@ -93,8 +93,10 @@ async function loadModels() {
     }), {});
 }
 function getInstancedPlane() {
-    const instancedMesh = new InstancedMesh(new PlaneGeometry(100, 100, 2, 2), new MeshBasicMaterial({ color: 0xffffff, side: DoubleSide }), 10000);
-    instancedMesh.instanceMatrix.setUsage(DynamicDrawUsage); // will be updated every frame
+    const geo = new PlaneGeometry(12, 7, 2, 2);
+    geo.rotateX(Math.PI / 2);
+    geo.rotateY(Math.PI / 2);
+    const instancedMesh = new InstancedMesh(geo, new MeshBasicMaterial({ color: 0xffffff, side: DoubleSide }), 10000);
     instancedMesh.count = 0;
     return instancedMesh;
 }
@@ -107,9 +109,12 @@ function instancedUpdate(entity, instanceKey) {
     matrix.identity();
     if (id === undefined) {
         matrix.setPosition(0, 0, 0);
-        entityIdToInstanceId[entity.id] = idCounter;
+        if (hasRotation(entity)) {
+            matrix.makeRotationFromEuler(eulers[entity.components.rotation.dix]);
+        }
         inst.setMatrixAt(idCounter, matrix);
         const newCount = idCounter + 1;
+        entityIdToInstanceId[entity.id] = idCounter;
         instanceMeshes[instanceKey].idCounter = newCount;
         instanceMeshes[instanceKey].inst.count = newCount;
     }

@@ -2,9 +2,9 @@ import { updateStateMachine } from "../StateMachine.js";
 import { Model } from "../Model.js";
 import { Entity } from "../Entity.js";
 import { WanderingEntity, canWander } from "../components/Components.js";
-import { dirs, rots } from "../components/RotationComponent.js";
+import { dirs } from "../components/RotationComponent.js";
 
-function entityWander(e: WanderingEntity, i: number): Entity {
+function entityWander(e: WanderingEntity): Entity {
   let { position, wander, rotation, ...unaffectedComponents } = e.components;
   const dix = wander.directionIndex;
 
@@ -20,7 +20,7 @@ function entityWander(e: WanderingEntity, i: number): Entity {
       ...wander,
       directionIndex: newDix,
     };
-    rotation = { dix };
+    rotation = { dix: newDix };
   }
 
   wander.fsm = updateStateMachine(e.components.wander.fsm, Math.random());

@@ -8,6 +8,7 @@ import {
   SphereRenderComponent,
 } from "./RenderComponent";
 import { WanderComponent } from "./WanderComponent";
+import { LevitateComponent } from "./LevitateComponent";
 
 // order should match corresponding system order
 export type Components = {
@@ -15,12 +16,20 @@ export type Components = {
   wander?: WanderComponent;
   render?: RenderComponent;
   rotation?: RotationComponent;
+  levitate?: LevitateComponent;
 };
 
 export type PositionedEntity = Entity & {
   components: Components & { position: PositionComponent };
 };
-
+export type LevitatingEntity = PositionedEntity & {
+  components: Components & {
+    levitate: LevitateComponent;
+  };
+};
+export function levitates(entity: Entity): entity is LevitatingEntity {
+  return isPositioned(entity) && entity.components.levitate !== undefined;
+}
 export function isPositioned(entity: Entity): entity is PositionedEntity {
   return entity.components.position !== undefined;
 }

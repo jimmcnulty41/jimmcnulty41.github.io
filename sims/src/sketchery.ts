@@ -4,6 +4,7 @@ import { wanderSystem } from "./systems/wanderSystem.js";
 import { addEntityEveryNTicksSystem } from "./systems/addEntityEveryNTicksSystem.js";
 import { Entity } from "./Entity.js";
 import { remap } from "./utils.js";
+import { levitateSystem } from "./systems/levitateSystem.js";
 
 const disabledSystems = ["report"];
 
@@ -19,8 +20,17 @@ let model: Model = {
         position: { x: 0, y: 0, z: 0 },
       },
     },
+    {
+      id: "1",
+      components: {
+        render: {
+          type: "grid",
+        },
+        position: { x: 100, y: 100, z: 100 },
+      },
+    },
   ],
-  idCounter: 1,
+  idCounter: 2,
 };
 
 function newDefaultEntity(id: string): Entity {
@@ -28,11 +38,18 @@ function newDefaultEntity(id: string): Entity {
   return {
     id,
     components: {
+      levitate: {
+        speed: Math.random(),
+        roll: Math.random(),
+      },
       render: { type: "3d model", refName: "plane" },
       position: {
         x: Math.random() * 100 - 50,
         y: 0,
         z: Math.random() * 100 - 50,
+      },
+      rotation: {
+        dix: 0,
       },
       wander: {
         speed: Math.random(),
@@ -72,6 +89,7 @@ let systems: Systems = {
   }),
   addEntityEveryNTicksSystem: addEntityEveryNTicksSystem(newDefaultEntity, 1),
   wanderSystem,
+  levitateSystem,
   //reportSystem,
   updateTHREEScene,
 };
