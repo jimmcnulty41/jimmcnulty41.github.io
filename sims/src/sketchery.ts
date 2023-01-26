@@ -17,15 +17,15 @@ const disabledSystems = ["report"];
 let model: Model = {
   time: 0,
   entities: [
-    {
-      id: "0",
-      components: {
-        render: {
-          type: "grid",
-        },
-        position: { x: 0, y: 0, z: 0 },
-      },
-    },
+    // {
+    //   id: "0",
+    //   components: {
+    //     render: {
+    //       type: "grid",
+    //     },
+    //     position: { x: 0, y: 0, z: 0 },
+    //   },
+    // },
     {
       id: "1",
       components: {
@@ -35,7 +35,11 @@ let model: Model = {
           amt: 0,
         },
         calculatePosition: {
-          calculation: (t) => ({ z: -t }),
+          calculation: (t) => {
+            const t2 = t - 100;
+            if (t2 < 0) return { z: 0 };
+            return { z: -t2 };
+          },
         },
         render: {
           type: "3d model",
@@ -46,7 +50,7 @@ let model: Model = {
       },
     },
     {
-      id: "2",
+      id: "0",
       components: {
         render: {
           type: "3d model",
@@ -89,10 +93,13 @@ function newDefaultEntity(id: string): Entity {
         calculation: (t) => sizeFn(t),
       },
       calculatePosition: {
-        calculation: (t) => ({
-          x: sign * Math.pow(t, 2) * pow,
-          z: -t / 2,
-        }),
+        calculation: (t) => {
+          const t2 = remap(0, 100, 0, 100, true)(t);
+          return {
+            x: (sign * Math.pow(t2, 2) * pow) / 10,
+            z: -t2 / 2,
+          };
+        },
       },
     },
   };
@@ -112,7 +119,11 @@ let systems: Systems = {
   calcScaleSystem,
   calcPositionSystem,
   //reportSystem,
-  addEntityEveryNTicksSystem: addEntityEveryNTicksSystem(newDefaultEntity, 10),
+  addEntityEveryNTicksSystem: addEntityEveryNTicksSystem(
+    newDefaultEntity,
+    10,
+    100
+  ),
   updateTHREEScene,
 };
 

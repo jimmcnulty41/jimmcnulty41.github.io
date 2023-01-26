@@ -6,10 +6,14 @@ type Systemx = (model: Model) => Model;
 
 export function addEntityEveryNTicksSystem(
   entityfn: EntityFn,
-  n: number
+  n: number,
+  delay?: number
 ): Systemx {
   function addEntityEveryNTicksSystem_inner(model: Model): Model {
-    return model.time % n || model.entities.length > 10000
+    if (delay && model.time < delay) {
+      return model;
+    }
+    return model.time % n || model.entities.length > 100
       ? model
       : {
           ...model,

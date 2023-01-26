@@ -1,6 +1,9 @@
-export function addEntityEveryNTicksSystem(entityfn, n) {
+export function addEntityEveryNTicksSystem(entityfn, n, delay) {
     function addEntityEveryNTicksSystem_inner(model) {
-        return model.time % n || model.entities.length > 10000
+        if (delay && model.time < delay) {
+            return model;
+        }
+        return model.time % n || model.entities.length > 100
             ? model
             : {
                 ...model,
