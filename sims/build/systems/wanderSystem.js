@@ -36,8 +36,8 @@ export function wanderSystem(model) {
     return {
         ...model,
         entities: [
-            ...model.entities.filter(canWander).map(entityWander),
             ...model.entities.filter((x) => !canWander(x)),
+            ...model.entities.filter(canWander).map(entityWander),
         ],
     };
 }

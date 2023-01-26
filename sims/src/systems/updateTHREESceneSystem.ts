@@ -1,26 +1,16 @@
 import {
-  BufferGeometry,
-  Color,
-  DynamicDrawUsage,
   GridHelper,
-  Group,
-  IcosahedronGeometry,
   InstancedMesh,
   Matrix4,
-  Mesh,
-  MeshBasicMaterial,
   PerspectiveCamera,
   Scene,
   WebGLRenderer,
   Euler,
   HemisphereLight,
-  MeshLambertMaterial,
   sRGBEncoding,
-  DoubleSide,
+  Object3D,
 } from "../vendor/three.js";
 
-import { mergeBufferGeometries } from "../vendor/BufferGeometryUtils.js";
-import { GLTF, GLTFLoader } from "../vendor/GLTFLoader.js";
 import { OrbitControls } from "../vendor/OrbitControls.js";
 
 import { Model } from "../Model.js";
@@ -41,10 +31,8 @@ import {
   SupportInstance,
   InstancedGLTFRenderComponent,
 } from "../components/RenderComponent.js";
-import { remap } from "../utils.js";
-import { PlaneGeometry } from "../vendor/three.js";
-import { Object3D } from "../vendor/three.js";
 import { RotationComponent, rots } from "../components/RotationComponent.js";
+import { getInstanceMeshes, getInstanceSubmodel } from "./loadModels.js";
 
 type EntityIdToThreeId = {
   [entityID: string]: number | undefined;
@@ -83,128 +71,13 @@ interface InstanceBookkeeping {
   };
 }
 
-const GLTFs = await loadModels();
+const instanceMeshes: { [name: string]: InstanceBookkeeping } =
+  getInstanceMeshes();
+scene.add(new HemisphereLight(0xffffff, 0xff0033, 1));
 
-const instanceMeshes: { [name: string]: InstanceBookkeeping } = {
-  sphere: {
-    inst: getInstancedSphere(),
-    idCounter: 0,
-    registers: {
-      matrix: new Matrix4(),
-      euler: new Euler(),
-    },
-  },
-  rat: {
-    inst: getInstancedModel(),
-    idCounter: 0,
-    registers: {
-      matrix: new Matrix4(),
-      euler: new Euler(),
-    },
-  },
-  plane: {
-    inst: getInstancedPlane(),
-    idCounter: 0,
-    registers: {
-      matrix: new Matrix4(),
-      euler: new Euler(),
-    },
-  },
-};
 Object.keys(instanceMeshes).forEach((k) => {
   scene.add(instanceMeshes[k].inst);
 });
-
-scene.add(new HemisphereLight(0xffffff, 0xff0033, 1));
-
-function getInstancedSphere() {
-  const instancedMesh = new InstancedMesh(
-    new IcosahedronGeometry(10, 3),
-    new MeshBasicMaterial({ color: 0xffffff }),
-    10000
-  );
-  instancedMesh.instanceMatrix.setUsage(DynamicDrawUsage); // will be updated every frame
-  instancedMesh.count = 0;
-  return instancedMesh;
-}
-
-function groupToBuffer(group: Group): BufferGeometry {
-  const meshes: Mesh[] = [];
-  group.traverse((c) => {
-    if ((c as Mesh).isMesh) {
-      meshes.push(c as Mesh);
-    }
-  });
-  const geos = meshes.map((m) => m.geometry);
-  const bufferGeometry = mergeBufferGeometries(geos);
-
-  return bufferGeometry;
-}
-
-function getInstancedModel() {
-  const refName = "rat";
-  const model = GLTFs[refName];
-  const geo = groupToBuffer(model.model.scene);
-  geo.computeVertexNormals();
-  geo.scale(model.scale[0], model.scale[1], model.scale[2]);
-  const instancedMesh = new InstancedMesh(
-    geo,
-    new MeshLambertMaterial({ color: 0xff00ff }),
-    10000
-  );
-  instancedMesh.instanceMatrix.setUsage(DynamicDrawUsage); // will be updated every frame
-  instancedMesh.count = 0;
-  return instancedMesh;
-}
-
-type ModelData = { [refName: string]: { model: GLTF; scale: number[] } };
-
-async function loadModels(): Promise<ModelData> {
-  const gltfPaths = [
-    {
-      path: "/assets/models/rat_2.2.gltf",
-      refName: "rat",
-      scale: [2, 2, 2],
-    },
-    {
-      path: "/assets/models/self_portrait_2.gltf",
-      refName: "head_top",
-      scale: [20, 20, 20],
-    },
-  ];
-  const gltfLoader = new GLTFLoader();
-  return (
-    await Promise.all(
-      gltfPaths.map(async ({ path, refName, scale }) => ({
-        model: await gltfLoader.loadAsync(path),
-        refName,
-        scale,
-      }))
-    )
-  ).reduce(
-    (memo, x) => ({
-      ...memo,
-      [x.refName]: {
-        model: x.model,
-        scale: x.scale,
-      },
-    }),
-    {}
-  );
-}
-
-function getInstancedPlane() {
-  const geo = new PlaneGeometry(1.2, 0.7, 2, 2);
-  geo.rotateX(Math.PI / 2);
-  geo.rotateY(Math.PI / 2);
-  const instancedMesh = new InstancedMesh(
-    geo,
-    new MeshBasicMaterial({ color: 0xffffff, side: DoubleSide }),
-    10000
-  );
-  instancedMesh.count = 0;
-  return instancedMesh;
-}
 
 function updateSphere(
   sphereEntity: RenderableEntity<SphereRenderComponent>
@@ -283,34 +156,10 @@ function update3DModel(
   return instancedUpdate(value, value.components.render.refName);
 }
 
-function isBufferGeometry(blah: any): blah is BufferGeometry {
-  return (blah as BufferGeometry).isBufferGeometry;
-}
-
 function updateSubmodel(value: RenderableEntity<GLTFRenderComponent>): void {
-  const objectName = value.components.render.objectName;
+  const { refName, objectName } = value.components.render;
   return basicUpdate(value, () => {
-    const gltf = GLTFs[value.components.render.refName];
-    const group = gltf.model.scene;
-    let geo = null;
-    if (objectName !== undefined) {
-      geo = gltf.model.scene.getObjectByName(objectName);
-      if ((geo as Mesh).isMesh) {
-        (geo as Mesh).geometry.computeVertexNormals();
-        (geo as Mesh).geometry.scale(
-          gltf.scale[0],
-          gltf.scale[1],
-          gltf.scale[2]
-        );
-        return geo as Mesh;
-      }
-    } else {
-      geo = groupToBuffer(group);
-    }
-    if (!isBufferGeometry(geo)) {
-      throw new Error(`issues getting submodel ${objectName}`);
-    }
-    return new Mesh(geo, new MeshLambertMaterial({ color: 0xaa33cc }));
+    return getInstanceSubmodel(refName, objectName);
   });
 }
 
