@@ -20,7 +20,7 @@ import {
 } from "../vendor/three.js";
 
 import { mergeBufferGeometries } from "../vendor/BufferGeometryUtils.js";
-import { GLTF, GLTFLoader, GLTFParser } from "../vendor/GLTFLoader.js";
+import { GLTF, GLTFLoader } from "../vendor/GLTFLoader.js";
 import { OrbitControls } from "../vendor/OrbitControls.js";
 
 import { Model } from "../Model.js";
@@ -194,7 +194,7 @@ async function loadModels(): Promise<ModelData> {
 }
 
 function getInstancedPlane() {
-  const geo = new PlaneGeometry(12, 7, 2, 2);
+  const geo = new PlaneGeometry(1.2, 0.7, 2, 2);
   geo.rotateX(Math.PI / 2);
   geo.rotateY(Math.PI / 2);
   const instancedMesh = new InstancedMesh(

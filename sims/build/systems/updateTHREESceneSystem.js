@@ -105,7 +105,7 @@ async function loadModels() {
     }), {});
 }
 function getInstancedPlane() {
-    const geo = new PlaneGeometry(12, 7, 2, 2);
+    const geo = new PlaneGeometry(1.2, 0.7, 2, 2);
     geo.rotateX(Math.PI / 2);
     geo.rotateY(Math.PI / 2);
     const instancedMesh = new InstancedMesh(geo, new MeshBasicMaterial({ color: 0xffffff, side: DoubleSide }), 10000);
