@@ -20,6 +20,11 @@ export function isRenderableSphere(entity) {
         entity.components.render.type === "sphere" &&
         entity.components.position !== undefined);
 }
+export function isRenderableInstanceModel(entity) {
+    return (entity.components.render !== undefined &&
+        entity.components.render.type === "instanced 3d model" &&
+        entity.components.position !== undefined);
+}
 export function isRenderableModel(entity) {
     return (entity.components.render !== undefined &&
         entity.components.render.type === "3d model" &&
@@ -29,4 +34,9 @@ export function isRenderableGrid(entity) {
     return (entity.components.render !== undefined &&
         entity.components.render.type === "grid" &&
         entity.components.position !== undefined);
+}
+export function isCalcRotation(e) {
+    return (e.components.calculateRotation !== undefined &&
+        e.components.rotation !== undefined &&
+        e.components.rotation.style === "angle axis");
 }

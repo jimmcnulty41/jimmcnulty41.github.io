@@ -5,6 +5,7 @@ import { addEntityEveryNTicksSystem } from "./systems/addEntityEveryNTicksSystem
 import { Entity } from "./Entity.js";
 import { remap } from "./utils.js";
 import { levitateSystem } from "./systems/levitateSystem.js";
+import { calcRotationSystem } from "./systems/calcRotationSystem.js";
 
 const disabledSystems = ["report"];
 
@@ -29,8 +30,38 @@ let model: Model = {
         position: { x: 100, y: 100, z: 100 },
       },
     },
+    {
+      id: "2",
+      components: {
+        rotation: {
+          style: "angle axis",
+          axis: 1,
+          amt: 0,
+        },
+        calculateRotation: {
+          calculation: (t) => remap(120, 240, 0, Math.PI, true)(t),
+        },
+        render: {
+          type: "3d model",
+          refName: "head_top",
+          objectName: "head_top",
+        },
+        position: { x: 0, y: 0, z: 0 },
+      },
+    },
+    {
+      id: "3",
+      components: {
+        render: {
+          type: "3d model",
+          refName: "head_top",
+          objectName: "head_bottom",
+        },
+        position: { x: 0, y: 0, z: 0 },
+      },
+    },
   ],
-  idCounter: 2,
+  idCounter: 3,
 };
 
 function newDefaultEntity(id: string): Entity {
@@ -42,13 +73,17 @@ function newDefaultEntity(id: string): Entity {
         speed: Math.random(),
         roll: Math.random(),
       },
-      render: { type: "3d model", refName: "plane" },
+      render: {
+        type: "instanced 3d model",
+        refName: "plane",
+      },
       position: {
-        x: Math.random() * 100 - 50,
+        x: Math.random() * 10 - 5,
         y: 0,
-        z: Math.random() * 100 - 50,
+        z: Math.random() * 10 - 5,
       },
       rotation: {
+        style: "standard",
         dix: 0,
       },
       wander: {
@@ -90,6 +125,7 @@ let systems: Systems = {
   addEntityEveryNTicksSystem: addEntityEveryNTicksSystem(newDefaultEntity, 1),
   wanderSystem,
   levitateSystem,
+  calcRotationSystem,
   //reportSystem,
   updateTHREEScene,
 };

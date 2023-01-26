@@ -17,7 +17,7 @@ function entityWander(e) {
             ...wander,
             directionIndex: newDix,
         };
-        rotation = { dix: newDix };
+        rotation = { style: "standard", dix: newDix };
     }
     wander.fsm = updateStateMachine(e.components.wander.fsm, Math.random());
     return {

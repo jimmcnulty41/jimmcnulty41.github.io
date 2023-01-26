@@ -11,7 +11,6 @@ import {
   MeshBasicMaterial,
   PerspectiveCamera,
   Scene,
-  Vector3,
   WebGLRenderer,
   Euler,
   HemisphereLight,
@@ -21,7 +20,7 @@ import {
 } from "../vendor/three.js";
 
 import { mergeBufferGeometries } from "../vendor/BufferGeometryUtils.js";
-import { GLTF, GLTFLoader } from "../vendor/GLTFLoader.js";
+import { GLTF, GLTFLoader, GLTFParser } from "../vendor/GLTFLoader.js";
 import { OrbitControls } from "../vendor/OrbitControls.js";
 
 import { Model } from "../Model.js";
@@ -30,6 +29,7 @@ import {
   hasRotation,
   isRenderable,
   isRenderableGrid,
+  isRenderableInstanceModel,
   isRenderableModel,
   isRenderableSphere,
 } from "../components/Components.js";
@@ -39,11 +39,12 @@ import {
   SupportSceneParent,
   SphereRenderComponent,
   SupportInstance,
+  InstancedGLTFRenderComponent,
 } from "../components/RenderComponent.js";
 import { remap } from "../utils.js";
 import { PlaneGeometry } from "../vendor/three.js";
 import { Object3D } from "../vendor/three.js";
-import { rots } from "../components/RotationComponent.js";
+import { RotationComponent, rots } from "../components/RotationComponent.js";
 
 type EntityIdToThreeId = {
   [entityID: string]: number | undefined;
@@ -78,7 +79,7 @@ interface InstanceBookkeeping {
   idCounter: number;
   registers: {
     matrix: THREE.Matrix4;
-    color: THREE.Color;
+    euler: THREE.Euler;
   };
 }
 
@@ -90,7 +91,7 @@ const instanceMeshes: { [name: string]: InstanceBookkeeping } = {
     idCounter: 0,
     registers: {
       matrix: new Matrix4(),
-      color: new Color(1, 0, 0.5),
+      euler: new Euler(),
     },
   },
   rat: {
@@ -98,7 +99,7 @@ const instanceMeshes: { [name: string]: InstanceBookkeeping } = {
     idCounter: 0,
     registers: {
       matrix: new Matrix4(),
-      color: new Color(1, 0, 0.5),
+      euler: new Euler(),
     },
   },
   plane: {
@@ -106,7 +107,7 @@ const instanceMeshes: { [name: string]: InstanceBookkeeping } = {
     idCounter: 0,
     registers: {
       matrix: new Matrix4(),
-      color: new Color(1, 0, 0.5),
+      euler: new Euler(),
     },
   },
 };
@@ -141,9 +142,11 @@ function groupToBuffer(group: Group): BufferGeometry {
 }
 
 function getInstancedModel() {
-  const geo = groupToBuffer(GLTFs["rat"].scene);
+  const refName = "rat";
+  const model = GLTFs[refName];
+  const geo = groupToBuffer(model.model.scene);
   geo.computeVertexNormals();
-  geo.scale(2, 2, 2);
+  geo.scale(model.scale[0], model.scale[1], model.scale[2]);
   const instancedMesh = new InstancedMesh(
     geo,
     new MeshLambertMaterial({ color: 0xff00ff }),
@@ -154,30 +157,37 @@ function getInstancedModel() {
   return instancedMesh;
 }
 
-async function loadModels() {
+type ModelData = { [refName: string]: { model: GLTF; scale: number[] } };
+
+async function loadModels(): Promise<ModelData> {
   const gltfPaths = [
     {
       path: "/assets/models/rat_2.2.gltf",
       refName: "rat",
+      scale: [2, 2, 2],
+    },
+    {
+      path: "/assets/models/self_portrait_2.gltf",
+      refName: "head_top",
+      scale: [20, 20, 20],
     },
   ];
   const gltfLoader = new GLTFLoader();
   return (
     await Promise.all(
-      gltfPaths.map(
-        async ({
-          path,
-          refName,
-        }): Promise<{ model: GLTF; refName: string }> => ({
-          model: await gltfLoader.loadAsync(path),
-          refName,
-        })
-      )
+      gltfPaths.map(async ({ path, refName, scale }) => ({
+        model: await gltfLoader.loadAsync(path),
+        refName,
+        scale,
+      }))
     )
   ).reduce(
-    (memo: { [refName: string]: GLTF }, x) => ({
+    (memo, x) => ({
       ...memo,
-      [x.refName]: x.model,
+      [x.refName]: {
+        model: x.model,
+        scale: x.scale,
+      },
     }),
     {}
   );
@@ -202,6 +212,37 @@ function updateSphere(
   return instancedUpdate(sphereEntity, "sphere");
 }
 
+function updateBasicRotation(rotation: RotationComponent, childIdx: number) {
+  const { style } = rotation;
+  if (style === "standard") {
+    const { dix } = rotation;
+    scene.children[childIdx].setRotationFromEuler(eulers[dix]);
+  } else {
+    const { axis, amt } = rotation;
+    const euler = new Euler(
+      axis === 0 ? amt : 0,
+      axis === 1 ? amt : 0,
+      axis === 2 ? amt : 0
+    );
+    scene.children[childIdx].setRotationFromEuler(euler);
+  }
+}
+
+function updateInstanceRotation(
+  rotation: RotationComponent,
+  matrix: Matrix4,
+  euler: Euler
+) {
+  const { style } = rotation;
+  if (style === "angle axis") {
+    const { axis, amt } = rotation;
+    euler.set(axis === 0 ? amt : 0, axis === 1 ? amt : 0, axis === 2 ? amt : 0);
+    matrix.makeRotationFromEuler(euler);
+  } else {
+    matrix.makeRotationFromEuler(eulers[rotation.dix]);
+  }
+}
+
 function instancedUpdate(
   entity: RenderableEntity<SupportInstance>,
   instanceKey: string
@@ -210,7 +251,7 @@ function instancedUpdate(
   const {
     inst,
     idCounter,
-    registers: { matrix, color },
+    registers: { matrix, euler },
   } = instanceMeshes[instanceKey];
 
   matrix.identity();
@@ -218,7 +259,7 @@ function instancedUpdate(
   if (id === undefined) {
     matrix.setPosition(0, 0, 0);
     if (hasRotation(entity)) {
-      matrix.makeRotationFromEuler(eulers[entity.components.rotation.dix]);
+      updateInstanceRotation(entity.components.rotation, matrix, euler);
     }
     inst.setMatrixAt(idCounter, matrix);
 
@@ -228,7 +269,7 @@ function instancedUpdate(
     instanceMeshes[instanceKey].inst.count = newCount;
   } else {
     if (hasRotation(entity)) {
-      matrix.makeRotationFromEuler(eulers[entity.components.rotation.dix]);
+      updateInstanceRotation(entity.components.rotation, matrix, euler);
     }
     const { x, y, z } = entity.components.position;
     matrix.setPosition(x, y, z);
@@ -236,8 +277,41 @@ function instancedUpdate(
   }
 }
 
-function update3DModel(value: RenderableEntity<GLTFRenderComponent>): void {
+function update3DModel(
+  value: RenderableEntity<InstancedGLTFRenderComponent>
+): void {
   return instancedUpdate(value, value.components.render.refName);
+}
+
+function isBufferGeometry(blah: any): blah is BufferGeometry {
+  return (blah as BufferGeometry).isBufferGeometry;
+}
+
+function updateSubmodel(value: RenderableEntity<GLTFRenderComponent>): void {
+  const objectName = value.components.render.objectName;
+  return basicUpdate(value, () => {
+    const gltf = GLTFs[value.components.render.refName];
+    const group = gltf.model.scene;
+    let geo = null;
+    if (objectName !== undefined) {
+      geo = gltf.model.scene.getObjectByName(objectName);
+      if ((geo as Mesh).isMesh) {
+        (geo as Mesh).geometry.computeVertexNormals();
+        (geo as Mesh).geometry.scale(
+          gltf.scale[0],
+          gltf.scale[1],
+          gltf.scale[2]
+        );
+        return geo as Mesh;
+      }
+    } else {
+      geo = groupToBuffer(group);
+    }
+    if (!isBufferGeometry(geo)) {
+      throw new Error(`issues getting submodel ${objectName}`);
+    }
+    return new Mesh(geo, new MeshLambertMaterial({ color: 0xaa33cc }));
+  });
 }
 
 function basicUpdate(
@@ -253,6 +327,10 @@ function basicUpdate(
     const childIdx = scene.children.findIndex(
       (c: any) => c.id === entityIdToSceneChild[entity.id]
     );
+
+    if (hasRotation(entity)) {
+      updateBasicRotation(entity.components.rotation, childIdx);
+    }
     scene.children[childIdx].position.set(
       entity.components.position.x,
       entity.components.position.y,
@@ -270,7 +348,8 @@ export function updateTHREEScene(model: Model): Model {
 
   renderables.filter(isRenderableSphere).forEach(updateSphere);
   renderables.filter(isRenderableGrid).forEach(updateGrid);
-  renderables.filter(isRenderableModel).forEach(update3DModel);
+  renderables.filter(isRenderableInstanceModel).forEach(update3DModel);
+  renderables.filter(isRenderableModel).forEach(updateSubmodel);
 
   Object.keys(instanceMeshes).forEach((k) => {
     setInstUpdate(instanceMeshes[k].inst);

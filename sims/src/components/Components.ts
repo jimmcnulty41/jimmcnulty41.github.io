@@ -1,14 +1,19 @@
 import { Entity } from "../Entity";
-import { RotationComponent } from "./RotationComponent";
+import {
+  AngleAxisRotationComponent,
+  RotationComponent,
+} from "./RotationComponent";
 import { PositionComponent } from "./PositionComponent";
 import {
   GLTFRenderComponent,
   GridRenderComponent,
+  InstancedGLTFRenderComponent,
   RenderComponent,
   SphereRenderComponent,
 } from "./RenderComponent";
 import { WanderComponent } from "./WanderComponent";
 import { LevitateComponent } from "./LevitateComponent";
+import { CalcRotationComponent } from "./CalcRotationComponent";
 
 // order should match corresponding system order
 export type Components = {
@@ -17,6 +22,7 @@ export type Components = {
   render?: RenderComponent;
   rotation?: RotationComponent;
   levitate?: LevitateComponent;
+  calculateRotation?: CalcRotationComponent;
 };
 
 export type PositionedEntity = Entity & {
@@ -38,6 +44,7 @@ export type WanderingEntity = Entity & {
   components: Components & {
     wander: WanderComponent;
     position: PositionComponent;
+    rotation: RotationComponent;
   };
 };
 
@@ -86,6 +93,15 @@ export function isRenderableSphere(
     entity.components.position !== undefined
   );
 }
+export function isRenderableInstanceModel(
+  entity: Entity
+): entity is RenderableEntity<InstancedGLTFRenderComponent> {
+  return (
+    entity.components.render !== undefined &&
+    entity.components.render.type === "instanced 3d model" &&
+    entity.components.position !== undefined
+  );
+}
 export function isRenderableModel(
   entity: Entity
 ): entity is RenderableEntity<GLTFRenderComponent> {
@@ -95,6 +111,7 @@ export function isRenderableModel(
     entity.components.position !== undefined
   );
 }
+
 export function isRenderableGrid(
   entity: Entity
 ): entity is RenderableEntity<GridRenderComponent> {
@@ -102,5 +119,20 @@ export function isRenderableGrid(
     entity.components.render !== undefined &&
     entity.components.render.type === "grid" &&
     entity.components.position !== undefined
+  );
+}
+
+type EntityWithCalcRotation = Entity & {
+  components: Components & {
+    calculateRotation: CalcRotationComponent;
+    rotation: AngleAxisRotationComponent;
+  };
+};
+
+export function isCalcRotation(e: Entity): e is EntityWithCalcRotation {
+  return (
+    e.components.calculateRotation !== undefined &&
+    e.components.rotation !== undefined &&
+    e.components.rotation.style === "angle axis"
   );
 }

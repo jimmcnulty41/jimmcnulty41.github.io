@@ -15,6 +15,17 @@ export const rots = [
 export type Dirs = typeof dirs[number];
 export type Rots = typeof rots[number];
 
-export interface RotationComponent {
+export type StandardRotationComponent = {
+  style: "standard";
   dix: number;
-}
+};
+
+export type AngleAxisRotationComponent = {
+  style: "angle axis";
+  amt: number;
+  axis: number;
+};
+
+export type RotationComponent =
+  | StandardRotationComponent
+  | AngleAxisRotationComponent;

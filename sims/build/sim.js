@@ -23,7 +23,11 @@ function newDefaultEntity(id) {
     return {
         id,
         components: {
-            render: { type: "3d model", refName: "rat" },
+            render: { type: "instanced 3d model", refName: "rat" },
+            rotation: {
+                style: "standard",
+                dix: 0,
+            },
             position: {
                 x: Math.random() * 100 - 50,
                 y: 0,
