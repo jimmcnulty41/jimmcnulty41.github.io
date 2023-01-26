@@ -1,0 +1,3 @@
+interface AgeComponent {
+  birthday?: number;
+}

@@ -1,9 +1,15 @@
 import { Model } from "../Model.js";
 import {
+  Components,
   isCalcPosition,
   isCalcRotation,
   isCalcScale,
 } from "../components/Components.js";
+
+function getT(modelTime: number, age?: AgeComponent) {
+  const hbd = age?.birthday !== undefined ? age.birthday : 0;
+  return modelTime - hbd;
+}
 
 export function calcRotationSystem(model: Model): Model {
   return {
@@ -13,7 +19,9 @@ export function calcRotationSystem(model: Model): Model {
       ...model.entities.filter(isCalcRotation).map((e) => {
         const { rotation, calculateRotation, ...unaffectedComponents } =
           e.components;
-        rotation.amt = calculateRotation.calculation(model.time);
+        rotation.amt = calculateRotation.calculation(
+          getT(model.time, e.components.age)
+        );
         return {
           ...e,
           components: {
@@ -34,7 +42,9 @@ export function calcScaleSystem(model: Model): Model {
       ...model.entities.filter((e) => !isCalcScale(e)),
       ...model.entities.filter(isCalcScale).map((e) => {
         const { scale, calculateScale, ...unaffectedComponents } = e.components;
-        scale.amt = calculateScale.calculation(model.time);
+        scale.amt = calculateScale.calculation(
+          getT(model.time, e.components.age)
+        );
         return {
           ...e,
           components: {
@@ -56,13 +66,20 @@ export function calcPositionSystem(model: Model): Model {
       ...model.entities.filter(isCalcPosition).map((e) => {
         const { position, calculatePosition, ...unaffectedComponents } =
           e.components;
-        const val = calculatePosition.calculation(model.time);
+        const { x, y, z } = calculatePosition.calculation(
+          getT(model.time, e.components.age)
+        );
+        const pos = {
+          x: x === undefined ? position.x : x,
+          y: y === undefined ? position.y : y,
+          z: z === undefined ? position.z : z,
+        };
         return {
           ...e,
           components: {
             ...unaffectedComponents,
             calculatePosition,
-            position: val,
+            position: pos,
           },
         };
       }),

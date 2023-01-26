@@ -24,6 +24,7 @@ import { ScaleComponent } from "./ScaleComponent";
 export type Components = {
   wander?: WanderComponent;
   levitate?: LevitateComponent;
+  age?: AgeComponent;
 
   render?: RenderComponent;
 
@@ -179,4 +180,13 @@ export function isCalcPosition(e: Entity): e is EntityWithCalcPosition {
     e.components.calculatePosition !== undefined &&
     e.components.position !== undefined
   );
+}
+
+type EntityWithAge = Entity & {
+  components: Components & {
+    age: AgeComponent;
+  };
+};
+export function isEntityWithAge(e: Entity): e is EntityWithAge {
+  return e.components.age !== undefined;
 }

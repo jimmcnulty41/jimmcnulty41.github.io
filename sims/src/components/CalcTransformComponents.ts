@@ -5,5 +5,5 @@ export interface CalcScaleComponent {
   calculation: (t: number) => number | number[];
 }
 export interface CalcPositionComponent {
-  calculation: (t: number) => { x: number; y: number; z: number };
+  calculation: (t: number) => { x?: number; y?: number; z?: number };
 }

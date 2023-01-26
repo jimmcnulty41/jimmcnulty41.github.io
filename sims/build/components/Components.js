@@ -51,3 +51,6 @@ export function isCalcPosition(e) {
     return (e.components.calculatePosition !== undefined &&
         e.components.position !== undefined);
 }
+export function isEntityWithAge(e) {
+    return e.components.age !== undefined;
+}

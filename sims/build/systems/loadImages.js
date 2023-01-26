@@ -19,18 +19,21 @@ async function loadImagesInBg() {
         }
         const b = await response.response.blob();
         const url = URL.createObjectURL(b);
-        loadedImages++;
         const img = new Image();
         img.src = url;
+        while (!img.complete) {
+            await new Promise((resolve) => setTimeout(resolve, 100));
+        }
+        loadedImages++;
         imageDataArray[response.i] = img;
     }));
     console.log(`Texture loading complete. ${failedImages.length} images failed to load. ${loadedImages} succeeded`);
     console.log(failedImages);
 }
+await loadImagesInBg();
 export async function getImage(requestedImage) {
     while (loadedImages <= requestedImage) {
         await new Promise((resolve) => setTimeout(resolve, 100));
     }
     return imageDataArray[requestedImage];
 }
-loadImagesInBg();

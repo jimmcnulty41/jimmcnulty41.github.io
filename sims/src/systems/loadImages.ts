@@ -26,10 +26,12 @@ async function loadImagesInBg() {
       const b = await response.response.blob();
       const url = URL.createObjectURL(b);
 
-      loadedImages++;
-
       const img = new Image();
       img.src = url;
+      while (!img.complete) {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
+      loadedImages++;
       imageDataArray[response.i] = img;
     })
   );
@@ -40,6 +42,7 @@ async function loadImagesInBg() {
   console.log(failedImages);
 }
 
+await loadImagesInBg();
 export async function getImage(
   requestedImage: number
 ): Promise<HTMLImageElement> {
@@ -48,5 +51,3 @@ export async function getImage(
   }
   return imageDataArray[requestedImage];
 }
-
-loadImagesInBg();
