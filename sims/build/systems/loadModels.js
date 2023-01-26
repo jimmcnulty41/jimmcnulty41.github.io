@@ -98,7 +98,7 @@ async function getInstancedPlane() {
 function isBufferGeometry(blah) {
     return blah.isBufferGeometry;
 }
-export function getInstanceSubmodel(refName, objectName) {
+export function getSubmodel(refName, objectName) {
     const gltf = GLTFs[refName];
     const group = gltf.model.scene;
     let geo = null;

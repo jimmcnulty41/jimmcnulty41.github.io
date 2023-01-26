@@ -1,8 +1,8 @@
-import { GridHelper, PerspectiveCamera, Scene, WebGLRenderer, Euler, HemisphereLight, sRGBEncoding, } from "../vendor/three.js";
+import { GridHelper, Matrix4, PerspectiveCamera, Scene, WebGLRenderer, Euler, HemisphereLight, sRGBEncoding, Vector3, } from "../vendor/three.js";
 import { OrbitControls } from "../vendor/OrbitControls.js";
 import { hasRotation, hasScale, isRenderable, isRenderableGrid, isRenderableInstanceModel, isRenderableModel, isRenderableSphere, } from "../components/Components.js";
 import { rots } from "../components/RotationComponent.js";
-import { getInstanceMeshes, getInstanceSubmodel } from "./loadModels.js";
+import { getInstanceMeshes, getSubmodel } from "./loadModels.js";
 const eulers = rots.map((r) => new Euler(r[0], r[1], r[2]));
 let entityIdToSceneChild = {};
 let entityIdToInstanceId = {};
@@ -17,6 +17,11 @@ const camera = new PerspectiveCamera(35, window.innerWidth / window.innerHeight,
 camera.position.set(0, 100, 1);
 camera.lookAt(0, 0, 0);
 const orbitControls = new OrbitControls(camera, canvas);
+const registers = {
+    matrix: new Matrix4(),
+    euler: new Euler(),
+    vector: new Vector3(),
+};
 const instanceMeshes = await getInstanceMeshes();
 scene.add(new HemisphereLight(0xffffff, 0xff0033, 1));
 Object.keys(instanceMeshes).forEach((k) => {
@@ -37,49 +42,53 @@ function updateBasicRotation(rotation, childIdx) {
         scene.children[childIdx].setRotationFromEuler(euler);
     }
 }
-function updateInstanceRotation(rotation, matrix, euler) {
+function updateInstanceRotation(rotation) {
     const { style } = rotation;
     if (style === "angle axis") {
         const { axis, amt } = rotation;
-        euler.set(axis === 0 ? amt : 0, axis === 1 ? amt : 0, axis === 2 ? amt : 0);
-        matrix.makeRotationFromEuler(euler);
+        registers.euler.set(axis === 0 ? amt : 0, axis === 1 ? amt : 0, axis === 2 ? amt : 0);
+        registers.matrix.makeRotationFromEuler(registers.euler);
     }
     else {
-        matrix.makeRotationFromEuler(eulers[rotation.dix]);
+        registers.matrix.makeRotationFromEuler(eulers[rotation.dix]);
+    }
+}
+function updateInstanceTransform(components) {
+    const { matrix, vector } = registers;
+    matrix.identity();
+    matrix.setPosition(0, 0, 0);
+    if (components.rotation) {
+        updateInstanceRotation(components.rotation);
+    }
+    if (components.scale) {
+        const { amt } = components.scale;
+        if (typeof amt === "number") {
+            vector.set(amt, amt, amt);
+        }
+        else {
+            vector.set(amt[0], amt[1], amt[2]);
+        }
+        matrix.scale(vector);
+    }
+    if (components.position) {
+        const { x, y, z } = components.position;
+        matrix.setPosition(x, y, z);
     }
 }
 function instancedUpdate(entity, instanceKey) {
     const id = entityIdToInstanceId[entity.id];
-    const { inst, idCounter, registers: { matrix, euler, vector }, } = instanceMeshes[instanceKey];
-    matrix.identity();
+    const { inst, idCounter } = instanceMeshes[instanceKey];
     if (id === undefined) {
-        matrix.setPosition(0, 0, 0);
-        // if (hasRotation(entity)) {
-        //   updateInstanceRotation(entity.components.rotation, matrix, euler);
-        // }
-        inst.setMatrixAt(idCounter, matrix);
+        updateInstanceTransform(entity.components);
+        inst.setMatrixAt(idCounter, registers.matrix);
         const newCount = idCounter + 1;
         entityIdToInstanceId[entity.id] = idCounter;
         instanceMeshes[instanceKey].idCounter = newCount;
         instanceMeshes[instanceKey].inst.count = newCount;
     }
     else {
-        if (hasRotation(entity)) {
-            updateInstanceRotation(entity.components.rotation, matrix, euler);
-        }
-        if (hasScale(entity)) {
-            const { amt } = entity.components.scale;
-            if (typeof amt === "number") {
-                vector.set(amt, amt, amt);
-            }
-            else {
-                vector.set(amt[0], amt[1], amt[2]);
-            }
-            matrix.scale(vector);
-        }
-        const { x, y, z } = entity.components.position;
-        matrix.setPosition(x, y, z);
-        inst.setMatrixAt(id, matrix);
+        updateInstanceTransform(entity.components);
+        inst.setMatrixAt(id, registers.matrix);
     }
 }
 function update3DModel(value) {
@@ -88,7 +97,7 @@ function update3DModel(value) {
 function updateSubmodel(value) {
     const { refName, objectName } = value.components.render;
     return basicUpdate(value, () => {
-        return getInstanceSubmodel(refName, objectName);
+        return getSubmodel(refName, objectName);
     });
 }
 function basicUpdate(entity, createObjFn) {

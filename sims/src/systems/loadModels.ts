@@ -145,7 +145,7 @@ function isBufferGeometry(blah: any): blah is BufferGeometry {
   return (blah as BufferGeometry).isBufferGeometry;
 }
 
-export function getInstanceSubmodel(refName: string, objectName?: string) {
+export function getSubmodel(refName: string, objectName?: string) {
   const gltf = GLTFs[refName];
   const group = gltf.model.scene;
   let geo = null;

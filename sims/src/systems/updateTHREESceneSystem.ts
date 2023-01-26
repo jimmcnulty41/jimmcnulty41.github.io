@@ -16,6 +16,7 @@ import { OrbitControls } from "../vendor/OrbitControls.js";
 
 import { Model } from "../Model.js";
 import {
+  Components,
   RenderableEntity,
   hasRotation,
   hasScale,
@@ -34,7 +35,8 @@ import {
   InstancedGLTFRenderComponent,
 } from "../components/RenderComponent.js";
 import { RotationComponent, rots } from "../components/RotationComponent.js";
-import { getInstanceMeshes, getInstanceSubmodel } from "./loadModels.js";
+import { getInstanceMeshes, getSubmodel } from "./loadModels.js";
+import { Euler } from "../vendor/three.js";
 
 type EntityIdToThreeId = {
   [entityID: string]: number | undefined;
@@ -64,14 +66,15 @@ camera.lookAt(0, 0, 0);
 
 const orbitControls = new OrbitControls(camera, canvas);
 
+const registers = {
+  matrix: new Matrix4(),
+  euler: new Euler(),
+  vector: new Vector3(),
+};
+
 interface InstanceBookkeeping {
   inst: InstancedMesh;
   idCounter: number;
-  registers: {
-    matrix: Matrix4;
-    euler: Euler;
-    vector: Vector3;
-  };
 }
 
 const instanceMeshes: { [name: string]: InstanceBookkeeping } =
@@ -104,18 +107,40 @@ function updateBasicRotation(rotation: RotationComponent, childIdx: number) {
   }
 }
 
-function updateInstanceRotation(
-  rotation: RotationComponent,
-  matrix: Matrix4,
-  euler: Euler
-) {
+function updateInstanceRotation(rotation: RotationComponent) {
   const { style } = rotation;
   if (style === "angle axis") {
     const { axis, amt } = rotation;
-    euler.set(axis === 0 ? amt : 0, axis === 1 ? amt : 0, axis === 2 ? amt : 0);
-    matrix.makeRotationFromEuler(euler);
+    registers.euler.set(
+      axis === 0 ? amt : 0,
+      axis === 1 ? amt : 0,
+      axis === 2 ? amt : 0
+    );
+    registers.matrix.makeRotationFromEuler(registers.euler);
   } else {
-    matrix.makeRotationFromEuler(eulers[rotation.dix]);
+    registers.matrix.makeRotationFromEuler(eulers[rotation.dix]);
+  }
+}
+
+function updateInstanceTransform(components: Components): void {
+  const { matrix, vector } = registers;
+  matrix.identity();
+  matrix.setPosition(0, 0, 0);
+  if (components.rotation) {
+    updateInstanceRotation(components.rotation);
+  }
+  if (components.scale) {
+    const { amt } = components.scale;
+    if (typeof amt === "number") {
+      vector.set(amt, amt, amt);
+    } else {
+      vector.set(amt[0], amt[1], amt[2]);
+    }
+    matrix.scale(vector);
+  }
+  if (components.position) {
+    const { x, y, z } = components.position;
+    matrix.setPosition(x, y, z);
   }
 }
 
@@ -124,42 +149,20 @@ function instancedUpdate(
   instanceKey: string
 ): void {
   const id = entityIdToInstanceId[entity.id];
-  const {
-    inst,
-    idCounter,
-    registers: { matrix, euler, vector },
-  } = instanceMeshes[instanceKey];
-
-  matrix.identity();
+  const { inst, idCounter } = instanceMeshes[instanceKey];
 
   if (id === undefined) {
-    matrix.setPosition(0, 0, 0);
-    // if (hasRotation(entity)) {
-    //   updateInstanceRotation(entity.components.rotation, matrix, euler);
-    // }
-    inst.setMatrixAt(idCounter, matrix);
+    updateInstanceTransform(entity.components);
+
+    inst.setMatrixAt(idCounter, registers.matrix);
 
     const newCount = idCounter + 1;
     entityIdToInstanceId[entity.id] = idCounter;
     instanceMeshes[instanceKey].idCounter = newCount;
     instanceMeshes[instanceKey].inst.count = newCount;
   } else {
-    if (hasRotation(entity)) {
-      updateInstanceRotation(entity.components.rotation, matrix, euler);
-    }
-
-    if (hasScale(entity)) {
-      const { amt } = entity.components.scale;
-      if (typeof amt === "number") {
-        vector.set(amt, amt, amt);
-      } else {
-        vector.set(amt[0], amt[1], amt[2]);
-      }
-      matrix.scale(vector);
-    }
-    const { x, y, z } = entity.components.position;
-    matrix.setPosition(x, y, z);
-    inst.setMatrixAt(id, matrix);
+    updateInstanceTransform(entity.components);
+    inst.setMatrixAt(id, registers.matrix);
   }
 }
 
@@ -172,7 +175,7 @@ function update3DModel(
 function updateSubmodel(value: RenderableEntity<GLTFRenderComponent>): void {
   const { refName, objectName } = value.components.render;
   return basicUpdate(value, () => {
-    return getInstanceSubmodel(refName, objectName);
+    return getSubmodel(refName, objectName);
   });
 }
 
