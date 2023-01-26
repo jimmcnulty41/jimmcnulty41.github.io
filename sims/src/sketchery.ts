@@ -5,7 +5,10 @@ import { addEntityEveryNTicksSystem } from "./systems/addEntityEveryNTicksSystem
 import { Entity } from "./Entity.js";
 import { remap } from "./utils.js";
 import { levitateSystem } from "./systems/levitateSystem.js";
-import { calcRotationSystem } from "./systems/calcRotationSystem.js";
+import {
+  calcRotationSystem,
+  calcScaleSystem,
+} from "./systems/calcTransformSystem.js";
 
 const disabledSystems = ["report"];
 
@@ -70,7 +73,7 @@ function newDefaultEntity(id: string): Entity {
     id,
     components: {
       levitate: {
-        speed: Math.random(),
+        speed: Math.random() / 12,
         roll: Math.random(),
       },
       render: {
@@ -85,6 +88,12 @@ function newDefaultEntity(id: string): Entity {
       rotation: {
         style: "standard",
         dix: 0,
+      },
+      scale: {
+        amt: 0,
+      },
+      calculateScale: {
+        calculation: (t) => remap(-1, 1, 1, 1.2)(Math.sin(t / 100)) + 1,
       },
       wander: {
         speed: Math.random(),
@@ -122,11 +131,12 @@ let systems: Systems = {
     ...model,
     time: model.time + 1,
   }),
-  addEntityEveryNTicksSystem: addEntityEveryNTicksSystem(newDefaultEntity, 1),
   wanderSystem,
   levitateSystem,
   calcRotationSystem,
+  calcScaleSystem,
   //reportSystem,
+  addEntityEveryNTicksSystem: addEntityEveryNTicksSystem(newDefaultEntity, 100),
   updateTHREEScene,
 };
 

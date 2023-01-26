@@ -1,6 +1,7 @@
 import { mergeBufferGeometries } from "../vendor/BufferGeometryUtils.js";
 import { GLTF, GLTFLoader } from "../vendor/GLTFLoader.js";
 import {
+  ShaderMaterial,
   BufferGeometry,
   DoubleSide,
   DynamicDrawUsage,
@@ -13,7 +14,10 @@ import {
   MeshBasicMaterial,
   MeshLambertMaterial,
   PlaneGeometry,
+  Texture,
+  Vector3,
 } from "../vendor/three.js";
+import { getImage, imageDataArray, loadedImages } from "./loadImages.js";
 
 export type ModelData = { [refName: string]: { model: GLTF; scale: number[] } };
 
@@ -30,6 +34,7 @@ async function loadModels(): Promise<ModelData> {
       scale: [20, 20, 20],
     },
   ];
+
   const gltfLoader = new GLTFLoader();
   return (
     await Promise.all(
@@ -53,31 +58,31 @@ async function loadModels(): Promise<ModelData> {
 
 const GLTFs = await loadModels();
 
-export function getInstanceMeshes() {
+function getRegisters() {
+  return {
+    matrix: new Matrix4(),
+    euler: new Euler(),
+    vector: new Vector3(),
+  };
+}
+
+export async function getInstanceMeshes() {
+  const plane = await getInstancedPlane();
   return {
     sphere: {
       inst: getInstancedSphere(),
       idCounter: 0,
-      registers: {
-        matrix: new Matrix4(),
-        euler: new Euler(),
-      },
+      registers: getRegisters(),
     },
     rat: {
       inst: getInstancedModel(),
       idCounter: 0,
-      registers: {
-        matrix: new Matrix4(),
-        euler: new Euler(),
-      },
+      registers: getRegisters(),
     },
     plane: {
-      inst: getInstancedPlane(),
+      inst: plane,
       idCounter: 0,
-      registers: {
-        matrix: new Matrix4(),
-        euler: new Euler(),
-      },
+      registers: getRegisters(),
     },
   };
 }
@@ -120,14 +125,17 @@ function getInstancedSphere() {
   instancedMesh.count = 0;
   return instancedMesh;
 }
-function getInstancedPlane() {
-  const geo = new PlaneGeometry(1.2, 0.7, 2, 2);
+async function getInstancedPlane() {
+  const geo = new PlaneGeometry(12, 10, 2, 2);
   geo.rotateX(Math.PI / 2);
   geo.rotateY(Math.PI / 2);
+  const tex = new Texture();
+  tex.image = await getImage(0);
+  tex.needsUpdate = true;
   const instancedMesh = new InstancedMesh(
     geo,
-    new MeshBasicMaterial({ color: 0xffffff, side: DoubleSide }),
-    10000
+    new MeshBasicMaterial({ map: tex, side: DoubleSide }),
+    1000
   );
   instancedMesh.count = 0;
   return instancedMesh;

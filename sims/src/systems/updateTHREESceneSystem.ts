@@ -9,6 +9,7 @@ import {
   HemisphereLight,
   sRGBEncoding,
   Object3D,
+  Vector3,
 } from "../vendor/three.js";
 
 import { OrbitControls } from "../vendor/OrbitControls.js";
@@ -17,6 +18,7 @@ import { Model } from "../Model.js";
 import {
   RenderableEntity,
   hasRotation,
+  hasScale,
   isRenderable,
   isRenderableGrid,
   isRenderableInstanceModel,
@@ -52,12 +54,12 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.outputEncoding = sRGBEncoding;
 
 const camera = new PerspectiveCamera(
-  70,
+  35,
   window.innerWidth / window.innerHeight,
   0.1,
   1000
 );
-camera.position.set(100, 100, 100);
+camera.position.set(0, 100, 1);
 camera.lookAt(0, 0, 0);
 
 const orbitControls = new OrbitControls(camera, canvas);
@@ -66,13 +68,14 @@ interface InstanceBookkeeping {
   inst: InstancedMesh;
   idCounter: number;
   registers: {
-    matrix: THREE.Matrix4;
-    euler: THREE.Euler;
+    matrix: Matrix4;
+    euler: Euler;
+    vector: Vector3;
   };
 }
 
 const instanceMeshes: { [name: string]: InstanceBookkeeping } =
-  getInstanceMeshes();
+  await getInstanceMeshes();
 scene.add(new HemisphereLight(0xffffff, 0xff0033, 1));
 
 Object.keys(instanceMeshes).forEach((k) => {
@@ -124,16 +127,16 @@ function instancedUpdate(
   const {
     inst,
     idCounter,
-    registers: { matrix, euler },
+    registers: { matrix, euler, vector },
   } = instanceMeshes[instanceKey];
 
   matrix.identity();
 
   if (id === undefined) {
     matrix.setPosition(0, 0, 0);
-    if (hasRotation(entity)) {
-      updateInstanceRotation(entity.components.rotation, matrix, euler);
-    }
+    // if (hasRotation(entity)) {
+    //   updateInstanceRotation(entity.components.rotation, matrix, euler);
+    // }
     inst.setMatrixAt(idCounter, matrix);
 
     const newCount = idCounter + 1;
@@ -143,6 +146,16 @@ function instancedUpdate(
   } else {
     if (hasRotation(entity)) {
       updateInstanceRotation(entity.components.rotation, matrix, euler);
+    }
+
+    if (hasScale(entity)) {
+      const { amt } = entity.components.scale;
+      if (typeof amt === "number") {
+        vector.set(amt, amt, amt);
+      } else {
+        vector.set(amt[0], amt[1], amt[2]);
+      }
+      matrix.scale(vector);
     }
     const { x, y, z } = entity.components.position;
     matrix.setPosition(x, y, z);
@@ -173,9 +186,20 @@ function basicUpdate(
     scene.add(o);
     entityIdToSceneChild[entity.id] = o.id;
   } else {
+    // there's an off-by-one-frame error here and instancedUpdate, if we separate the
+    // else condition into a fn and call that fn in the creation case as well,
+    // it should fix it
     const childIdx = scene.children.findIndex(
       (c: any) => c.id === entityIdToSceneChild[entity.id]
     );
+    if (hasScale(entity)) {
+      const { amt } = entity.components.scale;
+      if (typeof amt === "number") {
+        scene.children[childIdx].scale.set(amt, amt, amt);
+      } else {
+        scene.children[childIdx].scale.set(amt[0], amt[1], amt[2]);
+      }
+    }
 
     if (hasRotation(entity)) {
       updateBasicRotation(entity.components.rotation, childIdx);

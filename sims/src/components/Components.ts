@@ -13,16 +13,26 @@ import {
 } from "./RenderComponent";
 import { WanderComponent } from "./WanderComponent";
 import { LevitateComponent } from "./LevitateComponent";
-import { CalcRotationComponent } from "./CalcRotationComponent";
+import {
+  CalcPositionComponent,
+  CalcRotationComponent,
+  CalcScaleComponent,
+} from "./CalcTransformComponents";
+import { ScaleComponent } from "./ScaleComponent";
 
 // order should match corresponding system order
 export type Components = {
-  position?: PositionComponent;
   wander?: WanderComponent;
-  render?: RenderComponent;
-  rotation?: RotationComponent;
   levitate?: LevitateComponent;
+
+  render?: RenderComponent;
+
+  rotation?: RotationComponent;
   calculateRotation?: CalcRotationComponent;
+  scale?: ScaleComponent;
+  calculateScale?: CalcScaleComponent;
+  position?: PositionComponent;
+  calculatePosition?: CalcPositionComponent;
 };
 
 export type PositionedEntity = Entity & {
@@ -134,5 +144,39 @@ export function isCalcRotation(e: Entity): e is EntityWithCalcRotation {
     e.components.calculateRotation !== undefined &&
     e.components.rotation !== undefined &&
     e.components.rotation.style === "angle axis"
+  );
+}
+
+type EntityWithScale = Entity & {
+  components: Components & {
+    scale: ScaleComponent;
+  };
+};
+export function hasScale(e: Entity): e is EntityWithScale {
+  return e.components.scale !== undefined;
+}
+type EntityWithCalcScale = EntityWithScale & {
+  components: Components & {
+    calculateScale: CalcScaleComponent;
+  };
+};
+
+export function isCalcScale(e: Entity): e is EntityWithCalcScale {
+  return (
+    e.components.calculateScale !== undefined &&
+    e.components.scale !== undefined
+  );
+}
+
+type EntityWithCalcPosition = Entity & {
+  components: Components & {
+    calculatePosition: CalcPositionComponent;
+    position: PositionComponent;
+  };
+};
+export function isCalcPosition(e: Entity): e is EntityWithCalcPosition {
+  return (
+    e.components.calculatePosition !== undefined &&
+    e.components.position !== undefined
   );
 }

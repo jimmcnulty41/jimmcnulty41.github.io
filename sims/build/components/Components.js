@@ -40,3 +40,14 @@ export function isCalcRotation(e) {
         e.components.rotation !== undefined &&
         e.components.rotation.style === "angle axis");
 }
+export function hasScale(e) {
+    return e.components.scale !== undefined;
+}
+export function isCalcScale(e) {
+    return (e.components.calculateScale !== undefined &&
+        e.components.scale !== undefined);
+}
+export function isCalcPosition(e) {
+    return (e.components.calculatePosition !== undefined &&
+        e.components.position !== undefined);
+}
