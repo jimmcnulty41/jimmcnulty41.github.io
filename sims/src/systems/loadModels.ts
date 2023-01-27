@@ -16,6 +16,7 @@ import {
   PlaneGeometry,
   Texture,
   Vector3,
+  Color,
 } from "../vendor/three.js";
 import { getImage, imageDataArray, loadedImages } from "./loadImages.js";
 
@@ -126,6 +127,7 @@ function getInstancedSphere() {
   return instancedMesh;
 }
 async function getInstancedPlane() {
+  const instanceCount = 1000;
   const geo = new PlaneGeometry(12, 10, 2, 2);
   geo.rotateX(Math.PI / 2);
   geo.rotateY(Math.PI / 2);
@@ -135,9 +137,16 @@ async function getInstancedPlane() {
   const instancedMesh = new InstancedMesh(
     geo,
     new MeshBasicMaterial({ map: tex, side: DoubleSide }),
-    1000
+    instanceCount
   );
   instancedMesh.count = 0;
+  instancedMesh.instanceMatrix.setUsage(DynamicDrawUsage); // will be updated every frame
+  [...Array(instanceCount)].map((x, i) =>
+    instancedMesh.setColorAt(i, new Color(0xff0000))
+  );
+  if (instancedMesh.instanceColor) {
+    instancedMesh.instanceColor.needsUpdate = true;
+  }
   return instancedMesh;
 }
 

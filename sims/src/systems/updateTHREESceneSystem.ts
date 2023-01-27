@@ -36,14 +36,19 @@ import {
 } from "../components/RenderComponent.js";
 import { RotationComponent, rots } from "../components/RotationComponent.js";
 import { getInstanceMeshes, getSubmodel } from "./loadModels.js";
+import { init, inputSystem } from "./inputSystem.js";
 
 type EntityIdToThreeId = {
   [entityID: string]: number | undefined;
+};
+type THREEIDToEntityId = {
+  [threeId: string]: string;
 };
 
 const eulers = rots.map((r) => new Euler(r[0], r[1], r[2]));
 let entityIdToSceneChild: EntityIdToThreeId = {};
 let entityIdToInstanceId: EntityIdToThreeId = {};
+let instanceIdToEntityId: THREEIDToEntityId = {};
 
 let scene = new Scene();
 
@@ -83,6 +88,8 @@ scene.add(new HemisphereLight(0xffffff, 0xff0033, 1));
 Object.keys(instanceMeshes).forEach((k) => {
   scene.add(instanceMeshes[k].inst);
 });
+
+init(camera, instanceMeshes.plane.inst);
 
 function updateSphere(
   sphereEntity: RenderableEntity<SphereRenderComponent>
@@ -157,6 +164,7 @@ function instancedUpdate(
 
     const newCount = idCounter + 1;
     entityIdToInstanceId[entity.id] = idCounter;
+    instanceIdToEntityId[idCounter] = entity.id;
     instanceMeshes[instanceKey].idCounter = newCount;
     instanceMeshes[instanceKey].inst.count = newCount;
   } else {
@@ -232,9 +240,7 @@ export function updateTHREEScene(model: Model): Model {
   orbitControls.update();
   renderer.render(scene, camera);
 
-  return {
-    ...model,
-  };
+  return inputSystem(model);
 }
 function setInstUpdate(inst: InstancedMesh) {
   inst.instanceMatrix.needsUpdate = true;

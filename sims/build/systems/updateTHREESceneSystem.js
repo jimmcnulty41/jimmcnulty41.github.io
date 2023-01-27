@@ -3,9 +3,11 @@ import { OrbitControls } from "../vendor/OrbitControls.js";
 import { hasRotation, isEntityWith, isRenderable, isRenderableGrid, isRenderableInstanceModel, isRenderableModel, isRenderableSphere, } from "../components/Components.js";
 import { rots } from "../components/RotationComponent.js";
 import { getInstanceMeshes, getSubmodel } from "./loadModels.js";
+import { init, inputSystem } from "./inputSystem.js";
 const eulers = rots.map((r) => new Euler(r[0], r[1], r[2]));
 let entityIdToSceneChild = {};
 let entityIdToInstanceId = {};
+let instanceIdToEntityId = {};
 let scene = new Scene();
 const canvas = document.querySelector("canvas");
 if (!canvas)
@@ -27,6 +29,7 @@ scene.add(new HemisphereLight(0xffffff, 0xff0033, 1));
 Object.keys(instanceMeshes).forEach((k) => {
     scene.add(instanceMeshes[k].inst);
 });
+init(camera, instanceMeshes.plane.inst);
 function updateSphere(sphereEntity) {
     return instancedUpdate(sphereEntity, "sphere");
 }
@@ -83,6 +86,7 @@ function instancedUpdate(entity, instanceKey) {
         inst.setMatrixAt(idCounter, registers.matrix);
         const newCount = idCounter + 1;
         entityIdToInstanceId[entity.id] = idCounter;
+        instanceIdToEntityId[idCounter] = entity.id;
         instanceMeshes[instanceKey].idCounter = newCount;
         instanceMeshes[instanceKey].inst.count = newCount;
     }
@@ -141,9 +145,7 @@ export function updateTHREEScene(model) {
     });
     orbitControls.update();
     renderer.render(scene, camera);
-    return {
-        ...model,
-    };
+    return inputSystem(model);
 }
 function setInstUpdate(inst) {
     inst.instanceMatrix.needsUpdate = true;

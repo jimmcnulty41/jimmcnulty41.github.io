@@ -1,6 +1,6 @@
 import { mergeBufferGeometries } from "../vendor/BufferGeometryUtils.js";
 import { GLTFLoader } from "../vendor/GLTFLoader.js";
-import { DoubleSide, DynamicDrawUsage, Euler, IcosahedronGeometry, InstancedMesh, Matrix4, Mesh, MeshBasicMaterial, MeshLambertMaterial, PlaneGeometry, Texture, Vector3, } from "../vendor/three.js";
+import { DoubleSide, DynamicDrawUsage, Euler, IcosahedronGeometry, InstancedMesh, Matrix4, Mesh, MeshBasicMaterial, MeshLambertMaterial, PlaneGeometry, Texture, Vector3, Color, } from "../vendor/three.js";
 import { getImage } from "./loadImages.js";
 async function loadModels() {
     const gltfPaths = [
@@ -85,14 +85,20 @@ function getInstancedSphere() {
     return instancedMesh;
 }
 async function getInstancedPlane() {
+    const instanceCount = 1000;
     const geo = new PlaneGeometry(12, 10, 2, 2);
     geo.rotateX(Math.PI / 2);
     geo.rotateY(Math.PI / 2);
     const tex = new Texture();
     tex.image = await getImage(0);
     tex.needsUpdate = true;
-    const instancedMesh = new InstancedMesh(geo, new MeshBasicMaterial({ map: tex, side: DoubleSide }), 1000);
+    const instancedMesh = new InstancedMesh(geo, new MeshBasicMaterial({ map: tex, side: DoubleSide }), instanceCount);
     instancedMesh.count = 0;
+    instancedMesh.instanceMatrix.setUsage(DynamicDrawUsage); // will be updated every frame
+    [...Array(instanceCount)].map((x, i) => instancedMesh.setColorAt(i, new Color(0xff0000)));
+    if (instancedMesh.instanceColor) {
+        instancedMesh.instanceColor.needsUpdate = true;
+    }
     return instancedMesh;
 }
 function isBufferGeometry(blah) {
