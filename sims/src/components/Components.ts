@@ -19,99 +19,81 @@ import {
   CalcScaleComponent,
 } from "./CalcTransformComponents";
 import { ScaleComponent } from "./ScaleComponent";
+import { AgeComponent } from "./AgeComponent";
 
 // order should match corresponding system order
-export type Components = {
-  wander?: WanderComponent;
-  levitate?: LevitateComponent;
-  age?: AgeComponent;
+type ComponentTypes = {
+  wander: WanderComponent;
+  levitate: LevitateComponent;
+  age: AgeComponent;
 
-  render?: RenderComponent;
+  render: RenderComponent;
 
-  rotation?: RotationComponent;
-  calculateRotation?: CalcRotationComponent;
-  scale?: ScaleComponent;
-  calculateScale?: CalcScaleComponent;
-  position?: PositionComponent;
-  calculatePosition?: CalcPositionComponent;
+  rotation: RotationComponent;
+  calculateRotation: CalcRotationComponent;
+  scale: ScaleComponent;
+  calculateScale: CalcScaleComponent;
+  position: PositionComponent;
+  calculatePosition: CalcPositionComponent;
 };
-
-export type PositionedEntity = Entity & {
-  components: Components & { position: PositionComponent };
-};
-export type LevitatingEntity = PositionedEntity & {
-  components: Components & {
-    levitate: LevitateComponent;
-  };
-};
-export function levitates(entity: Entity): entity is LevitatingEntity {
-  return isPositioned(entity) && entity.components.levitate !== undefined;
-}
-export function isPositioned(entity: Entity): entity is PositionedEntity {
-  return entity.components.position !== undefined;
+export type Components = Partial<ComponentTypes>;
+export function levitates(
+  e: Entity
+): e is EntityWith<"position"> & EntityWith<"levitate"> {
+  return isEntityWith(e, "position") && isEntityWith(e, "levitate");
 }
 
-export type WanderingEntity = Entity & {
-  components: Components & {
-    wander: WanderComponent;
-    position: PositionComponent;
-    rotation: RotationComponent;
-  };
-};
-
-export function canWander(entity: Entity): entity is WanderingEntity {
+export function canWander(
+  entity: Entity
+): entity is EntityWith<"position" | "wander"> {
   return (
     entity.components.wander !== undefined &&
     entity.components.position !== undefined
   );
 }
 
-export type RotatingEntity<T extends RenderComponent> = Entity & {
-  components: Components & {
-    render: T;
-    position: PositionComponent;
-    rotation: RotationComponent;
-  };
-};
 export function hasRotation(
   entity: Entity
-): entity is RotatingEntity<RenderComponent> {
-  return isPositioned(entity) && entity.components.rotation !== undefined;
+): entity is EntityWith<"position" | "rotation"> {
+  return (
+    isEntityWith(entity, "position") && entity.components.rotation !== undefined
+  );
 }
 
-export type RenderableEntity<T extends RenderComponent> = Entity & {
-  components: Components & {
-    render: T;
-    position: PositionComponent;
+export type RenderableEntity<
+  RenderType extends RenderComponent = RenderComponent
+> = EntityWith<"position" | "render"> & {
+  components: {
+    render: RenderType;
   };
 };
 
-export function isRenderable(
-  entity: Entity
-): entity is RenderableEntity<RenderComponent> {
+export type EntityWith<K extends keyof Components> = Entity & {
+  components: Components & { [P in K]: ComponentTypes[P] };
+};
+
+type EntityWithCalcRotation = Entity & {
+  components: Components & {
+    calculateRotation: CalcRotationComponent;
+    rotation: AngleAxisRotationComponent;
+  };
+};
+
+export function isRenderable(entity: Entity): entity is RenderableEntity {
   return (
     entity.components.render !== undefined &&
     entity.components.position !== undefined
   );
 }
-
 export function isRenderableSphere(
-  entity: Entity
+  entity: RenderableEntity
 ): entity is RenderableEntity<SphereRenderComponent> {
-  return (
-    entity.components.render !== undefined &&
-    entity.components.render.type === "sphere" &&
-    entity.components.position !== undefined
-  );
+  return entity.components.render.type === "sphere";
 }
 export function isRenderableInstanceModel(
-  entity: Entity
+  entity: RenderableEntity
 ): entity is RenderableEntity<InstancedGLTFRenderComponent> {
-  return (
-    entity.components.render !== undefined &&
-    entity.components.render.type === "instanced 3d model" &&
-    entity.components.position !== undefined
-  );
+  return entity.components.render.type === "instanced 3d model";
 }
 export function isRenderableModel(
   entity: Entity
@@ -133,14 +115,8 @@ export function isRenderableGrid(
   );
 }
 
-type EntityWithCalcRotation = Entity & {
-  components: Components & {
-    calculateRotation: CalcRotationComponent;
-    rotation: AngleAxisRotationComponent;
-  };
-};
-
-export function isCalcRotation(e: Entity): e is EntityWithCalcRotation {
+// slightly different from scale / position cuz the "style" property
+export function hasCalculatedRotation(e: Entity): e is EntityWithCalcRotation {
   return (
     e.components.calculateRotation !== undefined &&
     e.components.rotation !== undefined &&
@@ -148,45 +124,30 @@ export function isCalcRotation(e: Entity): e is EntityWithCalcRotation {
   );
 }
 
-type EntityWithScale = Entity & {
-  components: Components & {
-    scale: ScaleComponent;
-  };
-};
-export function hasScale(e: Entity): e is EntityWithScale {
-  return e.components.scale !== undefined;
-}
-type EntityWithCalcScale = EntityWithScale & {
-  components: Components & {
-    calculateScale: CalcScaleComponent;
-  };
-};
-
-export function isCalcScale(e: Entity): e is EntityWithCalcScale {
+export function hasCalculatedScale(
+  e: Entity
+): e is EntityWith<"scale" | "calculateScale"> {
   return (
     e.components.calculateScale !== undefined &&
     e.components.scale !== undefined
   );
 }
 
-type EntityWithCalcPosition = Entity & {
-  components: Components & {
-    calculatePosition: CalcPositionComponent;
-    position: PositionComponent;
-  };
-};
-export function isCalcPosition(e: Entity): e is EntityWithCalcPosition {
-  return (
-    e.components.calculatePosition !== undefined &&
-    e.components.position !== undefined
-  );
+export function hasCalculatedPosition(
+  e: Entity
+): e is EntityWith<"position" | "calculatePosition"> {
+  return isEntityWith(e, "position") && isEntityWith(e, "calculatePosition");
 }
 
-type EntityWithAge = Entity & {
-  components: Components & {
-    age: AgeComponent;
-  };
-};
-export function isEntityWithAge(e: Entity): e is EntityWithAge {
-  return e.components.age !== undefined;
+export function isEntityWith<K extends keyof Components>(
+  e: Entity,
+  componentName: K
+): e is EntityWith<K> {
+  return e.components[componentName] !== undefined;
+}
+
+export function isEntityWithFn<K extends keyof ComponentTypes>(
+  componentName: K
+) {
+  return (e: Entity): e is EntityWith<K> => isEntityWith<K>(e, componentName);
 }

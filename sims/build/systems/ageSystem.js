@@ -1,8 +1,10 @@
-import { isEntityWithAge } from "../components/Components.js";
+import { isEntityWith, isEntityWithFn, } from "../components/Components.js";
 export function ageSystem(model) {
     const entities = [
-        ...model.entities.filter((e) => !isEntityWithAge(e)),
-        ...model.entities.filter(isEntityWithAge).map((e) => {
+        ...model.entities.filter((e) => !isEntityWith(e, "age")),
+        ...model.entities
+            .filter(isEntityWithFn("age"))
+            .map((e) => {
             const { age, ...unaffectedComponents } = e.components;
             if (age.birthday === undefined) {
                 return {

@@ -1,9 +1,9 @@
 import { Model } from "../Model.js";
+import { AgeComponent } from "../components/AgeComponent.js";
 import {
-  Components,
-  isCalcPosition,
-  isCalcRotation,
-  isCalcScale,
+  hasCalculatedPosition,
+  hasCalculatedRotation,
+  hasCalculatedScale,
 } from "../components/Components.js";
 
 function getT(modelTime: number, age?: AgeComponent) {
@@ -15,8 +15,8 @@ export function calcRotationSystem(model: Model): Model {
   return {
     ...model,
     entities: [
-      ...model.entities.filter((e) => !isCalcRotation(e)),
-      ...model.entities.filter(isCalcRotation).map((e) => {
+      ...model.entities.filter((e) => !hasCalculatedRotation(e)),
+      ...model.entities.filter(hasCalculatedRotation).map((e) => {
         const { rotation, calculateRotation, ...unaffectedComponents } =
           e.components;
         rotation.amt = calculateRotation.calculation(
@@ -39,8 +39,8 @@ export function calcScaleSystem(model: Model): Model {
   return {
     ...model,
     entities: [
-      ...model.entities.filter((e) => !isCalcScale(e)),
-      ...model.entities.filter(isCalcScale).map((e) => {
+      ...model.entities.filter((e) => !hasCalculatedScale(e)),
+      ...model.entities.filter(hasCalculatedScale).map((e) => {
         const { scale, calculateScale, ...unaffectedComponents } = e.components;
         scale.amt = calculateScale.calculation(
           getT(model.time, e.components.age)
@@ -62,8 +62,8 @@ export function calcPositionSystem(model: Model): Model {
   return {
     ...model,
     entities: [
-      ...model.entities.filter((e) => !isCalcPosition(e)),
-      ...model.entities.filter(isCalcPosition).map((e) => {
+      ...model.entities.filter((e) => !hasCalculatedPosition(e)),
+      ...model.entities.filter(hasCalculatedPosition).map((e) => {
         const { position, calculatePosition, ...unaffectedComponents } =
           e.components;
         const { x, y, z } = calculatePosition.calculation(

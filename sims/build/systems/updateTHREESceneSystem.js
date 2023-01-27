@@ -1,6 +1,6 @@
 import { GridHelper, Matrix4, PerspectiveCamera, Scene, WebGLRenderer, Euler, HemisphereLight, sRGBEncoding, Vector3, } from "../vendor/three.js";
 import { OrbitControls } from "../vendor/OrbitControls.js";
-import { hasRotation, hasScale, isRenderable, isRenderableGrid, isRenderableInstanceModel, isRenderableModel, isRenderableSphere, } from "../components/Components.js";
+import { hasRotation, isEntityWith, isRenderable, isRenderableGrid, isRenderableInstanceModel, isRenderableModel, isRenderableSphere, } from "../components/Components.js";
 import { rots } from "../components/RotationComponent.js";
 import { getInstanceMeshes, getSubmodel } from "./loadModels.js";
 const eulers = rots.map((r) => new Euler(r[0], r[1], r[2]));
@@ -112,7 +112,7 @@ function basicUpdate(entity, createObjFn) {
         // else condition into a fn and call that fn in the creation case as well,
         // it should fix it
         const childIdx = scene.children.findIndex((c) => c.id === entityIdToSceneChild[entity.id]);
-        if (hasScale(entity)) {
+        if (isEntityWith(entity, "scale")) {
             const { amt } = entity.components.scale;
             if (typeof amt === "number") {
                 scene.children[childIdx].scale.set(amt, amt, amt);

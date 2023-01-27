@@ -1,6 +1,5 @@
 import { Model } from "../Model.js";
-import { canWander, isPositioned } from "../components/Components.js";
-import { vec3Sum } from "../utils.js";
+import { canWander } from "../components/Components.js";
 
 export function reportSystem(model: Model): Model {
   console.log(

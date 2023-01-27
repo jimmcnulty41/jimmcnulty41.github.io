@@ -19,7 +19,7 @@ import {
   Components,
   RenderableEntity,
   hasRotation,
-  hasScale,
+  isEntityWith,
   isRenderable,
   isRenderableGrid,
   isRenderableInstanceModel,
@@ -194,7 +194,7 @@ function basicUpdate(
     const childIdx = scene.children.findIndex(
       (c: any) => c.id === entityIdToSceneChild[entity.id]
     );
-    if (hasScale(entity)) {
+    if (isEntityWith(entity, "scale")) {
       const { amt } = entity.components.scale;
       if (typeof amt === "number") {
         scene.children[childIdx].scale.set(amt, amt, amt);
@@ -220,7 +220,6 @@ function updateGrid(gridEntity: RenderableEntity<GridRenderComponent>) {
 
 export function updateTHREEScene(model: Model): Model {
   const renderables = model.entities.filter(isRenderable);
-
   renderables.filter(isRenderableSphere).forEach(updateSphere);
   renderables.filter(isRenderableGrid).forEach(updateGrid);
   renderables.filter(isRenderableInstanceModel).forEach(update3DModel);

@@ -2,7 +2,8 @@ export type RenderComponent =
   | SphereRenderComponent
   | GridRenderComponent
   | InstancedGLTFRenderComponent
-  | GLTFRenderComponent;
+  | GLTFRenderComponent
+  | never;
 
 export type SupportSceneParent = GridRenderComponent | GLTFRenderComponent;
 export type SupportInstance =

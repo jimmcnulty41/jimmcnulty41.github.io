@@ -1,3 +1,3 @@
-interface AgeComponent {
+export interface AgeComponent {
   birthday?: number;
 }
