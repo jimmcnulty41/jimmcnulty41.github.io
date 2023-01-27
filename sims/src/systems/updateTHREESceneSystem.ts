@@ -36,7 +36,6 @@ import {
 } from "../components/RenderComponent.js";
 import { RotationComponent, rots } from "../components/RotationComponent.js";
 import { getInstanceMeshes, getSubmodel } from "./loadModels.js";
-import { Euler } from "../vendor/three.js";
 
 type EntityIdToThreeId = {
   [entityID: string]: number | undefined;
