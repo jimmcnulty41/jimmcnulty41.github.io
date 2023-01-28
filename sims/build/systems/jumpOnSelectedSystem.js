@@ -7,17 +7,30 @@ export function jumpOnSelectedSystem(model) {
             ...model.entities
                 .filter(isEntityWithFn("position"))
                 .map((e) => {
+                const { position, ...unaffectedComponents } = e.components;
+                if (e.id !== model.input.entityUnderMouse &&
+                    e.id === model.input.prevEntityUnderMouse) {
+                    return {
+                        ...e,
+                        components: {
+                            ...unaffectedComponents,
+                            position: {
+                                ...position,
+                                y: 0,
+                            },
+                        },
+                    };
+                }
                 if (e.id !== model.input.entityUnderMouse) {
                     return e;
                 }
-                const { position, ...unaffectedComponents } = e.components;
                 return {
                     ...e,
                     components: {
                         ...unaffectedComponents,
                         position: {
                             ...position,
-                            y: 100,
+                            y: 10,
                         },
                     },
                 };

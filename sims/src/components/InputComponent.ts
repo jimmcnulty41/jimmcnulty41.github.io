@@ -1,4 +1,5 @@
 export interface InputComponent {
+  prevEntityUnderMouse?: string;
   entityUnderMouse?: string;
   mouse: number[];
   mouseState?: "down";

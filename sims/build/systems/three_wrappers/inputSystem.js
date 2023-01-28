@@ -31,13 +31,23 @@ export function inputSystem(model) {
     if (intersection.length <= 0) {
         return {
             ...model,
-            input: { ...defaultInputComponent },
+            input: {
+                ...defaultInputComponent,
+                prevEntityUnderMouse: model.input.entityUnderMouse,
+            },
         };
     }
     const { instanceId, object: { name }, } = intersection[0];
     if (instanceId === undefined) {
-        return { ...model, input: { ...defaultInputComponent } };
+        return {
+            ...model,
+            input: {
+                ...defaultInputComponent,
+                prevEntityUnderMouse: model.input.entityUnderMouse,
+            },
+        };
     }
+    // This should be moved to the render components
     if (meshes.instanceColor) {
         meshes.setColorAt(instanceId, highlight.setHex(0x0000ff));
         meshes.instanceColor.needsUpdate = true;
@@ -45,6 +55,7 @@ export function inputSystem(model) {
     return {
         ...model,
         input: {
+            prevEntityUnderMouse: model.input.entityUnderMouse,
             entityUnderMouse: instanceIdToEntityId[name][`${instanceId}`],
             mouse: [mouse_pos.x, mouse_pos.y],
         },
