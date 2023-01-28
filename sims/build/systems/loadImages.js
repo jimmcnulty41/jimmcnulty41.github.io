@@ -1,5 +1,5 @@
 import { data } from "../data/data_9.js";
-const numImages = 20;
+const numImages = 5;
 export const imageDataArray = new Array(numImages);
 export let loadedImages = 0;
 const failedImages = [];

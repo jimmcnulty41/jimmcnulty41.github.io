@@ -1,5 +1,9 @@
 export interface InputComponent {
-  instanceIdUnderMouse?: number;
-  name: string;
+  entityUnderMouse?: string;
   mouse: number[];
+  mouseState?: "down";
 }
+
+export const defaultInputComponent = {
+  mouse: [0, 0],
+};

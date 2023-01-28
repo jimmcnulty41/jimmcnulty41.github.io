@@ -1,7 +1,8 @@
-import { updateTHREEScene } from "./systems/updateTHREESceneSystem.js";
+import { updateTHREEScene } from "./systems/three_wrappers/updateTHREESceneSystem.js";
 import { wanderSystem } from "./systems/wanderSystem.js";
 import { addEntityEveryNTicksSystem } from "./systems/addEntityEveryNTicksSystem.js";
 import { remap } from "./utils.js";
+import { defaultInputComponent } from "./components/InputComponent.js";
 const disabledSystems = ["report"];
 let model = {
     time: 0,
@@ -17,6 +18,7 @@ let model = {
     // },
     ],
     idCounter: 0,
+    input: defaultInputComponent,
 };
 function newDefaultEntity(id) {
     const internalRoll = remap(0, 1, 0.1, 0.4)(Math.random());

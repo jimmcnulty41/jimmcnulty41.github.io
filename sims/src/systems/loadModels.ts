@@ -19,6 +19,7 @@ import {
   Color,
 } from "../vendor/three.js";
 import { getImage, imageDataArray, loadedImages } from "./loadImages.js";
+import { instanceIdToEntityId } from "./three_wrappers/threeOptimizations.js";
 
 export type ModelData = { [refName: string]: { model: GLTF; scale: number[] } };
 
@@ -114,6 +115,8 @@ function getInstancedModel() {
   );
   instancedMesh.instanceMatrix.setUsage(DynamicDrawUsage); // will be updated every frame
   instancedMesh.count = 0;
+  instancedMesh.name = "rat";
+  instanceIdToEntityId[instancedMesh.name] = {};
   return instancedMesh;
 }
 function getInstancedSphere() {
@@ -124,6 +127,8 @@ function getInstancedSphere() {
   );
   instancedMesh.instanceMatrix.setUsage(DynamicDrawUsage); // will be updated every frame
   instancedMesh.count = 0;
+  instancedMesh.name = "sphere";
+  instanceIdToEntityId[instancedMesh.name] = {};
   return instancedMesh;
 }
 async function getInstancedPlane() {
@@ -142,11 +147,14 @@ async function getInstancedPlane() {
   instancedMesh.count = 0;
   instancedMesh.instanceMatrix.setUsage(DynamicDrawUsage); // will be updated every frame
   [...Array(instanceCount)].map((x, i) =>
-    instancedMesh.setColorAt(i, new Color(0xff0000))
+    // default color
+    instancedMesh.setColorAt(i, new Color(0xffffff))
   );
   if (instancedMesh.instanceColor) {
     instancedMesh.instanceColor.needsUpdate = true;
   }
+  instancedMesh.name = "plane";
+  instanceIdToEntityId[instancedMesh.name] = {};
   return instancedMesh;
 }
 

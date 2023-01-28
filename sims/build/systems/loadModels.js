@@ -2,6 +2,7 @@ import { mergeBufferGeometries } from "../vendor/BufferGeometryUtils.js";
 import { GLTFLoader } from "../vendor/GLTFLoader.js";
 import { DoubleSide, DynamicDrawUsage, Euler, IcosahedronGeometry, InstancedMesh, Matrix4, Mesh, MeshBasicMaterial, MeshLambertMaterial, PlaneGeometry, Texture, Vector3, Color, } from "../vendor/three.js";
 import { getImage } from "./loadImages.js";
+import { instanceIdToEntityId } from "./three_wrappers/threeOptimizations.js";
 async function loadModels() {
     const gltfPaths = [
         {
@@ -76,12 +77,16 @@ function getInstancedModel() {
     const instancedMesh = new InstancedMesh(geo, new MeshLambertMaterial({ color: 0xff00ff }), 10000);
     instancedMesh.instanceMatrix.setUsage(DynamicDrawUsage); // will be updated every frame
     instancedMesh.count = 0;
+    instancedMesh.name = "rat";
+    instanceIdToEntityId[instancedMesh.name] = {};
     return instancedMesh;
 }
 function getInstancedSphere() {
     const instancedMesh = new InstancedMesh(new IcosahedronGeometry(10, 3), new MeshBasicMaterial({ color: 0xffffff }), 10000);
     instancedMesh.instanceMatrix.setUsage(DynamicDrawUsage); // will be updated every frame
     instancedMesh.count = 0;
+    instancedMesh.name = "sphere";
+    instanceIdToEntityId[instancedMesh.name] = {};
     return instancedMesh;
 }
 async function getInstancedPlane() {
@@ -95,10 +100,14 @@ async function getInstancedPlane() {
     const instancedMesh = new InstancedMesh(geo, new MeshBasicMaterial({ map: tex, side: DoubleSide }), instanceCount);
     instancedMesh.count = 0;
     instancedMesh.instanceMatrix.setUsage(DynamicDrawUsage); // will be updated every frame
-    [...Array(instanceCount)].map((x, i) => instancedMesh.setColorAt(i, new Color(0xff0000)));
+    [...Array(instanceCount)].map((x, i) => 
+    // default color
+    instancedMesh.setColorAt(i, new Color(0xffffff)));
     if (instancedMesh.instanceColor) {
         instancedMesh.instanceColor.needsUpdate = true;
     }
+    instancedMesh.name = "plane";
+    instanceIdToEntityId[instancedMesh.name] = {};
     return instancedMesh;
 }
 function isBufferGeometry(blah) {

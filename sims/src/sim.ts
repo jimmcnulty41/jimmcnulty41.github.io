@@ -1,10 +1,11 @@
 import { Model } from "./Model.js";
-import { updateTHREEScene } from "./systems/updateTHREESceneSystem.js";
+import { updateTHREEScene } from "./systems/three_wrappers/updateTHREESceneSystem.js";
 import { reportSystem } from "./systems/reportSystem.js";
 import { wanderSystem } from "./systems/wanderSystem.js";
 import { addEntityEveryNTicksSystem } from "./systems/addEntityEveryNTicksSystem.js";
 import { Entity } from "./Entity.js";
 import { remap } from "./utils.js";
+import { defaultInputComponent } from "./components/InputComponent.js";
 
 const disabledSystems = ["report"];
 
@@ -22,6 +23,7 @@ let model: Model = {
     // },
   ],
   idCounter: 0,
+  input: defaultInputComponent,
 };
 
 function newDefaultEntity(id: string): Entity {

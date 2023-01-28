@@ -1,7 +1,7 @@
 import { Model } from "../Model.js";
-import { LevitatingEntity, levitates } from "../components/Components.js";
+import { EntityWith, levitates } from "../components/Components.js";
 
-function update(e: LevitatingEntity, t: number) {
+function update(e: EntityWith<"levitate" | "position">, t: number) {
   const { x, y, z } = e.components.position;
   const l = e.components.levitate;
 

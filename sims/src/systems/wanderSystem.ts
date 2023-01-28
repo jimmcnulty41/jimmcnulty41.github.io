@@ -1,10 +1,10 @@
 import { updateStateMachine } from "../StateMachine.js";
 import { Model } from "../Model.js";
 import { Entity } from "../Entity.js";
-import { WanderingEntity, canWander } from "../components/Components.js";
+import { EntityWith, canWander } from "../components/Components.js";
 import { dirs } from "../components/RotationComponent.js";
 
-function entityWander(e: WanderingEntity): Entity {
+function entityWander(e: EntityWith<"wander" | "position">): Entity {
   let { position, wander, rotation, ...unaffectedComponents } = e.components;
   const dix = wander.directionIndex;
 

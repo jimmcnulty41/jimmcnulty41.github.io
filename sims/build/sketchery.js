@@ -1,13 +1,16 @@
-import { updateTHREEScene } from "./systems/updateTHREESceneSystem.js";
+import { updateTHREEScene } from "./systems/three_wrappers/updateTHREESceneSystem.js";
 import { wanderSystem } from "./systems/wanderSystem.js";
 import { addEntityEveryNTicksSystem } from "./systems/addEntityEveryNTicksSystem.js";
 import { remap } from "./utils.js";
 import { levitateSystem } from "./systems/levitateSystem.js";
 import { calcPositionSystem, calcRotationSystem, calcScaleSystem, } from "./systems/calcTransformSystem.js";
 import { ageSystem } from "./systems/ageSystem.js";
+import { defaultInputComponent } from "./components/InputComponent.js";
+import { jumpOnSelectedSystem } from "./systems/jumpOnSelectedSystem.js";
 const disabledSystems = ["report"];
 let model = {
     time: 0,
+    input: defaultInputComponent,
     entities: [
         // {
         //   id: "0",
@@ -28,7 +31,7 @@ let model = {
                 },
                 calculatePosition: {
                     calculation: (t) => {
-                        const t2 = t - 100;
+                        const t2 = t - 20;
                         if (t2 < 0)
                             return { z: 0 };
                         return { z: -t2 };
@@ -71,8 +74,8 @@ function newDefaultEntity(id) {
             },
             position: {
                 x: 0,
-                y: 0,
-                z: 0,
+                y: internalRoll,
+                z: 0, // to prevent z-fighting
             },
             rotation: {
                 style: "standard",
@@ -86,7 +89,7 @@ function newDefaultEntity(id) {
             },
             calculatePosition: {
                 calculation: (t) => {
-                    const t2 = remap(0, 100, 0, 100, true)(t);
+                    const t2 = remap(0, 100, 0, 10)(t);
                     return {
                         x: (sign * Math.pow(t2, 2) * pow) / 10,
                         z: -t2 / 2,
@@ -101,6 +104,7 @@ let systems = {
         ...model,
         time: model.time + 1,
     }),
+    jumpOnSelectedSystem,
     ageSystem,
     wanderSystem,
     levitateSystem,

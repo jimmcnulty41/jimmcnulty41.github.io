@@ -10,11 +10,11 @@ import {
   sRGBEncoding,
   Object3D,
   Vector3,
-} from "../vendor/three.js";
+} from "../../vendor/three.js";
 
-import { OrbitControls } from "../vendor/OrbitControls.js";
+import { OrbitControls } from "../../vendor/OrbitControls.js";
 
-import { Model } from "../Model.js";
+import { Model } from "../../Model.js";
 import {
   Components,
   RenderableEntity,
@@ -25,7 +25,7 @@ import {
   isRenderableInstanceModel,
   isRenderableModel,
   isRenderableSphere,
-} from "../components/Components.js";
+} from "../../components/Components.js";
 import {
   GLTFRenderComponent,
   GridRenderComponent,
@@ -33,23 +33,18 @@ import {
   SphereRenderComponent,
   SupportInstance,
   InstancedGLTFRenderComponent,
-} from "../components/RenderComponent.js";
-import { RotationComponent, rots } from "../components/RotationComponent.js";
-import { getInstanceMeshes, getSubmodel } from "./loadModels.js";
+} from "../../components/RenderComponent.js";
+import { RotationComponent, rots } from "../../components/RotationComponent.js";
+import { getInstanceMeshes, getSubmodel } from "../loadModels.js";
 import { init, inputSystem } from "./inputSystem.js";
-
-type EntityIdToThreeId = {
-  [entityID: string]: number | undefined;
-};
-type THREEIDToEntityId = {
-  [threeId: string]: string;
-};
+import {
+  entityIdToInstanceId,
+  entityIdToSceneChild,
+  instanceIdToEntityId,
+  registers,
+} from "./threeOptimizations.js";
 
 const eulers = rots.map((r) => new Euler(r[0], r[1], r[2]));
-let entityIdToSceneChild: EntityIdToThreeId = {};
-let entityIdToInstanceId: EntityIdToThreeId = {};
-let instanceIdToEntityId: THREEIDToEntityId = {};
-
 let scene = new Scene();
 
 const canvas = document.querySelector("canvas");
@@ -69,12 +64,6 @@ camera.position.set(0, 100, 1);
 camera.lookAt(0, 0, 0);
 
 const orbitControls = new OrbitControls(camera, canvas);
-
-const registers = {
-  matrix: new Matrix4(),
-  euler: new Euler(),
-  vector: new Vector3(),
-};
 
 interface InstanceBookkeeping {
   inst: InstancedMesh;
@@ -164,7 +153,7 @@ function instancedUpdate(
 
     const newCount = idCounter + 1;
     entityIdToInstanceId[entity.id] = idCounter;
-    instanceIdToEntityId[idCounter] = entity.id;
+    instanceIdToEntityId[inst.name][`${idCounter}`] = entity.id;
     instanceMeshes[instanceKey].idCounter = newCount;
     instanceMeshes[instanceKey].inst.count = newCount;
   } else {

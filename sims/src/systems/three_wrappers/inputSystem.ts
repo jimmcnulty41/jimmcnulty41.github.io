@@ -1,12 +1,13 @@
-import { Model } from "../Model";
+import { Model } from "../../Model.js";
+import { defaultInputComponent } from "../../components/InputComponent.js";
 import {
   PerspectiveCamera,
-  Matrix4,
   Color,
   Vector2,
   Raycaster,
   InstancedMesh,
-} from "../vendor/three.js";
+} from "../../vendor/three.js";
+import { instanceIdToEntityId } from "./threeOptimizations.js";
 
 const raycaster = new Raycaster();
 const mouse_pos = new Vector2(1, 1);
@@ -24,7 +25,10 @@ function onMouseMove(event: MouseEvent) {
   mouse_pos.y = -(event.clientY / window.innerHeight) * 2 + 1;
 }
 
-let matrix = new Matrix4();
+function onMouseDown(event: MouseEvent) {
+  event.preventDefault();
+}
+
 const emptyInput = {
   name: "",
   mouse: [0, 0],
@@ -40,30 +44,31 @@ export function inputSystem(model: Model): Model {
   raycaster.setFromCamera(mouse_pos, camera);
 
   const intersection = raycaster.intersectObject(meshes);
-  if (intersection.length > 0) {
-    const instanceId = intersection[0].instanceId;
-
-    if (instanceId !== undefined && meshes.instanceColor) {
-      meshes.setColorAt(instanceId, highlight.setHex(0x0000ff));
-      console.log(meshes.instanceColor || "poopoo");
-      meshes.instanceColor.needsUpdate = true;
-    }
-    console.log(instanceId);
+  if (intersection.length <= 0) {
     return {
       ...model,
-      input: {
-        name: intersection[0].object.name,
-        instanceIdUnderMouse: instanceId,
-        mouse: [mouse_pos.x, mouse_pos.y],
-      },
+      input: { ...defaultInputComponent },
     };
+  }
+
+  const {
+    instanceId,
+    object: { name },
+  } = intersection[0];
+
+  if (instanceId === undefined) {
+    return { ...model, input: { ...defaultInputComponent } };
+  }
+
+  if (meshes.instanceColor) {
+    meshes.setColorAt(instanceId, highlight.setHex(0x0000ff));
+    meshes.instanceColor.needsUpdate = true;
   }
 
   return {
     ...model,
     input: {
-      name: "unexpected -- a null value set in code not the name of part of a model",
-      instanceIdUnderMouse: undefined,
+      entityUnderMouse: instanceIdToEntityId[name][`${instanceId}`],
       mouse: [mouse_pos.x, mouse_pos.y],
     },
   };
