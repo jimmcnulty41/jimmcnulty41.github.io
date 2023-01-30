@@ -1,8 +1,4 @@
 import { hasCalculatedPosition, hasCalculatedRotation, hasCalculatedScale, } from "../components/Components.js";
-function getT(modelTime, age) {
-    const hbd = age?.birthday !== undefined ? age.birthday : 0;
-    return modelTime - hbd;
-}
 export function calcRotationSystem(model) {
     return {
         ...model,
@@ -10,7 +6,7 @@ export function calcRotationSystem(model) {
             ...model.entities.filter((e) => !hasCalculatedRotation(e)),
             ...model.entities.filter(hasCalculatedRotation).map((e) => {
                 const { rotation, calculateRotation, ...unaffectedComponents } = e.components;
-                rotation.amt = calculateRotation.calculation(getT(model.time, e.components.age));
+                rotation.amt = calculateRotation.calculation(model, e);
                 return {
                     ...e,
                     components: {
@@ -30,7 +26,7 @@ export function calcScaleSystem(model) {
             ...model.entities.filter((e) => !hasCalculatedScale(e)),
             ...model.entities.filter(hasCalculatedScale).map((e) => {
                 const { scale, calculateScale, ...unaffectedComponents } = e.components;
-                scale.amt = calculateScale.calculation(getT(model.time, e.components.age));
+                scale.amt = calculateScale.calculation(model, e);
                 return {
                     ...e,
                     components: {
@@ -50,7 +46,7 @@ export function calcPositionSystem(model) {
             ...model.entities.filter((e) => !hasCalculatedPosition(e)),
             ...model.entities.filter(hasCalculatedPosition).map((e) => {
                 const { position, calculatePosition, ...unaffectedComponents } = e.components;
-                const { x, y, z } = calculatePosition.calculation(getT(model.time, e.components.age));
+                const { x, y, z } = calculatePosition.calculation(model, e);
                 const pos = {
                     x: x === undefined ? position.x : x,
                     y: y === undefined ? position.y : y,

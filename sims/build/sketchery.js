@@ -7,6 +7,7 @@ import { calcPositionSystem, calcRotationSystem, calcScaleSystem, } from "./syst
 import { ageSystem } from "./systems/ageSystem.js";
 import { defaultInputComponent } from "./components/InputComponent.js";
 import { jumpOnSelectedSystem } from "./systems/jumpOnSelectedSystem.js";
+import { getAge } from "./components/AgeComponent.js";
 const disabledSystems = ["report"];
 let model = {
     time: 0,
@@ -30,7 +31,8 @@ let model = {
                     amt: 0,
                 },
                 calculatePosition: {
-                    calculation: (t) => {
+                    calculation: (m, e) => {
+                        const t = m.time;
                         const t2 = t - 20;
                         if (t2 < 0)
                             return { z: 0 };
@@ -85,10 +87,13 @@ function newDefaultEntity(id) {
                 amt: 0,
             },
             calculateScale: {
-                calculation: (t) => sizeFn(t),
+                calculation: (m, e) => sizeFn(getAge(m.time, e.components.age)),
             },
             calculatePosition: {
-                calculation: (t) => {
+                calculation: (m, e) => {
+                    const t = e.components.age
+                        ? getAge(m.time, e.components.age)
+                        : model.time;
                     const t2 = remap(0, 100, 0, 10)(t);
                     return {
                         x: (sign * Math.pow(t2, 2) * pow) / 10,

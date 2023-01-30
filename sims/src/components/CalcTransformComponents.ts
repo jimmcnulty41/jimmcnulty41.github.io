@@ -1,9 +1,15 @@
+import { Entity } from "../Entity.js";
+import { Model } from "../Model.js";
+
 export interface CalcRotationComponent {
-  calculation: (t: number) => number;
+  calculation: (model: Model, entity: Entity) => number;
 }
 export interface CalcScaleComponent {
-  calculation: (t: number) => number | number[];
+  calculation: (model: Model, entity: Entity) => number | number[];
 }
 export interface CalcPositionComponent {
-  calculation: (t: number) => { x?: number; y?: number; z?: number };
+  calculation: (
+    mode: Model,
+    entity: Entity
+  ) => { x?: number; y?: number; z?: number };
 }
