@@ -1,7 +1,6 @@
 import {
   GridHelper,
   InstancedMesh,
-  Matrix4,
   PerspectiveCamera,
   Scene,
   WebGLRenderer,
@@ -9,7 +8,6 @@ import {
   HemisphereLight,
   sRGBEncoding,
   Object3D,
-  Vector3,
 } from "../../vendor/three.js";
 
 import { OrbitControls } from "../../vendor/OrbitControls.js";
@@ -43,7 +41,6 @@ import {
   instanceIdToEntityId,
   registers,
 } from "./threeOptimizations.js";
-import { Entity } from "../../Entity.js";
 
 const eulers = rots.map((r) => new Euler(r[0], r[1], r[2]));
 let scene = new Scene();
