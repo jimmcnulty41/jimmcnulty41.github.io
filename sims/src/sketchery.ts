@@ -77,6 +77,7 @@ function newDefaultEntity(id: string): Entity {
   return {
     id,
     components: {
+      color: { r: 1, g: 1, b: 1 },
       age: {},
       render: {
         type: "instanced 3d model",
@@ -88,21 +89,25 @@ function newDefaultEntity(id: string): Entity {
         z: 0, // to prevent z-fighting
       },
       rotation: {
-        style: "standard",
-        dix: 0,
+        style: "angle axis",
+        amt: 0,
+        axis: 1,
       },
       scale: {
-        amt: 0,
+        amt: 1,
       },
-      calculateScale: {
-        calculation: (m, e) => sizeFn(getAge(m.time, e.components.age)),
+      calculateRotation: {
+        calculation: (m, e) => {
+          const t = m.input.entityUnderMouse === e.id ? 2 * m.time : m.time;
+          return Math.sin(t / 12 + internalRoll * 100);
+        },
       },
       calculatePosition: {
         calculation: (m, e) => {
           const t = e.components.age
             ? getAge(m.time, e.components.age)
             : model.time;
-          const t2 = remap(0, 100, 0, 10)(t);
+          const t2 = t;
           return {
             x: (sign * Math.pow(t2, 2) * pow) / 10,
             z: -t2 / 2,

@@ -1,16 +1,30 @@
+import { Entity } from "../Entity.js";
 import { Model } from "../Model.js";
-import { isEntityWith, isEntityWithFn } from "../components/Components.js";
+import {
+  EntityWith,
+  isEntityWith,
+  isEntityWithFn,
+} from "../components/Components.js";
+
+function selection(entity: Entity): entity is EntityWith<"color" | "scale"> {
+  return isEntityWith(entity, "color") && isEntityWith(entity, "scale");
+}
+const defaultColor = {
+  r: 1,
+  g: 1,
+  b: 1,
+};
 
 export function jumpOnSelectedSystem(model: Model): Model {
   return {
     ...model,
     entities: [
-      ...model.entities.filter((e) => !isEntityWith(e, "position")),
+      ...model.entities.filter((e) => !selection(e)),
       ...model.entities
-        .filter(isEntityWithFn("position"))
+        .filter(selection)
 
         .map((e) => {
-          const { position, ...unaffectedComponents } = e.components;
+          const { scale, color, ...unaffectedComponents } = e.components;
           if (
             e.id !== model.input.entityUnderMouse &&
             e.id === model.input.prevEntityUnderMouse
@@ -19,9 +33,9 @@ export function jumpOnSelectedSystem(model: Model): Model {
               ...e,
               components: {
                 ...unaffectedComponents,
-                position: {
-                  ...position,
-                  y: 0,
+                color: defaultColor,
+                scale: {
+                  amt: 1,
                 },
               },
             };
@@ -34,9 +48,13 @@ export function jumpOnSelectedSystem(model: Model): Model {
             ...e,
             components: {
               ...unaffectedComponents,
-              position: {
-                ...position,
-                y: 10,
+              color: {
+                r: 1,
+                g: 0,
+                b: 0,
+              },
+              scale: {
+                amt: 4,
               },
             },
           };

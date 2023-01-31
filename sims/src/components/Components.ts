@@ -20,6 +20,7 @@ import {
 } from "./CalcTransformComponents";
 import { ScaleComponent } from "./ScaleComponent";
 import { AgeComponent } from "./AgeComponent";
+import { ColorComponent } from "./ColorComponent";
 
 // order should match corresponding system order
 type ComponentTypes = {
@@ -33,6 +34,7 @@ type ComponentTypes = {
   calculateRotation: CalcRotationComponent;
   scale: ScaleComponent;
   calculateScale: CalcScaleComponent;
+  color: ColorComponent;
   position: PositionComponent;
   calculatePosition: CalcPositionComponent;
 };

@@ -19,7 +19,10 @@ import {
   Color,
 } from "../vendor/three.js";
 import { getImage, imageDataArray, loadedImages } from "./loadImages.js";
-import { instanceIdToEntityId } from "./three_wrappers/threeOptimizations.js";
+import {
+  instanceIdToEntityId,
+  registers,
+} from "./three_wrappers/threeOptimizations.js";
 
 export type ModelData = { [refName: string]: { model: GLTF; scale: number[] } };
 
@@ -146,13 +149,13 @@ async function getInstancedPlane() {
   );
   instancedMesh.count = 0;
   instancedMesh.instanceMatrix.setUsage(DynamicDrawUsage); // will be updated every frame
-  [...Array(instanceCount)].map((x, i) =>
-    // default color
-    instancedMesh.setColorAt(i, new Color(0xffffff))
-  );
-  if (instancedMesh.instanceColor) {
-    instancedMesh.instanceColor.needsUpdate = true;
-  }
+
+  instancedMesh.setColorAt(0, registers.color.setHex(0xffffff));
+  //@ts-ignore
+  instancedMesh.instanceColor.setUsage(DynamicDrawUsage); // will be updated every frame
+  //@ts-ignore
+  instancedMesh.instanceColor.needsUpdate = true;
+
   instancedMesh.name = "plane";
   instanceIdToEntityId[instancedMesh.name] = {};
   return instancedMesh;

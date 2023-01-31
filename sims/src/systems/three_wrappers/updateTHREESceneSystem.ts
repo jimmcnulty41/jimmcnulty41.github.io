@@ -43,6 +43,7 @@ import {
   instanceIdToEntityId,
   registers,
 } from "./threeOptimizations.js";
+import { Entity } from "../../Entity.js";
 
 const eulers = rots.map((r) => new Euler(r[0], r[1], r[2]));
 let scene = new Scene();
@@ -139,6 +140,18 @@ function updateInstanceTransform(components: Components): void {
   }
 }
 
+function updateInstanceColor(components: Components) {
+  if (components.color) {
+    registers.color.setRGB(
+      components.color.r,
+      components.color.g,
+      components.color.b
+    );
+  } else {
+    registers.color.setRGB(0, 0, 0);
+  }
+}
+
 function instancedUpdate(
   entity: RenderableEntity<SupportInstance>,
   instanceKey: string
@@ -147,8 +160,9 @@ function instancedUpdate(
   const { inst, idCounter } = instanceMeshes[instanceKey];
 
   if (id === undefined) {
+    updateInstanceColor(entity.components);
+    inst.setColorAt(idCounter, registers.color);
     updateInstanceTransform(entity.components);
-
     inst.setMatrixAt(idCounter, registers.matrix);
 
     const newCount = idCounter + 1;
@@ -157,6 +171,8 @@ function instancedUpdate(
     instanceMeshes[instanceKey].idCounter = newCount;
     instanceMeshes[instanceKey].inst.count = newCount;
   } else {
+    updateInstanceColor(entity.components);
+    inst.setColorAt(id, registers.color);
     updateInstanceTransform(entity.components);
     inst.setMatrixAt(id, registers.matrix);
   }

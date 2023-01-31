@@ -14,8 +14,7 @@ const mouse_pos = new Vector2(1, 1);
 let camera: PerspectiveCamera | null = null;
 let meshes: InstancedMesh | null = null;
 
-let highlight = new Color(0xffffff);
-
+window.addEventListener("mousedown", onMouseDown);
 document.addEventListener("mousemove", onMouseMove);
 
 function onMouseMove(event: MouseEvent) {
@@ -25,8 +24,12 @@ function onMouseMove(event: MouseEvent) {
   mouse_pos.y = -(event.clientY / window.innerHeight) * 2 + 1;
 }
 
+let tmp_model: Model | null = null;
+
 function onMouseDown(event: MouseEvent) {
   event.preventDefault();
+
+  console.log(tmp_model);
 }
 
 const emptyInput = {
@@ -59,26 +62,17 @@ export function inputSystem(model: Model): Model {
     object: { name },
   } = intersection[0];
 
-  if (instanceId === undefined) {
-    return {
-      ...model,
-      input: {
-        ...defaultInputComponent,
-        prevEntityUnderMouse: model.input.entityUnderMouse,
-      },
-    };
-  }
+  tmp_model = model;
 
-  // This should be moved to the render components
-  if (meshes.instanceColor) {
-    meshes.setColorAt(instanceId, highlight.setHex(0x0000ff));
-    meshes.instanceColor.needsUpdate = true;
-  }
+  const prevEntityUnderMouse =
+    model.input.entityUnderMouse !== instanceIdToEntityId[name][`${instanceId}`]
+      ? model.input.entityUnderMouse
+      : undefined;
 
   return {
     ...model,
     input: {
-      prevEntityUnderMouse: model.input.entityUnderMouse,
+      prevEntityUnderMouse,
       entityUnderMouse: instanceIdToEntityId[name][`${instanceId}`],
       mouse: [mouse_pos.x, mouse_pos.y],
     },

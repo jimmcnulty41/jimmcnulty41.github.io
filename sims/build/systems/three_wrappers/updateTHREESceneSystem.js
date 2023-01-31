@@ -71,10 +71,20 @@ function updateInstanceTransform(components) {
         matrix.setPosition(x, y, z);
     }
 }
+function updateInstanceColor(components) {
+    if (components.color) {
+        registers.color.setRGB(components.color.r, components.color.g, components.color.b);
+    }
+    else {
+        registers.color.setRGB(0, 0, 0);
+    }
+}
 function instancedUpdate(entity, instanceKey) {
     const id = entityIdToInstanceId[entity.id];
     const { inst, idCounter } = instanceMeshes[instanceKey];
     if (id === undefined) {
+        updateInstanceColor(entity.components);
+        inst.setColorAt(idCounter, registers.color);
         updateInstanceTransform(entity.components);
         inst.setMatrixAt(idCounter, registers.matrix);
         const newCount = idCounter + 1;
@@ -84,6 +94,8 @@ function instancedUpdate(entity, instanceKey) {
         instanceMeshes[instanceKey].inst.count = newCount;
     }
     else {
+        updateInstanceColor(entity.components);
+        inst.setColorAt(id, registers.color);
         updateInstanceTransform(entity.components);
         inst.setMatrixAt(id, registers.matrix);
     }
