@@ -77,10 +77,11 @@ let model: Model = {
 function newDefaultEntity(id: string): Entity {
   const internalRoll = Math.random();
   const internalRoll2 = Math.random();
+  const internalRoll3 = Math.random();
 
   const target1 = {
     x: remap(0, 1, -50, 50)(internalRoll),
-    y: internalRoll * 10,
+    y: internalRoll3 * 4,
     z: remap(0, 1, 0, -50)(internalRoll2),
   };
   const target2 = {
@@ -98,8 +99,8 @@ function newDefaultEntity(id: string): Entity {
       },
       position: {
         x: 0,
-        y: internalRoll,
-        z: 0, // to prevent z-fighting
+        y: internalRoll3 * 4,
+        z: 0,
       },
       rotation: {
         style: "angle axis",
@@ -138,7 +139,7 @@ function newDefaultEntity(id: string): Entity {
           )(getAge(m.time, e.components.age as AgeComponent));
           const target = {
             x: lerp(target2.x, target1.x, t),
-            y: target1.y,
+            y: m.input.entityUnderMouse === e.id ? target1.y + 5 : target1.y,
             z: target1.z,
           };
           return {
