@@ -27,6 +27,11 @@ function newDefaultEntity(id) {
         id,
         components: {
             render: { type: "instanced 3d model", refName: "rat" },
+            color: {
+                r: 0.5,
+                g: 0.5,
+                b: 0.2,
+            },
             rotation: {
                 style: "standard",
                 dix: 0,
