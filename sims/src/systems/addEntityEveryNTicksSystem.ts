@@ -13,7 +13,7 @@ export function addEntityEveryNTicksSystem(
     if (delay && model.time < delay) {
       return model;
     }
-    return model.time % n || model.entities.length > 100
+    return model.time % n || model.entities.length > 1000
       ? model
       : {
           ...model,

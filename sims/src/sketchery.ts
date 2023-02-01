@@ -3,7 +3,7 @@ import { updateTHREEScene } from "./systems/three_wrappers/updateTHREESceneSyste
 import { wanderSystem } from "./systems/wanderSystem.js";
 import { addEntityEveryNTicksSystem } from "./systems/addEntityEveryNTicksSystem.js";
 import { Entity } from "./Entity.js";
-import { remap } from "./utils.js";
+import { lerp, remap } from "./utils.js";
 import { levitateSystem } from "./systems/levitateSystem.js";
 import {
   calcPositionSystem,
@@ -13,7 +13,8 @@ import {
 import { ageSystem } from "./systems/ageSystem.js";
 import { defaultInputComponent } from "./components/InputComponent.js";
 import { jumpOnSelectedSystem } from "./systems/jumpOnSelectedSystem.js";
-import { getAge } from "./components/AgeComponent.js";
+import { AgeComponent, getAge } from "./components/AgeComponent.js";
+import { AngleAxisRotationComponent } from "./components/RotationComponent.js";
 import {
   THREEManager,
   getResolvedTHREEManager,
@@ -75,9 +76,17 @@ let model: Model = {
 
 function newDefaultEntity(id: string): Entity {
   const internalRoll = Math.random();
-  const sign = Math.sign(remap(0, 1, -1, 1)(internalRoll));
-  const pow = remap(0, 1, 0, 0.1)(internalRoll);
-  const sizeFn = remap(0, 50, 0, 1, true);
+  const internalRoll2 = Math.random();
+
+  const target1 = {
+    x: remap(0, 1, -50, 50)(internalRoll),
+    y: internalRoll * 10,
+    z: remap(0, 1, 0, -50)(internalRoll2),
+  };
+  const target2 = {
+    ...target1,
+    x: 0,
+  };
   return {
     id,
     components: {
@@ -98,23 +107,44 @@ function newDefaultEntity(id: string): Entity {
         axis: 1,
       },
       scale: {
-        amt: 1,
+        amt: 0,
+      },
+      calculateScale: {
+        calculation: (m, e) => {
+          const t = e.components.age
+            ? getAge(m.time, e.components.age)
+            : m.time;
+          return remap(0, 100, 0, 1, true)(t);
+        },
       },
       calculateRotation: {
         calculation: (m, e) => {
-          const t = m.input.entityUnderMouse === e.id ? 2 * m.time : m.time;
-          return Math.sin(t / 12 + internalRoll * 100);
+          const t =
+            m.input.entityUnderMouse === e.id ? m.time / 2 : m.time / 12;
+          return (
+            (e.components.rotation as AngleAxisRotationComponent).amt +
+            Math.sin(t + internalRoll * 100) / 100
+          );
         },
       },
       calculatePosition: {
         calculation: (m, e) => {
-          const t = e.components.age
-            ? getAge(m.time, e.components.age)
-            : model.time;
-          const t2 = t;
+          const t = remap(
+            0,
+            50,
+            0,
+            1,
+            true
+          )(getAge(m.time, e.components.age as AgeComponent));
+          const target = {
+            x: lerp(target2.x, target1.x, t),
+            y: target1.y,
+            z: target1.z,
+          };
           return {
-            x: (sign * Math.pow(t2, 2) * pow) / 10,
-            z: -t2 / 2,
+            x: lerp(e.components.position.x, target.x, t),
+            y: lerp(e.components.position.y, target.y, t),
+            z: lerp(e.components.position.z, target.z, t),
           };
         },
       },

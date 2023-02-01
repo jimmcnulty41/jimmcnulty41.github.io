@@ -18,3 +18,7 @@ export function remap(min, max, newMin, newMax, clamp) {
         }
     };
 }
+// clamps by default
+export function lerp(x, y, t) {
+    return (y - x) * t + x;
+}

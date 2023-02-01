@@ -1,5 +1,4 @@
 import { Model } from "../Model.js";
-import { AgeComponent } from "../components/AgeComponent.js";
 import {
   hasCalculatedPosition,
   hasCalculatedRotation,

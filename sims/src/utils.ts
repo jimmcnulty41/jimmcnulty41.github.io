@@ -27,3 +27,8 @@ export function remap(
     }
   };
 }
+
+// clamps by default
+export function lerp(x: number, y: number, t: number) {
+  return (y - x) * t + x;
+}
