@@ -8,6 +8,7 @@ import { ageSystem } from "./systems/ageSystem.js";
 import { defaultInputComponent } from "./components/InputComponent.js";
 import { jumpOnSelectedSystem } from "./systems/jumpOnSelectedSystem.js";
 import { getAge } from "./components/AgeComponent.js";
+import { THREEManager, getResolvedTHREEManager, } from "./systems/three_wrappers/THREEManager.js";
 const disabledSystems = ["report"];
 let model = {
     time: 0,
@@ -109,6 +110,7 @@ function newDefaultEntity(id) {
         },
     };
 }
+const blah = await getResolvedTHREEManager(new THREEManager());
 let systems = {
     advanceTimeSystem: (model) => ({
         ...model,
@@ -123,7 +125,7 @@ let systems = {
     calcPositionSystem,
     //reportSystem,
     addEntityEveryNTicksSystem: addEntityEveryNTicksSystem(newDefaultEntity, 10, 100),
-    updateTHREEScene,
+    updateTHREEScene: (m) => updateTHREEScene(blah, m),
 };
 function RunECS() {
     console.log("Simulation begins");

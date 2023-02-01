@@ -43,17 +43,14 @@ export async function getInstanceMeshes() {
         sphere: {
             inst: getInstancedSphere(),
             idCounter: 0,
-            registers: getRegisters(),
         },
         rat: {
             inst: getInstancedModel(),
             idCounter: 0,
-            registers: getRegisters(),
         },
         plane: {
             inst: plane,
             idCounter: 0,
-            registers: getRegisters(),
         },
     };
 }

@@ -71,23 +71,27 @@ function getRegisters() {
   };
 }
 
-export async function getInstanceMeshes() {
+interface InstanceBookkeeping {
+  inst: InstancedMesh;
+  idCounter: number;
+}
+
+export type InstanceMeshes = { [name: string]: InstanceBookkeeping };
+
+export async function getInstanceMeshes(): Promise<InstanceMeshes> {
   const plane = await getInstancedPlane();
   return {
     sphere: {
       inst: getInstancedSphere(),
       idCounter: 0,
-      registers: getRegisters(),
     },
     rat: {
       inst: getInstancedModel(),
       idCounter: 0,
-      registers: getRegisters(),
     },
     plane: {
       inst: plane,
       idCounter: 0,
-      registers: getRegisters(),
     },
   };
 }

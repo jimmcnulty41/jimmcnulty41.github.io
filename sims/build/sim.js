@@ -3,6 +3,7 @@ import { wanderSystem } from "./systems/wanderSystem.js";
 import { addEntityEveryNTicksSystem } from "./systems/addEntityEveryNTicksSystem.js";
 import { remap } from "./utils.js";
 import { defaultInputComponent } from "./components/InputComponent.js";
+import { THREEManager, getResolvedTHREEManager, } from "./systems/three_wrappers/THREEManager.js";
 const disabledSystems = ["report"];
 let model = {
     time: 0,
@@ -63,6 +64,7 @@ function newDefaultEntity(id) {
         },
     };
 }
+const tm = await getResolvedTHREEManager(new THREEManager());
 let systems = {
     advanceTimeSystem: (model) => ({
         ...model,
@@ -71,7 +73,7 @@ let systems = {
     addEntityEveryNTicksSystem: addEntityEveryNTicksSystem(newDefaultEntity, 1),
     wanderSystem,
     //reportSystem,
-    updateTHREEScene,
+    updateTHREEScene: (m) => updateTHREEScene(tm, m),
 };
 function RunECS() {
     console.log("Simulation begins");

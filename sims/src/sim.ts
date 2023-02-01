@@ -6,6 +6,10 @@ import { addEntityEveryNTicksSystem } from "./systems/addEntityEveryNTicksSystem
 import { Entity } from "./Entity.js";
 import { remap } from "./utils.js";
 import { defaultInputComponent } from "./components/InputComponent.js";
+import {
+  THREEManager,
+  getResolvedTHREEManager,
+} from "./systems/three_wrappers/THREEManager.js";
 
 const disabledSystems = ["report"];
 
@@ -70,6 +74,8 @@ function newDefaultEntity(id: string): Entity {
   };
 }
 
+const tm = await getResolvedTHREEManager(new THREEManager());
+
 type System = (model: Model) => Model;
 type Systems = { [name: string]: System };
 let systems: Systems = {
@@ -80,7 +86,7 @@ let systems: Systems = {
   addEntityEveryNTicksSystem: addEntityEveryNTicksSystem(newDefaultEntity, 1),
   wanderSystem,
   //reportSystem,
-  updateTHREEScene,
+  updateTHREEScene: (m) => updateTHREEScene(tm, m),
 };
 
 function RunECS() {

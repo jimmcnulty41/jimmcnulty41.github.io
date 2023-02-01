@@ -14,6 +14,10 @@ import { ageSystem } from "./systems/ageSystem.js";
 import { defaultInputComponent } from "./components/InputComponent.js";
 import { jumpOnSelectedSystem } from "./systems/jumpOnSelectedSystem.js";
 import { getAge } from "./components/AgeComponent.js";
+import {
+  THREEManager,
+  getResolvedTHREEManager,
+} from "./systems/three_wrappers/THREEManager.js";
 
 const disabledSystems = ["report"];
 
@@ -118,6 +122,8 @@ function newDefaultEntity(id: string): Entity {
   };
 }
 
+const blah = await getResolvedTHREEManager(new THREEManager());
+
 type System = (model: Model) => Model;
 type Systems = { [name: string]: System };
 let systems: Systems = {
@@ -138,7 +144,7 @@ let systems: Systems = {
     10,
     100
   ),
-  updateTHREEScene,
+  updateTHREEScene: (m) => updateTHREEScene(blah, m),
 };
 
 function RunECS() {
