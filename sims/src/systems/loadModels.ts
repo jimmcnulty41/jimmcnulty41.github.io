@@ -18,7 +18,7 @@ import {
   Vector3,
   Color,
 } from "../vendor/three.js";
-import { getImage, imageDataArray, loadedImages } from "./loadImages.js";
+import { getTexture } from "./loadImages.js";
 import {
   instanceIdToEntityId,
   registers,
@@ -143,9 +143,9 @@ async function getInstancedPlane() {
   const geo = new PlaneGeometry(12, 10, 2, 2);
   geo.rotateX(Math.PI / 2);
   geo.rotateY(Math.PI / 2);
-  const tex = new Texture();
-  tex.image = await getImage(0);
-  tex.needsUpdate = true;
+
+  const tex = await getTexture(0);
+
   const instancedMesh = new InstancedMesh(
     geo,
     new MeshBasicMaterial({ map: tex, side: DoubleSide }),

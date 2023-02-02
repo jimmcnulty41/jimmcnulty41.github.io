@@ -1,7 +1,7 @@
 import { mergeBufferGeometries } from "../vendor/BufferGeometryUtils.js";
 import { GLTFLoader } from "../vendor/GLTFLoader.js";
-import { DoubleSide, DynamicDrawUsage, Euler, IcosahedronGeometry, InstancedMesh, Matrix4, Mesh, MeshBasicMaterial, MeshLambertMaterial, PlaneGeometry, Texture, Vector3, } from "../vendor/three.js";
-import { getImage } from "./loadImages.js";
+import { DoubleSide, DynamicDrawUsage, Euler, IcosahedronGeometry, InstancedMesh, Matrix4, Mesh, MeshBasicMaterial, MeshLambertMaterial, PlaneGeometry, Vector3, } from "../vendor/three.js";
+import { getTexture } from "./loadImages.js";
 import { instanceIdToEntityId, registers, } from "./three_wrappers/threeOptimizations.js";
 async function loadModels() {
     const gltfPaths = [
@@ -91,9 +91,7 @@ async function getInstancedPlane() {
     const geo = new PlaneGeometry(12, 10, 2, 2);
     geo.rotateX(Math.PI / 2);
     geo.rotateY(Math.PI / 2);
-    const tex = new Texture();
-    tex.image = await getImage(0);
-    tex.needsUpdate = true;
+    const tex = await getTexture(0);
     const instancedMesh = new InstancedMesh(geo, new MeshBasicMaterial({ map: tex, side: DoubleSide }), instanceCount);
     instancedMesh.count = 0;
     instancedMesh.instanceMatrix.setUsage(DynamicDrawUsage); // will be updated every frame

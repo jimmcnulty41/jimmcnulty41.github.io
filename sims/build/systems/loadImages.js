@@ -1,39 +1,25 @@
 import { data } from "../data/data_9.js";
+import { TextureLoader } from "../vendor/three.js";
 const numImages = 5;
-export const imageDataArray = new Array(numImages);
-export let loadedImages = 0;
-const failedImages = [];
+const loadedTextures = Array(numImages);
+export let numLoadedTextures = 0;
+const tl = new TextureLoader();
 const baseUrl = "https://sketchery-store.nyc3.cdn.digitaloceanspaces.com/";
 async function loadImagesInBg() {
-    const urls = data.images
+    const loadCalls = data.images
         .slice(0, numImages)
-        .map((img) => `${baseUrl}${img.new}`);
-    const responses = await Promise.all(urls.map(async (u, i) => ({
-        response: await fetch(u),
-        i,
-    })));
-    await Promise.all(responses.map(async (response) => {
-        if (!response.response.ok) {
-            failedImages.push(data.images[response.i].new);
-            return;
-        }
-        const b = await response.response.blob();
-        const url = URL.createObjectURL(b);
-        const img = new Image();
-        img.src = url;
-        while (!img.complete) {
-            await new Promise((resolve) => setTimeout(resolve, 100));
-        }
-        loadedImages++;
-        imageDataArray[response.i] = img;
+        .map((img) => `${baseUrl}${img.new}`)
+        .map((u) => tl.loadAsync(u).then((x) => {
+        loadedTextures[numLoadedTextures++] = x;
+        return x;
     }));
-    console.log(`Texture loading complete. ${failedImages.length} images failed to load. ${loadedImages} succeeded`);
-    console.log(failedImages);
+    const textures = await Promise.all(loadCalls);
+    console.log(textures);
 }
-await loadImagesInBg();
-export async function getImage(requestedImage) {
-    while (loadedImages <= requestedImage) {
-        await new Promise((resolve) => setTimeout(resolve, 100));
+loadImagesInBg();
+export async function getTexture(requestedTexture) {
+    while (numLoadedTextures <= requestedTexture) {
+        await new Promise((resolve) => setTimeout(resolve, 10));
     }
-    return imageDataArray[requestedImage];
+    return loadedTextures[requestedTexture];
 }
