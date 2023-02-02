@@ -1,7 +1,7 @@
 import { data } from "../../data/data_9.js";
 import { Texture, TextureLoader } from "../../vendor/three.js";
 
-const numImages = 5;
+const numImages = 20;
 const loadedTextures: Texture[] = Array(numImages);
 export let numLoadedTextures = 0;
 
@@ -16,6 +16,7 @@ async function loadImagesInBg() {
     .map((u) =>
       tl.loadAsync(u).then((x) => {
         loadedTextures[numLoadedTextures++] = x;
+
         return x;
       })
     );
@@ -29,4 +30,9 @@ export async function getTexture(requestedTexture: number): Promise<Texture> {
     await new Promise((resolve) => setTimeout(resolve, 10));
   }
   return loadedTextures[requestedTexture];
+}
+
+export function getRandomTexture() {
+  const i = Math.floor(Math.random() * numLoadedTextures);
+  return loadedTextures[i];
 }

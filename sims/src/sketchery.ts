@@ -91,7 +91,7 @@ function newDefaultEntity(id: string): Entity {
       color: { r: 1, g: 1, b: 1 },
       age: {},
       initRender: {
-        refName: "plane",
+        refName: "sketchbook_page",
       },
       position: {
         x: 0,
