@@ -1,28 +1,14 @@
 export type RenderComponent =
-  | SphereRenderComponent
-  | GridRenderComponent
-  | InstancedGLTFRenderComponent
-  | GLTFRenderComponent
-  | never;
+  | StandardRenderComponent
+  | InstancedRenderComponent;
 
-export type SupportSceneParent = GridRenderComponent | GLTFRenderComponent;
-export type SupportInstance =
-  | SphereRenderComponent
-  | InstancedGLTFRenderComponent;
-
-export interface SphereRenderComponent {
-  type: "sphere";
-}
-export interface GridRenderComponent {
-  type: "grid";
-}
-export interface InstancedGLTFRenderComponent {
-  type: "instanced 3d model";
+export interface StandardRenderComponent {
   refName: string;
+  id: number;
+  type: "standard";
 }
-
-export interface GLTFRenderComponent {
-  type: "3d model";
+export interface InstancedRenderComponent {
   refName: string;
-  objectName?: string;
+  id: number;
+  type: "instanced";
 }

@@ -12,22 +12,6 @@ export function isRenderable(entity) {
     return (entity.components.render !== undefined &&
         entity.components.position !== undefined);
 }
-export function isRenderableSphere(entity) {
-    return entity.components.render.type === "sphere";
-}
-export function isRenderableInstanceModel(entity) {
-    return entity.components.render.type === "instanced 3d model";
-}
-export function isRenderableModel(entity) {
-    return (entity.components.render !== undefined &&
-        entity.components.render.type === "3d model" &&
-        entity.components.position !== undefined);
-}
-export function isRenderableGrid(entity) {
-    return (entity.components.render !== undefined &&
-        entity.components.render.type === "grid" &&
-        entity.components.position !== undefined);
-}
 // slightly different from scale / position cuz the "style" property
 export function hasCalculatedRotation(e) {
     return (e.components.calculateRotation !== undefined &&

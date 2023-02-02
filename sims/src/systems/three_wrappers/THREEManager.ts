@@ -1,24 +1,26 @@
 import { OrbitControls } from "../../vendor/OrbitControls.js";
-import { Camera, Renderer } from "../../vendor/three.js";
+import {} from "../../vendor/three.js";
 import {
+  Camera,
+  Mesh,
+  Renderer,
   HemisphereLight,
-  InstancedMesh,
   PerspectiveCamera,
   Scene,
   WebGLRenderer,
   sRGBEncoding,
 } from "../../vendor/three.js";
-import { InstanceMeshes, getInstanceMeshes } from "../loadModels.js";
-import { init } from "./inputSystem.js";
+import { InstanceMeshes, Meshes, getInstanceMeshes } from "./loadMeshes.js";
+import { getMeshes } from "./loadMeshes.js";
 
 export type ResolvedTHREEManager = THREEManager & {
   instanceMeshes: InstanceMeshes;
+  meshes: Meshes;
 };
-
 export async function getResolvedTHREEManager(
   tm: THREEManager
 ): Promise<ResolvedTHREEManager> {
-  while (tm.instanceMeshes === undefined) {
+  while (tm.instanceMeshes === undefined || tm.meshes === undefined) {
     await new Promise((resolve) => setTimeout(resolve, 100));
   }
   return tm as ResolvedTHREEManager;
@@ -32,6 +34,7 @@ export class THREEManager {
   renderer: Renderer;
 
   instanceMeshes?: InstanceMeshes;
+  meshes?: Meshes;
 
   constructor() {
     let scene = new Scene();
@@ -54,6 +57,10 @@ export class THREEManager {
 
     const orbitControls = new OrbitControls(camera, canvas);
 
+    getMeshes().then((result) => {
+      this.meshes = result;
+    });
+
     getInstanceMeshes().then((result) => {
       this.instanceMeshes = result;
       const keys = Object.keys(this.instanceMeshes);
@@ -62,8 +69,6 @@ export class THREEManager {
           this.scene.add(result[k].inst);
         }
       });
-
-      init(camera, this.instanceMeshes.plane.inst);
     });
 
     scene.add(new HemisphereLight(0xffffff, 0xff0033, 1));

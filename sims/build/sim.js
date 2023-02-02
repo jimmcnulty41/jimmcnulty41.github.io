@@ -4,6 +4,7 @@ import { addEntityEveryNTicksSystem } from "./systems/addEntityEveryNTicksSystem
 import { remap } from "./utils.js";
 import { defaultInputComponent } from "./components/InputComponent.js";
 import { THREEManager, getResolvedTHREEManager, } from "./systems/three_wrappers/THREEManager.js";
+import { initTHREEObjectSystem } from "./systems/three_wrappers/initTHREEObjectSystem.js";
 const disabledSystems = ["report"];
 let model = {
     time: 0,
@@ -26,7 +27,7 @@ function newDefaultEntity(id) {
     return {
         id,
         components: {
-            render: { type: "instanced 3d model", refName: "rat" },
+            initRender: { refName: "rat" },
             color: {
                 r: 0.5,
                 g: 0.5,
@@ -78,6 +79,7 @@ let systems = {
     addEntityEveryNTicksSystem: addEntityEveryNTicksSystem(newDefaultEntity, 1),
     wanderSystem,
     //reportSystem,
+    initTHREEScene: (m) => initTHREEObjectSystem(tm, m),
     updateTHREEScene: (m) => updateTHREEScene(tm, m),
 };
 function RunECS() {

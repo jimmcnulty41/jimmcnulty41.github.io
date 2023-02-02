@@ -10,6 +10,7 @@ import {
   THREEManager,
   getResolvedTHREEManager,
 } from "./systems/three_wrappers/THREEManager.js";
+import { initTHREEObjectSystem } from "./systems/three_wrappers/initTHREEObjectSystem.js";
 
 const disabledSystems = ["report"];
 
@@ -35,7 +36,7 @@ function newDefaultEntity(id: string): Entity {
   return {
     id,
     components: {
-      render: { type: "instanced 3d model", refName: "rat" },
+      initRender: { refName: "rat" },
       color: {
         r: 0.5,
         g: 0.5,
@@ -91,6 +92,7 @@ let systems: Systems = {
   addEntityEveryNTicksSystem: addEntityEveryNTicksSystem(newDefaultEntity, 1),
   wanderSystem,
   //reportSystem,
+  initTHREEScene: (m) => initTHREEObjectSystem(tm, m),
   updateTHREEScene: (m) => updateTHREEScene(tm, m),
 };
 

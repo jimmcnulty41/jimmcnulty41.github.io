@@ -1,9 +1,9 @@
 import { OrbitControls } from "../../vendor/OrbitControls.js";
 import { HemisphereLight, PerspectiveCamera, Scene, WebGLRenderer, sRGBEncoding, } from "../../vendor/three.js";
-import { getInstanceMeshes } from "../loadModels.js";
-import { init } from "./inputSystem.js";
+import { getInstanceMeshes } from "./loadMeshes.js";
+import { getMeshes } from "./loadMeshes.js";
 export async function getResolvedTHREEManager(tm) {
-    while (tm.instanceMeshes === undefined) {
+    while (tm.instanceMeshes === undefined || tm.meshes === undefined) {
         await new Promise((resolve) => setTimeout(resolve, 100));
     }
     return tm;
@@ -15,6 +15,7 @@ export class THREEManager {
     camera;
     renderer;
     instanceMeshes;
+    meshes;
     constructor() {
         let scene = new Scene();
         const canvas = document.querySelector("canvas");
@@ -27,6 +28,9 @@ export class THREEManager {
         camera.position.set(0, 100, 1);
         camera.lookAt(0, 0, 0);
         const orbitControls = new OrbitControls(camera, canvas);
+        getMeshes().then((result) => {
+            this.meshes = result;
+        });
         getInstanceMeshes().then((result) => {
             this.instanceMeshes = result;
             const keys = Object.keys(this.instanceMeshes);
@@ -35,7 +39,6 @@ export class THREEManager {
                     this.scene.add(result[k].inst);
                 }
             });
-            init(camera, this.instanceMeshes.plane.inst);
         });
         scene.add(new HemisphereLight(0xffffff, 0xff0033, 1));
         this.scene = scene;

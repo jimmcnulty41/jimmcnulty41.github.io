@@ -22,3 +22,14 @@ export function remap(min, max, newMin, newMax, clamp) {
 export function lerp(x, y, t) {
     return (y - x) * t + x;
 }
+export function splitArray(blah, predicate) {
+    const matching = [];
+    const notMatching = [];
+    blah.forEach((element) => {
+        if (predicate(element))
+            matching.push(element);
+        else
+            notMatching.push(element);
+    });
+    return { matching, notMatching };
+}

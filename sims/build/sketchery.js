@@ -9,6 +9,7 @@ import { defaultInputComponent } from "./components/InputComponent.js";
 import { jumpOnSelectedSystem } from "./systems/jumpOnSelectedSystem.js";
 import { getAge } from "./components/AgeComponent.js";
 import { THREEManager, getResolvedTHREEManager, } from "./systems/three_wrappers/THREEManager.js";
+import { initTHREEObjectSystem } from "./systems/three_wrappers/initTHREEObjectSystem.js";
 const disabledSystems = ["report"];
 let model = {
     time: 0,
@@ -40,10 +41,8 @@ let model = {
                         return { z: -t2 };
                     },
                 },
-                render: {
-                    type: "3d model",
+                initRender: {
                     refName: "head_top",
-                    objectName: "head_top",
                 },
                 position: { x: 0, y: 0, z: 0 },
             },
@@ -51,10 +50,8 @@ let model = {
         {
             id: "0",
             components: {
-                render: {
-                    type: "3d model",
-                    refName: "head_top",
-                    objectName: "head_bottom",
+                initRender: {
+                    refName: "head_bottom",
                 },
                 position: { x: 0, y: 0, z: 0 },
             },
@@ -80,8 +77,7 @@ function newDefaultEntity(id) {
         components: {
             color: { r: 1, g: 1, b: 1 },
             age: {},
-            render: {
-                type: "instanced 3d model",
+            initRender: {
                 refName: "plane",
             },
             position: {
@@ -145,6 +141,7 @@ let systems = {
     calcPositionSystem,
     //reportSystem,
     addEntityEveryNTicksSystem: addEntityEveryNTicksSystem(newDefaultEntity, 10, 100),
+    initTHREEObject: (m) => initTHREEObjectSystem(blah, m),
     updateTHREEScene: (m) => updateTHREEScene(blah, m),
 };
 function RunECS() {

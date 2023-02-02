@@ -1,5 +1,5 @@
-import { data } from "../data/data_9.js";
-import { TextureLoader } from "../vendor/three.js";
+import { data } from "../../data/data_9.js";
+import { TextureLoader } from "../../vendor/three.js";
 const numImages = 5;
 const loadedTextures = Array(numImages);
 export let numLoadedTextures = 0;

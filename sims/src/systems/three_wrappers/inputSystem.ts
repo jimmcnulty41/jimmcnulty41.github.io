@@ -1,18 +1,14 @@
 import { Model } from "../../Model.js";
 import { defaultInputComponent } from "../../components/InputComponent.js";
+import { Vector2, Raycaster } from "../../vendor/three.js";
+import { ResolvedTHREEManager } from "./THREEManager.js";
 import {
-  PerspectiveCamera,
-  Color,
-  Vector2,
-  Raycaster,
-  InstancedMesh,
-} from "../../vendor/three.js";
-import { instanceIdToEntityId } from "./threeOptimizations.js";
+  instanceIdToEntityId,
+  sceneIdToEntityId,
+} from "./threeOptimizations.js";
 
 const raycaster = new Raycaster();
 const mouse_pos = new Vector2(1, 1);
-let camera: PerspectiveCamera | null = null;
-let meshes: InstancedMesh | null = null;
 
 window.addEventListener("mousedown", onMouseDown);
 document.addEventListener("mousemove", onMouseMove);
@@ -24,12 +20,10 @@ function onMouseMove(event: MouseEvent) {
   mouse_pos.y = -(event.clientY / window.innerHeight) * 2 + 1;
 }
 
-let tmp_model: Model | null = null;
-
 function onMouseDown(event: MouseEvent) {
   event.preventDefault();
 
-  console.log(tmp_model);
+  console.log(event);
 }
 
 const emptyInput = {
@@ -37,16 +31,16 @@ const emptyInput = {
   mouse: [0, 0],
 };
 
-export function inputSystem(model: Model): Model {
-  if (meshes === null || camera === null) {
+export function inputSystem(tm: ResolvedTHREEManager, model: Model): Model {
+  if (tm.meshes === null || tm.camera === null) {
     return {
       ...model,
       input: emptyInput,
     };
   }
-  raycaster.setFromCamera(mouse_pos, camera);
+  raycaster.setFromCamera(mouse_pos, tm.camera);
 
-  const intersection = raycaster.intersectObject(meshes);
+  const intersection = raycaster.intersectObject(tm.scene, true);
   if (intersection.length <= 0) {
     return {
       ...model,
@@ -59,30 +53,36 @@ export function inputSystem(model: Model): Model {
 
   const {
     instanceId,
-    object: { name },
+    object: { name, id },
   } = intersection[0];
 
-  tmp_model = model;
+  if (instanceId) {
+    const prevEntityUnderMouse =
+      model.input.entityUnderMouse !==
+      instanceIdToEntityId[name][`${instanceId}`]
+        ? model.input.entityUnderMouse
+        : undefined;
 
-  const prevEntityUnderMouse =
-    model.input.entityUnderMouse !== instanceIdToEntityId[name][`${instanceId}`]
-      ? model.input.entityUnderMouse
-      : undefined;
-
-  return {
-    ...model,
-    input: {
-      prevEntityUnderMouse,
-      entityUnderMouse: instanceIdToEntityId[name][`${instanceId}`],
-      mouse: [mouse_pos.x, mouse_pos.y],
-    },
-  };
-}
-
-export function init(
-  _camera: PerspectiveCamera,
-  intersectionObjects: InstancedMesh
-) {
-  camera = _camera;
-  meshes = intersectionObjects;
+    return {
+      ...model,
+      input: {
+        prevEntityUnderMouse,
+        entityUnderMouse: instanceIdToEntityId[name][`${instanceId}`],
+        mouse: [mouse_pos.x, mouse_pos.y],
+      },
+    };
+  } else {
+    const prevEntityUnderMouse =
+      model.input.entityUnderMouse === sceneIdToEntityId[id]
+        ? undefined
+        : model.input.entityUnderMouse;
+    return {
+      ...model,
+      input: {
+        prevEntityUnderMouse,
+        entityUnderMouse: sceneIdToEntityId[id],
+        mouse: [mouse_pos.x, mouse_pos.y],
+      },
+    };
+  }
 }

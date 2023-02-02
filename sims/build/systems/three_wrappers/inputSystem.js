@@ -1,10 +1,8 @@
 import { defaultInputComponent } from "../../components/InputComponent.js";
-import { Vector2, Raycaster, } from "../../vendor/three.js";
-import { instanceIdToEntityId } from "./threeOptimizations.js";
+import { Vector2, Raycaster } from "../../vendor/three.js";
+import { instanceIdToEntityId, sceneIdToEntityId, } from "./threeOptimizations.js";
 const raycaster = new Raycaster();
 const mouse_pos = new Vector2(1, 1);
-let camera = null;
-let meshes = null;
 window.addEventListener("mousedown", onMouseDown);
 document.addEventListener("mousemove", onMouseMove);
 function onMouseMove(event) {
@@ -12,24 +10,23 @@ function onMouseMove(event) {
     mouse_pos.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse_pos.y = -(event.clientY / window.innerHeight) * 2 + 1;
 }
-let tmp_model = null;
 function onMouseDown(event) {
     event.preventDefault();
-    console.log(tmp_model);
+    console.log(event);
 }
 const emptyInput = {
     name: "",
     mouse: [0, 0],
 };
-export function inputSystem(model) {
-    if (meshes === null || camera === null) {
+export function inputSystem(tm, model) {
+    if (tm.meshes === null || tm.camera === null) {
         return {
             ...model,
             input: emptyInput,
         };
     }
-    raycaster.setFromCamera(mouse_pos, camera);
-    const intersection = raycaster.intersectObject(meshes);
+    raycaster.setFromCamera(mouse_pos, tm.camera);
+    const intersection = raycaster.intersectObject(tm.scene, true);
     if (intersection.length <= 0) {
         return {
             ...model,
@@ -39,21 +36,32 @@ export function inputSystem(model) {
             },
         };
     }
-    const { instanceId, object: { name }, } = intersection[0];
-    tmp_model = model;
-    const prevEntityUnderMouse = model.input.entityUnderMouse !== instanceIdToEntityId[name][`${instanceId}`]
-        ? model.input.entityUnderMouse
-        : undefined;
-    return {
-        ...model,
-        input: {
-            prevEntityUnderMouse,
-            entityUnderMouse: instanceIdToEntityId[name][`${instanceId}`],
-            mouse: [mouse_pos.x, mouse_pos.y],
-        },
-    };
-}
-export function init(_camera, intersectionObjects) {
-    camera = _camera;
-    meshes = intersectionObjects;
+    const { instanceId, object: { name, id }, } = intersection[0];
+    if (instanceId) {
+        const prevEntityUnderMouse = model.input.entityUnderMouse !==
+            instanceIdToEntityId[name][`${instanceId}`]
+            ? model.input.entityUnderMouse
+            : undefined;
+        return {
+            ...model,
+            input: {
+                prevEntityUnderMouse,
+                entityUnderMouse: instanceIdToEntityId[name][`${instanceId}`],
+                mouse: [mouse_pos.x, mouse_pos.y],
+            },
+        };
+    }
+    else {
+        const prevEntityUnderMouse = model.input.entityUnderMouse === sceneIdToEntityId[id]
+            ? undefined
+            : model.input.entityUnderMouse;
+        return {
+            ...model,
+            input: {
+                prevEntityUnderMouse,
+                entityUnderMouse: sceneIdToEntityId[id],
+                mouse: [mouse_pos.x, mouse_pos.y],
+            },
+        };
+    }
 }

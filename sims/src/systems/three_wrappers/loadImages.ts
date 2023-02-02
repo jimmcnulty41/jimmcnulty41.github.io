@@ -1,5 +1,5 @@
-import { data } from "../data/data_9.js";
-import { Texture, TextureLoader } from "../vendor/three.js";
+import { data } from "../../data/data_9.js";
+import { Texture, TextureLoader } from "../../vendor/three.js";
 
 const numImages = 5;
 const loadedTextures: Texture[] = Array(numImages);
@@ -8,6 +8,7 @@ export let numLoadedTextures = 0;
 const tl = new TextureLoader();
 
 const baseUrl = "https://sketchery-store.nyc3.cdn.digitaloceanspaces.com/";
+
 async function loadImagesInBg() {
   const loadCalls = data.images
     .slice(0, numImages)

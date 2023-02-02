@@ -32,3 +32,16 @@ export function remap(
 export function lerp(x: number, y: number, t: number) {
   return (y - x) * t + x;
 }
+
+export function splitArray<T, R extends T>(
+  blah: T[],
+  predicate: (e: T) => e is R
+): { matching: R[]; notMatching: T[] } {
+  const matching: R[] = [];
+  const notMatching: T[] = [];
+  blah.forEach((element) => {
+    if (predicate(element)) matching.push(element);
+    else notMatching.push(element);
+  });
+  return { matching, notMatching };
+}

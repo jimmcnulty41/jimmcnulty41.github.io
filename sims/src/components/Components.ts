@@ -4,13 +4,7 @@ import {
   RotationComponent,
 } from "./RotationComponent";
 import { PositionComponent } from "./PositionComponent";
-import {
-  GLTFRenderComponent,
-  GridRenderComponent,
-  InstancedGLTFRenderComponent,
-  RenderComponent,
-  SphereRenderComponent,
-} from "./RenderComponent";
+import { RenderComponent } from "./RenderComponent";
 import { WanderComponent } from "./WanderComponent";
 import { LevitateComponent } from "./LevitateComponent";
 import {
@@ -21,6 +15,7 @@ import {
 import { ScaleComponent } from "./ScaleComponent";
 import { AgeComponent } from "./AgeComponent";
 import { ColorComponent } from "./ColorComponent";
+import { InitRenderComponent } from "./InitRenderComponent";
 
 // order should match corresponding system order
 type ComponentTypes = {
@@ -28,6 +23,7 @@ type ComponentTypes = {
   levitate: LevitateComponent;
   age: AgeComponent;
 
+  initRender: InitRenderComponent;
   render: RenderComponent;
 
   rotation: RotationComponent;
@@ -84,35 +80,6 @@ type EntityWithCalcRotation = Entity & {
 export function isRenderable(entity: Entity): entity is RenderableEntity {
   return (
     entity.components.render !== undefined &&
-    entity.components.position !== undefined
-  );
-}
-export function isRenderableSphere(
-  entity: RenderableEntity
-): entity is RenderableEntity<SphereRenderComponent> {
-  return entity.components.render.type === "sphere";
-}
-export function isRenderableInstanceModel(
-  entity: RenderableEntity
-): entity is RenderableEntity<InstancedGLTFRenderComponent> {
-  return entity.components.render.type === "instanced 3d model";
-}
-export function isRenderableModel(
-  entity: Entity
-): entity is RenderableEntity<GLTFRenderComponent> {
-  return (
-    entity.components.render !== undefined &&
-    entity.components.render.type === "3d model" &&
-    entity.components.position !== undefined
-  );
-}
-
-export function isRenderableGrid(
-  entity: Entity
-): entity is RenderableEntity<GridRenderComponent> {
-  return (
-    entity.components.render !== undefined &&
-    entity.components.render.type === "grid" &&
     entity.components.position !== undefined
   );
 }
