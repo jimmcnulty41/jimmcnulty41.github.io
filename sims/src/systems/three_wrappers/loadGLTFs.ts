@@ -63,7 +63,7 @@ export async function loadGLTFsInBg(pathObjects: Blah[]) {
   console.log(gltfs);
 }
 
-export async function getBufferGeometry(
+export async function getBufferGeometryFromGLTF(
   refName: string
 ): Promise<BufferGeometry> {
   while (!Geometries[refName]) {
@@ -73,7 +73,7 @@ export async function getBufferGeometry(
   return Geometries[refName];
 }
 
-export async function getMesh(objectName: string): Promise<Mesh> {
+export async function getMeshFromGLTF(objectName: string): Promise<Mesh> {
   while (!Meshes[objectName]) {
     // hmm there's the opportunity for this never resolving and also not warning the user
     await new Promise((resolve) => setTimeout(resolve, 10));

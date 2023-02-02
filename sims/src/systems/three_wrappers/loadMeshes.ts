@@ -3,8 +3,16 @@ import {
   InstancedMesh,
   MeshLambertMaterial,
   Mesh,
+  MeshBasicMaterial,
+  PlaneGeometry,
+  SphereGeometry,
 } from "../../vendor/three.js";
-import { getBufferGeometry, getMesh, loadGLTFsInBg } from "./loadGLTFs.js";
+import { ResolvedTHREEManager } from "./THREEManager.js";
+import {
+  getBufferGeometryFromGLTF,
+  getMeshFromGLTF,
+  loadGLTFsInBg,
+} from "./loadGLTFs.js";
 import { instanceIdToEntityId, registers } from "./threeOptimizations.js";
 
 interface InstanceBookkeeping {
@@ -12,6 +20,23 @@ interface InstanceBookkeeping {
   idCounter: number;
 }
 export type InstanceMeshes = { [name: string]: InstanceBookkeeping };
+
+export const meshInitFuncs = {
+  sphere: (tm: ResolvedTHREEManager) =>
+    new Mesh(
+      new SphereGeometry(1, 2, 2),
+      new MeshBasicMaterial({ color: 0xff00ff })
+    ),
+  head_top: (tm: ResolvedTHREEManager) => tm.meshes["head_top"],
+  head_bottom: (tm: ResolvedTHREEManager) => tm.meshes["head_bottom"],
+  plane: (tm: ResolvedTHREEManager) =>
+    new Mesh(
+      new PlaneGeometry(10, 12, 2, 2),
+      new MeshBasicMaterial({ color: 0xff00ff })
+    ),
+};
+type InitFuncs = typeof meshInitFuncs;
+export type RefNames = keyof InitFuncs;
 
 loadGLTFsInBg([
   {
@@ -44,8 +69,15 @@ export async function getInstanceMeshes(): Promise<InstanceMeshes> {
   };
 }
 
+export async function getMeshes(): Promise<{ [refName: string]: Mesh }> {
+  return {
+    head_top: await getMeshFromGLTF("head_top"),
+    head_bottom: await getMeshFromGLTF("head_bottom"),
+  };
+}
+
 async function getInstancedMesh(refName: string): Promise<InstancedMesh> {
-  const geo = await getBufferGeometry(refName);
+  const geo = await getBufferGeometryFromGLTF(refName);
   const instancedMesh = new InstancedMesh(
     geo,
     new MeshLambertMaterial({ color: 0xff00ff }),
@@ -68,9 +100,3 @@ async function getInstancedMesh(refName: string): Promise<InstancedMesh> {
 }
 
 export type Meshes = { [refName: string]: Mesh };
-export async function getMeshes(): Promise<{ [refName: string]: Mesh }> {
-  return {
-    head_top: await getMesh("head_top"),
-    head_bottom: await getMesh("head_bottom"),
-  };
-}

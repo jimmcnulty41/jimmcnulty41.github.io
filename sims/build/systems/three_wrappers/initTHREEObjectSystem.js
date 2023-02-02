@@ -1,6 +1,5 @@
 import { splitArray } from "../../utils.js";
-import { PlaneGeometry } from "../../vendor/three.js";
-import { MeshBasicMaterial, SphereGeometry, Mesh } from "../../vendor/three.js";
+import { meshInitFuncs } from "./loadMeshes.js";
 import { instanceIdToEntityId, registers, sceneIdToEntityId, updateColorRegister, updateMatrixRegister, } from "./threeOptimizations.js";
 export function initTHREEObjectSystem(tm, model) {
     const { matching, notMatching } = splitArray(model.entities, (e) => e.components.initRender !== undefined);
@@ -43,12 +42,6 @@ function addObjectToTHREESceneFromInstance(tm, entity) {
 }
 const something = {
     rat: "instanced",
-};
-const meshInitFuncs = {
-    sphere: (tm) => new Mesh(new SphereGeometry(1, 2, 2), new MeshBasicMaterial({ color: 0xff00ff })),
-    head_top: (tm) => tm.meshes["head_top"],
-    head_bottom: (tm) => tm.meshes["head_bottom"],
-    plane: (tm) => new Mesh(new PlaneGeometry(10, 12, 2, 2), new MeshBasicMaterial({ color: 0xff00ff })),
 };
 function addObjectToTHREEScene(tm, e) {
     const { refName } = e.components.initRender;

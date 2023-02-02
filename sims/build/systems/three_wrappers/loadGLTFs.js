@@ -45,14 +45,14 @@ export async function loadGLTFsInBg(pathObjects) {
     console.log(`GLTFs loaded by ${performance.now()}`);
     console.log(gltfs);
 }
-export async function getBufferGeometry(refName) {
+export async function getBufferGeometryFromGLTF(refName) {
     while (!Geometries[refName]) {
         // hmm there's the opportunity for this never resolving and also not warning the user
         await new Promise((resolve) => setTimeout(resolve, 10));
     }
     return Geometries[refName];
 }
-export async function getMesh(objectName) {
+export async function getMeshFromGLTF(objectName) {
     while (!Meshes[objectName]) {
         // hmm there's the opportunity for this never resolving and also not warning the user
         await new Promise((resolve) => setTimeout(resolve, 10));

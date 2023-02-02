@@ -2,9 +2,8 @@ import { Model } from "../../Model.js";
 import { EntityWith } from "../../components/Components.js";
 import { RenderComponent } from "../../components/RenderComponent.js";
 import { splitArray } from "../../utils.js";
-import { PlaneGeometry } from "../../vendor/three.js";
-import { MeshBasicMaterial, SphereGeometry, Mesh } from "../../vendor/three.js";
 import { ResolvedTHREEManager } from "./THREEManager.js";
+import { RefNames, meshInitFuncs } from "./loadMeshes.js";
 import {
   instanceIdToEntityId,
   registers,
@@ -41,6 +40,7 @@ export function initTHREEObjectSystem(
     ],
   };
 }
+
 function addObjectToTHREESceneFromInstance(
   tm: ResolvedTHREEManager,
   entity: EntityWith<"initRender">
@@ -72,23 +72,6 @@ function addObjectToTHREESceneFromInstance(
 const something: { [refName: string]: "instanced" | "standard" } = {
   rat: "instanced",
 };
-
-const meshInitFuncs = {
-  sphere: (tm: ResolvedTHREEManager) =>
-    new Mesh(
-      new SphereGeometry(1, 2, 2),
-      new MeshBasicMaterial({ color: 0xff00ff })
-    ),
-  head_top: (tm: ResolvedTHREEManager) => tm.meshes["head_top"],
-  head_bottom: (tm: ResolvedTHREEManager) => tm.meshes["head_bottom"],
-  plane: (tm: ResolvedTHREEManager) =>
-    new Mesh(
-      new PlaneGeometry(10, 12, 2, 2),
-      new MeshBasicMaterial({ color: 0xff00ff })
-    ),
-};
-type InitFuncs = typeof meshInitFuncs;
-type RefNames = keyof InitFuncs;
 
 function addObjectToTHREEScene(
   tm: ResolvedTHREEManager,

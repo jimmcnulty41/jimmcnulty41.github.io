@@ -8,13 +8,9 @@ import {
   hasRotation,
   isEntityWith,
 } from "../../components/Components.js";
-import { RotationComponent } from "../../components/RotationComponent.js";
 
 import { inputSystem } from "./inputSystem.js";
 import {
-  entityIdToInstanceId,
-  entityIdToSceneChild,
-  instanceIdToEntityId,
   registers,
   updateColorRegister,
   updateMatrixRegister,
