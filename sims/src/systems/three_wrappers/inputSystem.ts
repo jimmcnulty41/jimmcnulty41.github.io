@@ -1,5 +1,5 @@
 import { Model } from "../../Model.js";
-import { defaultInputComponent } from "../../components/InputComponent.js";
+import { InputComponent } from "../../components/InputComponent.js";
 import { Vector2, Raycaster } from "../../vendor/three.js";
 import { ResolvedTHREEManager } from "./THREEManager.js";
 import {
@@ -9,6 +9,7 @@ import {
 
 const raycaster = new Raycaster();
 const mouse_pos = new Vector2(1, 1);
+let mouseState = "whatevs";
 
 window.addEventListener("mousedown", onMouseDown);
 document.addEventListener("mousemove", onMouseMove);
@@ -23,16 +24,22 @@ function onMouseMove(event: MouseEvent) {
 function onMouseDown(event: MouseEvent) {
   event.preventDefault();
 
-  console.log(event);
+  mouseState = "down";
+  setInterval(() => (mouseState = "whatevs"), 10);
 }
 
-const emptyInput = {
-  name: "",
+const emptyInput: InputComponent = {
   mouse: [0, 0],
+  mouseState: "whatevs",
 };
 
+// function setSpecialImageElement() {
+//   const special = document.querySelector("#featured") as HTMLImageElement;
+//   special.src =
+//   mouseState = "whatevs";
+// }
+
 export function inputSystem(tm: ResolvedTHREEManager, model: Model): Model {
-  console.log(tm.camera.position);
   if (tm.meshes === null || tm.camera === null) {
     return {
       ...model,
@@ -46,7 +53,7 @@ export function inputSystem(tm: ResolvedTHREEManager, model: Model): Model {
     return {
       ...model,
       input: {
-        ...defaultInputComponent,
+        ...emptyInput,
         prevEntityUnderMouse: model.input.entityUnderMouse,
       },
     };
@@ -58,28 +65,38 @@ export function inputSystem(tm: ResolvedTHREEManager, model: Model): Model {
   } = intersection[0];
 
   if (instanceId) {
+    const entityUnderMouse = instanceIdToEntityId[name][`${instanceId}`];
     const prevEntityUnderMouse =
-      model.input.entityUnderMouse !==
-      instanceIdToEntityId[name][`${instanceId}`]
+      model.input.entityUnderMouse !== entityUnderMouse
         ? model.input.entityUnderMouse
         : undefined;
+
+    if (mouseState === "down") {
+      console.log(model.entities.find((e) => e.id === entityUnderMouse));
+    }
 
     return {
       ...model,
       input: {
+        mouseState,
         prevEntityUnderMouse,
         entityUnderMouse: instanceIdToEntityId[name][`${instanceId}`],
         mouse: [mouse_pos.x, mouse_pos.y],
       },
     };
   } else {
+    const entityUnderMouse = sceneIdToEntityId[id];
+    if (mouseState === "down") {
+      console.log(model.entities.find((e) => e.id === entityUnderMouse));
+    }
     const prevEntityUnderMouse =
-      model.input.entityUnderMouse === sceneIdToEntityId[id]
+      model.input.entityUnderMouse === entityUnderMouse
         ? undefined
         : model.input.entityUnderMouse;
     return {
       ...model,
       input: {
+        mouseState,
         prevEntityUnderMouse,
         entityUnderMouse: sceneIdToEntityId[id],
         mouse: [mouse_pos.x, mouse_pos.y],
