@@ -19,6 +19,7 @@ const emptyInput = {
     mouse: [0, 0],
 };
 export function inputSystem(tm, model) {
+    console.log(tm.camera.position);
     if (tm.meshes === null || tm.camera === null) {
         return {
             ...model,

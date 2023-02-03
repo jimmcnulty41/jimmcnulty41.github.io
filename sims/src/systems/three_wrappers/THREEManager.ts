@@ -26,10 +26,12 @@ export async function getResolvedTHREEManager(
   return tm as ResolvedTHREEManager;
 }
 
+interface CameraConfig {}
+
 export class THREEManager {
   scene: Scene;
   canvas: HTMLCanvasElement;
-  orbitControls: OrbitControls;
+  //orbitControls: OrbitControls;
   camera: Camera;
   renderer: Renderer;
 
@@ -52,10 +54,10 @@ export class THREEManager {
       0.1,
       1000
     );
-    camera.position.set(0, 100, 1);
-    camera.lookAt(0, 0, 0);
+    camera.position.set(0, 115, -25);
+    camera.lookAt(0, 0, -25);
 
-    const orbitControls = new OrbitControls(camera, canvas);
+    //const orbitControls = new OrbitControls(camera, canvas);
 
     getMeshes().then((result) => {
       this.meshes = result;
@@ -75,7 +77,7 @@ export class THREEManager {
 
     this.scene = scene;
     this.canvas = canvas;
-    this.orbitControls = orbitControls;
+    //this.orbitControls = orbitControls;
     this.camera = camera;
     this.renderer = renderer;
   }

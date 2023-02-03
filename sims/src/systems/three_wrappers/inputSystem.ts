@@ -32,6 +32,7 @@ const emptyInput = {
 };
 
 export function inputSystem(tm: ResolvedTHREEManager, model: Model): Model {
+  console.log(tm.camera.position);
   if (tm.meshes === null || tm.camera === null) {
     return {
       ...model,

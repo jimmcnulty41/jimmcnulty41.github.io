@@ -1,3 +1,4 @@
+import { Color } from "../../vendor/three.js";
 import { hasRotation, isEntityWith, } from "../../components/Components.js";
 import { inputSystem } from "./inputSystem.js";
 import { registers, updateColorRegister, updateMatrixRegister, } from "./threeOptimizations.js";
@@ -27,7 +28,27 @@ function standardUpdate(tm, entity) {
     }
     tm.scene.children[childIdx].position.set(entity.components.position.x, entity.components.position.y, entity.components.position.z);
 }
+const gradientStart = {
+    r: 1,
+    g: 1,
+    b: 1,
+};
+const gradientEnd = {
+    r: 0.8,
+    g: 0.8,
+    b: 1,
+};
+function mix(start, end, t) {
+    return {
+        r: start.r * t + (1 - t) * end.r,
+        g: start.g * t + (1 - t) * end.g,
+        b: start.b * t + (1 - t) * end.b,
+    };
+}
+const bgc = new Color();
 export function updateTHREEScene(tm, model) {
+    const c = mix(gradientStart, gradientEnd, Math.sin(model.time / 1000));
+    tm.scene.background = bgc.setRGB(c.r, c.g, c.b);
     const { matching: renderable, notMatching: notRenderable } = splitArray(model.entities, (e) => isEntityWith(e, "position") && isEntityWith(e, "render"));
     renderable.forEach((e) => {
         switch (e.components.render.type) {
@@ -42,7 +63,7 @@ export function updateTHREEScene(tm, model) {
     Object.keys(tm.instanceMeshes).forEach((k) => {
         setInstUpdate(tm.instanceMeshes[k].inst);
     });
-    tm.orbitControls.update();
+    //tm.orbitControls.update();
     tm.renderer.render(tm.scene, tm.camera);
     return inputSystem(tm, model);
 }
