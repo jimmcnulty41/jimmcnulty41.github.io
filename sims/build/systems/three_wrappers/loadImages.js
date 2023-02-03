@@ -44,3 +44,6 @@ export function getRandomTexture() {
     const i = Math.floor(Math.random() * numLoadedTextures);
     return loadedTextures[i];
 }
+export function getImageSourceURL(imageNum) {
+    return `${baseUrl}${imageNum}`;
+}

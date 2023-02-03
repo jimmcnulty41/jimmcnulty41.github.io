@@ -4,16 +4,24 @@ const raycaster = new Raycaster();
 const mouse_pos = new Vector2(1, 1);
 let mouseState = "whatevs";
 window.addEventListener("mousedown", onMouseDown);
+window.addEventListener("touchstart", onTouch);
 document.addEventListener("mousemove", onMouseMove);
 function onMouseMove(event) {
     event.preventDefault();
     mouse_pos.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse_pos.y = -(event.clientY / window.innerHeight) * 2 + 1;
 }
+function onTouch(event) {
+    event.preventDefault();
+    mouseState = "down";
+    mouse_pos.x = (event.touches[0].clientX / window.innerWidth) * 2 - 1;
+    mouse_pos.y = -(event.touches[0].clientY / window.innerHeight) * 2 + 1;
+    setInterval(() => (mouseState = "whatevs"), 10);
+}
 function onMouseDown(event) {
     event.preventDefault();
     mouseState = "down";
-    setInterval(() => (mouseState = "whatevs"), 10);
+    requestAnimationFrame(() => (mouseState = "whatevs"));
 }
 const emptyInput = {
     mouse: [0, 0],
@@ -21,7 +29,7 @@ const emptyInput = {
 };
 // function setSpecialImageElement() {
 //   const special = document.querySelector("#featured") as HTMLImageElement;
-//   special.src =
+//   special.src = getImageSourceURL();
 //   mouseState = "whatevs";
 // }
 export function inputSystem(tm, model) {
@@ -49,12 +57,12 @@ export function inputSystem(tm, model) {
             ? model.input.entityUnderMouse
             : undefined;
         if (mouseState === "down") {
-            console.log(model.entities.find((e) => e.id === entityUnderMouse));
+            handleDown(tm, model, entityUnderMouse);
         }
         return {
             ...model,
             input: {
-                mouseState,
+                mouseState: "whatevs",
                 prevEntityUnderMouse,
                 entityUnderMouse: instanceIdToEntityId[name][`${instanceId}`],
                 mouse: [mouse_pos.x, mouse_pos.y],
@@ -64,7 +72,7 @@ export function inputSystem(tm, model) {
     else {
         const entityUnderMouse = sceneIdToEntityId[id];
         if (mouseState === "down") {
-            console.log(model.entities.find((e) => e.id === entityUnderMouse));
+            handleDown(tm, model, entityUnderMouse);
         }
         const prevEntityUnderMouse = model.input.entityUnderMouse === entityUnderMouse
             ? undefined
@@ -72,11 +80,22 @@ export function inputSystem(tm, model) {
         return {
             ...model,
             input: {
-                mouseState,
+                mouseState: "whatevs",
                 prevEntityUnderMouse,
                 entityUnderMouse: sceneIdToEntityId[id],
                 mouse: [mouse_pos.x, mouse_pos.y],
             },
         };
+    }
+}
+function handleDown(tm, model, entityUnderMouse) {
+    const e = model.entities.find((e) => e.id === entityUnderMouse);
+    const id = e?.components.render?.id;
+    if (id) {
+        // @ts-ignore
+        const blah = tm.scene.children[id].material.map.source.data;
+        const container = document.querySelector("#featured");
+        container.innerHTML = "";
+        container.appendChild(blah);
     }
 }
