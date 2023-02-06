@@ -20,6 +20,9 @@ function onTouch(event) {
 }
 function onMouseDown(event) {
     event.preventDefault();
+    if (event.target?.localName !== "canvas") {
+        return;
+    }
     mouseState = "down";
     requestAnimationFrame(() => (mouseState = "whatevs"));
 }
@@ -93,9 +96,10 @@ function handleDown(tm, model, entityUnderMouse) {
     const id = e?.components.render?.id;
     if (id) {
         // @ts-ignore
-        const blah = tm.scene.children[id].material.map.source.data;
-        const container = document.querySelector("#featured");
-        container.innerHTML = "";
-        container.appendChild(blah);
+        const blah = tm.scene.children[id].material.map
+            .source.data;
+        const imgV = document.createElement("image-viewer");
+        imgV.setAttribute("src", blah.src);
+        document.querySelector("body")?.appendChild(imgV);
     }
 }

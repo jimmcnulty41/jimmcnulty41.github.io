@@ -33,7 +33,9 @@ function onTouch(event: TouchEvent) {
 }
 function onMouseDown(event: MouseEvent) {
   event.preventDefault();
-
+  if ((event.target as HTMLElement)?.localName !== "canvas") {
+    return;
+  }
   mouseState = "down";
   requestAnimationFrame(() => (mouseState = "whatevs"));
 }
@@ -125,9 +127,10 @@ function handleDown(
   const id = e?.components.render?.id;
   if (id) {
     // @ts-ignore
-    const blah = tm.scene.children[id].material.map.source.data;
-    const container = document.querySelector("#featured") as HTMLDivElement;
-    container.innerHTML = "";
-    container.appendChild(blah);
+    const blah: HTMLImageElement = (tm.scene.children[id] as Mesh).material.map
+      .source.data;
+    const imgV = document.createElement("image-viewer");
+    imgV.setAttribute("src", blah.src);
+    document.querySelector("body")?.appendChild(imgV);
   }
 }
