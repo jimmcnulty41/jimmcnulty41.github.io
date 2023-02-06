@@ -134,7 +134,9 @@ class ImageViewer extends HTMLElement {
       this.img.src = cache[url];
       this.dimensions = [this.img.naturalWidth, this.img.naturalHeight];
       this.setStyle();
+      console.log("from cache");
     } else {
+      console.log("not from cache");
       fetch(url)
         .then((response) => {
           if (response.ok) {
@@ -147,8 +149,10 @@ class ImageViewer extends HTMLElement {
           this.localUrls["lowQ"] = bloburl;
           registerIntoCache(url, bloburl);
           this.img.src = this.localUrls["lowQ"];
-          this.dimensions = [this.img.naturalWidth, this.img.naturalHeight];
-          this.setStyle();
+          this.img.onload = () => {
+            this.dimensions = [this.img.naturalWidth, this.img.naturalHeight];
+            this.setStyle();
+          };
         });
     }
     if (cache[enhancedUrl]) {
