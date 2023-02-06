@@ -17,7 +17,7 @@ class ImageViewer extends HTMLElement {
     buttons;
     img;
     rotation = 0;
-    size = 256;
+    dimensions = [0, 0];
     _style;
     localUrls = {};
     constructor() {
@@ -77,14 +77,15 @@ class ImageViewer extends HTMLElement {
             align-items: center;
         }
         div.wrapper {
+            max-height: calc(100vh - 64px);
+            max-width: calc(100vh - 64px);
         }
         div.controls {
-            position: fixed;
+            z-index: 2;
             opacity:.5;
             transition: .05s;
         }
         div.controls:hover {
-            position: fixed;
             opacity:1;
             transition: .05s;
         }
@@ -92,10 +93,13 @@ class ImageViewer extends HTMLElement {
         button > img {
             height: 64px;
         }
+
         img.theImage {
+            width: ${this.dimensions[0]}px;
+            height: ${this.dimensions[1]}px;
             transition: .2s;
             transform: rotate(${this.rotation}deg);
-            height: ${this.size}px;
+            z-index: 1;
         }
     `;
     }
@@ -106,6 +110,8 @@ class ImageViewer extends HTMLElement {
         if (cache[url]) {
             this.localUrls["lowQ"] = cache[url];
             this.img.src = cache[url];
+            this.dimensions = [this.img.naturalWidth, this.img.naturalHeight];
+            this.setStyle();
         }
         else {
             fetch(url)
@@ -120,6 +126,8 @@ class ImageViewer extends HTMLElement {
                 this.localUrls["lowQ"] = bloburl;
                 registerIntoCache(url, bloburl);
                 this.img.src = this.localUrls["lowQ"];
+                this.dimensions = [this.img.naturalWidth, this.img.naturalHeight];
+                this.setStyle();
             });
         }
         if (cache[enhancedUrl]) {
@@ -170,7 +178,7 @@ class ImageViewer extends HTMLElement {
         this.img.src = this.localUrls.lowQ;
         this.buttons["maximize"].style.display = "inline";
         this.buttons["minimize"].style.display = "none";
-        this.size = 256;
+        this.dimensions = [this.img.naturalWidth, this.img.naturalHeight];
         this.setStyle();
     }
     maximizeHandler() {
@@ -179,7 +187,7 @@ class ImageViewer extends HTMLElement {
         this.img.src = this.localUrls.highQ;
         this.buttons["maximize"].style.display = "none";
         this.buttons["minimize"].style.display = "inline";
-        this.size = 1024;
+        this.dimensions = [this.img.naturalWidth, this.img.naturalHeight];
         this.setStyle();
     }
     updateSource(newSrc) {
