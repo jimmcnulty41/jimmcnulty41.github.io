@@ -1,3 +1,4 @@
+import { getTags } from "../../data/data_9.js";
 import { Vector2, Raycaster } from "../../vendor/three.js";
 import { instanceIdToEntityId, sceneIdToEntityId, } from "./threeOptimizations.js";
 const raycaster = new Raycaster();
@@ -98,8 +99,10 @@ function handleDown(tm, model, entityUnderMouse) {
         // @ts-ignore
         const blah = tm.scene.children[id].material.map
             .source.data;
+        const yadda = getTags(blah.src);
         const imgV = document.createElement("image-viewer");
         imgV.setAttribute("src", blah.src);
+        imgV.setAttribute("tags", yadda);
         document.querySelector("body")?.appendChild(imgV);
     }
 }

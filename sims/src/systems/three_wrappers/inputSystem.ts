@@ -1,8 +1,9 @@
 import { Model } from "../../Model.js";
 import { InputComponent } from "../../components/InputComponent.js";
+import { getTags } from "../../data/data_9.js";
 import { Vector2, Raycaster, Mesh } from "../../vendor/three.js";
 import { ResolvedTHREEManager } from "./THREEManager.js";
-import { getImageSourceURL } from "./loadImages.js";
+import { getImageSourceURL, getTexture } from "./loadImages.js";
 import {
   instanceIdToEntityId,
   sceneIdToEntityId,
@@ -129,8 +130,10 @@ function handleDown(
     // @ts-ignore
     const blah: HTMLImageElement = (tm.scene.children[id] as Mesh).material.map
       .source.data;
+    const yadda = getTags(blah.src);
     const imgV = document.createElement("image-viewer");
     imgV.setAttribute("src", blah.src);
+    imgV.setAttribute("tags", yadda);
     document.querySelector("body")?.appendChild(imgV);
   }
 }

@@ -15,6 +15,7 @@ function getFromCache(name) {
  */
 class ImageViewer extends HTMLElement {
     buttons;
+    tagContainer;
     img;
     rotation = 0;
     dimensions = [0, 0];
@@ -56,6 +57,10 @@ class ImageViewer extends HTMLElement {
         const close = this.getButton("close");
         this.buttons["close"] = close;
         controls.appendChild(close);
+        const tags = document.createElement("div");
+        d.classList.add("tags");
+        this.tagContainer = tags;
+        d.appendChild(tags);
     }
     getButton(name) {
         const b = document.createElement("button");
@@ -88,6 +93,9 @@ class ImageViewer extends HTMLElement {
         div.controls:hover {
             opacity:1;
             transition: .05s;
+        }
+        div.tags {
+
         }
 
         button > img {
@@ -174,6 +182,15 @@ class ImageViewer extends HTMLElement {
             this.parentNode?.removeChild(this);
             e.stopPropagation();
         });
+        const tagAt = this.getAttribute("tags");
+        if (tagAt) {
+            const tags = tagAt.split(",");
+            tags.forEach((t) => {
+                const tagEl = document.createElement("button");
+                tagEl.innerText = t;
+                this.tagContainer.appendChild(tagEl);
+            });
+        }
     }
     disconnectedCallback() { }
     minimizeHandler() {
@@ -193,9 +210,6 @@ class ImageViewer extends HTMLElement {
         this.buttons["minimize"].style.display = "inline";
         this.dimensions = [this.img.naturalWidth, this.img.naturalHeight];
         this.setStyle();
-    }
-    updateSource(newSrc) {
-        this.img.src = newSrc;
     }
 }
 window.customElements.define("image-viewer", ImageViewer);
