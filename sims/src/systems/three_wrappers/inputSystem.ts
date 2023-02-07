@@ -26,11 +26,13 @@ function onMouseMove(event: MouseEvent) {
 function onTouch(event: TouchEvent) {
   event.preventDefault();
 
-  mouseState = "down";
+  if ((event.target as HTMLElement)?.localName !== "canvas") {
+    return;
+  }
   mouse_pos.x = (event.touches[0].clientX / window.innerWidth) * 2 - 1;
   mouse_pos.y = -(event.touches[0].clientY / window.innerHeight) * 2 + 1;
-
-  setInterval(() => (mouseState = "whatevs"), 10);
+  mouseState = "down";
+  requestAnimationFrame(() => (mouseState = "whatevs"));
 }
 function onMouseDown(event: MouseEvent) {
   event.preventDefault();
@@ -45,12 +47,6 @@ const emptyInput: InputComponent = {
   mouse: [0, 0],
   mouseState: "whatevs",
 };
-
-// function setSpecialImageElement() {
-//   const special = document.querySelector("#featured") as HTMLImageElement;
-//   special.src = getImageSourceURL();
-//   mouseState = "whatevs";
-// }
 
 export function inputSystem(tm: ResolvedTHREEManager, model: Model): Model {
   if (tm.meshes === null || tm.camera === null) {

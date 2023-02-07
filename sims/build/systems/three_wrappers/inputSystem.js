@@ -14,10 +14,13 @@ function onMouseMove(event) {
 }
 function onTouch(event) {
     event.preventDefault();
-    mouseState = "down";
+    if (event.target?.localName !== "canvas") {
+        return;
+    }
     mouse_pos.x = (event.touches[0].clientX / window.innerWidth) * 2 - 1;
     mouse_pos.y = -(event.touches[0].clientY / window.innerHeight) * 2 + 1;
-    setInterval(() => (mouseState = "whatevs"), 10);
+    mouseState = "down";
+    requestAnimationFrame(() => (mouseState = "whatevs"));
 }
 function onMouseDown(event) {
     event.preventDefault();
@@ -31,11 +34,6 @@ const emptyInput = {
     mouse: [0, 0],
     mouseState: "whatevs",
 };
-// function setSpecialImageElement() {
-//   const special = document.querySelector("#featured") as HTMLImageElement;
-//   special.src = getImageSourceURL();
-//   mouseState = "whatevs";
-// }
 export function inputSystem(tm, model) {
     if (tm.meshes === null || tm.camera === null) {
         return {
