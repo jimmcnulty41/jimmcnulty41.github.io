@@ -25764,7 +25764,15 @@ export const data = {
   ],
 };
 
-export function getTags(sourceName) {
-  const idx = sourceName.slice(sourceName.search(/\d*.jpg/)).split(".")[0];
+export function getTags(sourceName: string) {
+  const idx = Number.parseInt(
+    sourceName.slice(sourceName.search(/\d*.jpg/)).split(".")[0]
+  );
   return data.images[idx].tags.join(",");
+}
+export function getMetadata(sourceName: string) {
+  const idx = Number.parseInt(
+    sourceName.slice(sourceName.search(/\d*.jpg/)).split(".")[0]
+  );
+  return data.images[idx];
 }

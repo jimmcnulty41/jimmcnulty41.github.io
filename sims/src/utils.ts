@@ -1,3 +1,5 @@
+import { call, fn, func } from "./vendor/types/three/examples/jsm/nodes/Nodes";
+
 export function vec3Sum(vecs: { x: number; y: number; z: number }[]) {
   return vecs.reduce(
     (sum, p) => ({
@@ -44,4 +46,40 @@ export function splitArray<T, R extends T>(
     else notMatching.push(element);
   });
   return { matching, notMatching };
+}
+
+export function messageToCallStack(message: string, errorMsg: string) {
+  // split into 2-word pairs
+  // from the back, create a function with that name,
+  // have it call a function with name from previous in list
+  // in the list
+  const fNames = message
+    .split(",")
+    .map((x) => x.replaceAll(" ", "_").replaceAll("\n", ""));
+  //
+
+  function getFunctionString() {
+    let str = "";
+
+    fNames.forEach((f, i) => {
+      if (i === 0) {
+        str = `
+        function ${f}() {
+          console.error("${errorMsg}");
+        }
+        `;
+      } else {
+        str += `
+        function ${f}() {
+          ${fNames[i - 1]}();
+        }
+        `;
+      }
+    });
+    return str + ` return ${fNames[fNames.length - 1]}();`;
+  }
+  const body = getFunctionString();
+  const f = new Function(body);
+
+  f();
 }
