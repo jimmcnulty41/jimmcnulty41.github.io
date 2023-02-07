@@ -90,8 +90,30 @@ class ImageViewer extends HTMLElement {
     b.appendChild(icon);
     return b;
   }
+  private blahblah() {
+    if (this.dimensions[0] > window.innerWidth) {
+      // screen narrow,
+
+      const aspect = this.dimensions[1] / this.dimensions[0];
+      return {
+        width: window.innerWidth,
+        height: aspect * window.innerWidth,
+      };
+    }
+    if (this.dimensions[1] > window.innerHeight) {
+      // screen squat
+
+      const aspect = this.dimensions[0] / this.dimensions[1];
+      return { width: aspect * window.innerHeight, height: window.innerHeight };
+    }
+    return {
+      width: this.dimensions[0],
+      height: this.dimensions[1],
+    };
+  }
 
   private setStyle() {
+    const { width, height } = this.blahblah();
     this._style.innerText = `
         div.pageSize {
             position: fixed;
@@ -104,8 +126,6 @@ class ImageViewer extends HTMLElement {
             align-items: center;
         }
         div.wrapper {
-            max-height: calc(100vh - 64px);
-            max-width: calc(100vh - 64px);
         }
         div.controls {
             z-index: 2;
@@ -125,8 +145,8 @@ class ImageViewer extends HTMLElement {
         }
 
         img.theImage {
-            width: ${this.dimensions[0]}px;
-            height: ${this.dimensions[1]}px;
+            width: ${width}px;
+            height: ${height}px;
             transition: .2s;
             transform: rotate(${this.rotation}deg);
             z-index: 1;
