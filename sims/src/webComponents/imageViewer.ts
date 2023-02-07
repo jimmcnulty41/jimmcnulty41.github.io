@@ -64,15 +64,6 @@ class ImageViewer extends HTMLElement {
     this.buttons["rotateRight"] = r;
     controls.appendChild(r);
 
-    const max = this.getButton("maximize");
-    this.buttons["maximize"] = max;
-    controls.appendChild(max);
-
-    const min = this.getButton("minimize");
-    min.style.display = "none";
-    this.buttons["minimize"] = min;
-    controls.appendChild(min);
-
     const close = this.getButton("close");
     this.buttons["close"] = close;
     controls.appendChild(close);
@@ -90,6 +81,7 @@ class ImageViewer extends HTMLElement {
     b.appendChild(icon);
     return b;
   }
+
   private blahblah() {
     if (this.dimensions[0] > window.innerWidth) {
       // screen narrow,
@@ -100,11 +92,15 @@ class ImageViewer extends HTMLElement {
         height: aspect * window.innerWidth,
       };
     }
-    if (this.dimensions[1] > window.innerHeight) {
-      // screen squat
+    if (this.dimensions[1] > window.innerHeight - 64) {
+      // screen squat; 64 is button height
+      console.log("su");
 
       const aspect = this.dimensions[0] / this.dimensions[1];
-      return { width: aspect * window.innerHeight, height: window.innerHeight };
+      return {
+        width: aspect * window.innerHeight,
+        height: window.innerHeight - 64,
+      };
     }
     return {
       width: this.dimensions[0],
@@ -154,6 +150,14 @@ class ImageViewer extends HTMLElement {
     `;
   }
 
+  private setImage(name: "highQ" | "lowQ") {
+    this.img.src = this.localUrls[name] as string;
+    this.img.onload = () => {
+      this.dimensions = [this.img.naturalWidth, this.img.naturalHeight];
+      this.setStyle();
+    };
+  }
+
   connectedCallback() {
     const url = this.getAttribute("src") || "ERROR";
     const name = url.slice(url.search(/\d*.jpg/));
@@ -161,11 +165,7 @@ class ImageViewer extends HTMLElement {
     if (cache[url]) {
       console.log("from cache");
       this.localUrls["lowQ"] = cache[url];
-      this.img.src = cache[url];
-      this.img.onload = () => {
-        this.dimensions = [this.img.naturalWidth, this.img.naturalHeight];
-        this.setStyle();
-      };
+      this.setImage("lowQ");
     } else {
       console.log("not from cache");
       fetch(url)
@@ -179,16 +179,11 @@ class ImageViewer extends HTMLElement {
           const bloburl = URL.createObjectURL(blob);
           this.localUrls["lowQ"] = bloburl;
           registerIntoCache(url, bloburl);
-          this.img.src = this.localUrls["lowQ"];
-          this.img.onload = () => {
-            this.dimensions = [this.img.naturalWidth, this.img.naturalHeight];
-            this.setStyle();
-          };
         });
     }
     if (cache[enhancedUrl]) {
       this.localUrls["highQ"] = cache[enhancedUrl];
-      this.img.src = cache[enhancedUrl];
+      this.setImage("highQ");
     } else {
       fetch(enhancedUrl)
         .then((response) => {
@@ -201,6 +196,7 @@ class ImageViewer extends HTMLElement {
           const bloburl = URL.createObjectURL(blob);
           this.localUrls["highQ"] = bloburl;
           registerIntoCache(enhancedUrl, bloburl);
+          this.setImage("highQ");
         });
     }
 
@@ -212,14 +208,6 @@ class ImageViewer extends HTMLElement {
     this.buttons["rotateLeft"].addEventListener("click", (e) => {
       this.rotation -= 90;
       this.setStyle();
-      e.stopPropagation();
-    });
-    this.buttons["maximize"].addEventListener("click", (e) => {
-      this.maximizeHandler();
-      e.stopPropagation();
-    });
-    this.buttons["minimize"].addEventListener("click", (e) => {
-      this.minimizeHandler();
       e.stopPropagation();
     });
     this.buttons["close"].addEventListener("click", (e) => {
@@ -240,24 +228,6 @@ class ImageViewer extends HTMLElement {
   }
 
   disconnectedCallback() {}
-
-  private minimizeHandler() {
-    if (!this.localUrls.lowQ) throw new Error("waiting for load");
-    this.img.src = this.localUrls.lowQ;
-    this.buttons["maximize"].style.display = "inline";
-    this.buttons["minimize"].style.display = "none";
-    this.dimensions = [this.img.naturalWidth, this.img.naturalHeight];
-    this.setStyle();
-  }
-
-  private maximizeHandler() {
-    if (!this.localUrls.highQ) throw new Error("waiting for load");
-    this.img.src = this.localUrls.highQ;
-    this.buttons["maximize"].style.display = "none";
-    this.buttons["minimize"].style.display = "inline";
-    this.dimensions = [this.img.naturalWidth, this.img.naturalHeight];
-    this.setStyle();
-  }
 }
 
 window.customElements.define("image-viewer", ImageViewer);
