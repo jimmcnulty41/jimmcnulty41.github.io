@@ -41,10 +41,16 @@ let model = {
                         return { z: -t2 };
                     },
                 },
+                calculateRotation: {
+                    calculation: (m, e) => {
+                        const t = m.time;
+                        return t;
+                    },
+                },
                 initRender: {
                     refName: "head_top",
                 },
-                position: { x: 0, y: 0, z: 0 },
+                position: { x: 0, y: -10, z: 0 },
             },
         },
         {
@@ -53,7 +59,7 @@ let model = {
                 initRender: {
                     refName: "head_bottom",
                 },
-                position: { x: 0, y: 0, z: 0 },
+                position: { x: 0, y: -10, z: 0 },
             },
         },
     ],
@@ -63,10 +69,13 @@ function newDefaultEntity(id) {
     const internalRoll = Math.random();
     const internalRoll2 = Math.random();
     const internalRoll3 = Math.random();
+    const center = { x: 0, y: 5, z: -10 };
+    const p = remap(0, 1, 1, 200, true)(internalRoll);
+    const theta = remap(0, 1, 0, 2 * Math.PI)(internalRoll3);
     const target1 = {
-        x: remap(0, 1, -50, 50)(internalRoll),
-        y: internalRoll3 * 4,
-        z: remap(0, 1, 0, -50)(internalRoll2),
+        x: center.x + Math.cos(theta) * p,
+        y: center.y - p / 4,
+        z: center.z + Math.sin(theta) * p,
     };
     const target2 = {
         ...target1,
@@ -126,7 +135,7 @@ function newDefaultEntity(id) {
         },
     };
 }
-const blah = await getResolvedTHREEManager(new THREEManager());
+const blah = await getResolvedTHREEManager(new THREEManager(false));
 let systems = {
     advanceTimeSystem: (model) => ({
         ...model,
@@ -140,7 +149,7 @@ let systems = {
     calcScaleSystem,
     calcPositionSystem,
     //reportSystem,
-    addEntityEveryNTicksSystem: addEntityEveryNTicksSystem(newDefaultEntity, 10, 100),
+    addEntityEveryNTicksSystem: addEntityEveryNTicksSystem(newDefaultEntity, 1),
     initTHREEObject: (m) => initTHREEObjectSystem(blah, m),
     updateTHREEScene: (m) => updateTHREEScene(blah, m),
 };

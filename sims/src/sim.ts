@@ -80,7 +80,7 @@ function newDefaultEntity(id: string): Entity {
   };
 }
 
-const tm = await getResolvedTHREEManager(new THREEManager());
+const tm = await getResolvedTHREEManager(new THREEManager(true));
 
 type System = (model: Model) => Model;
 type Systems = { [name: string]: System };

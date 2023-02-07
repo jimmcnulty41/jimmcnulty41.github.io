@@ -31,14 +31,14 @@ interface CameraConfig {}
 export class THREEManager {
   scene: Scene;
   canvas: HTMLCanvasElement;
-  //orbitControls: OrbitControls;
+  orbitControls?: OrbitControls;
   camera: Camera;
   renderer: Renderer;
 
   instanceMeshes?: InstanceMeshes;
   meshes?: Meshes;
 
-  constructor() {
+  constructor(enableOrbit: boolean) {
     let scene = new Scene();
 
     const canvas = document.querySelector("canvas");
@@ -57,8 +57,6 @@ export class THREEManager {
     camera.position.set(0, 115, -25);
     camera.lookAt(0, 0, -25);
 
-    //const orbitControls = new OrbitControls(camera, canvas);
-
     getMeshes().then((result) => {
       this.meshes = result;
     });
@@ -75,9 +73,13 @@ export class THREEManager {
 
     scene.add(new HemisphereLight(0xffffff, 0xff0033, 1));
 
+    if (enableOrbit) {
+      const orbitControls = new OrbitControls(camera, canvas);
+      this.orbitControls = orbitControls;
+    }
+
     this.scene = scene;
     this.canvas = canvas;
-    //this.orbitControls = orbitControls;
     this.camera = camera;
     this.renderer = renderer;
   }

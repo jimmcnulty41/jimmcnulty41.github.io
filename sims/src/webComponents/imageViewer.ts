@@ -139,11 +139,13 @@ class ImageViewer extends HTMLElement {
     const name = url.slice(url.search(/\d*.jpg/));
     const enhancedUrl = baseUrl + name;
     if (cache[url]) {
+      console.log("from cache");
       this.localUrls["lowQ"] = cache[url];
       this.img.src = cache[url];
-      this.dimensions = [this.img.naturalWidth, this.img.naturalHeight];
-      this.setStyle();
-      console.log("from cache");
+      this.img.onload = () => {
+        this.dimensions = [this.img.naturalWidth, this.img.naturalHeight];
+        this.setStyle();
+      };
     } else {
       console.log("not from cache");
       fetch(url)

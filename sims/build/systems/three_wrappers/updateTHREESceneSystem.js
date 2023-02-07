@@ -34,8 +34,8 @@ const gradientStart = {
     b: 1,
 };
 const gradientEnd = {
-    r: 0.8,
-    g: 0.8,
+    r: 0.9,
+    g: 0.9,
     b: 1,
 };
 function mix(start, end, t) {
@@ -63,7 +63,6 @@ export function updateTHREEScene(tm, model) {
     Object.keys(tm.instanceMeshes).forEach((k) => {
         setInstUpdate(tm.instanceMeshes[k].inst);
     });
-    //tm.orbitControls.update();
     tm.renderer.render(tm.scene, tm.camera);
     return inputSystem(tm, model);
 }

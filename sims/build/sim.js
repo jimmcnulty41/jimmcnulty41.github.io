@@ -70,7 +70,7 @@ function newDefaultEntity(id) {
         },
     };
 }
-const tm = await getResolvedTHREEManager(new THREEManager());
+const tm = await getResolvedTHREEManager(new THREEManager(true));
 let systems = {
     advanceTimeSystem: (model) => ({
         ...model,
