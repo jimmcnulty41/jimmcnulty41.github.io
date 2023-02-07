@@ -9,6 +9,9 @@ window.addEventListener("touchstart", onTouch);
 document.addEventListener("mousemove", onMouseMove);
 function onMouseMove(event) {
     event.preventDefault();
+    if (event.target?.localName !== "canvas") {
+        return;
+    }
     mouse_pos.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse_pos.y = -(event.clientY / window.innerHeight) * 2 + 1;
 }
