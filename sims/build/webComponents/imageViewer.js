@@ -27,10 +27,13 @@ class ImageViewer extends HTMLElement {
         const d = document.createElement("div");
         d.classList.add("pageSize");
         shadow.appendChild(d);
-        const i = document.createElement("img");
-        i.classList.add("theImage");
+        const o = document.createElement("div");
+        o.classList.add("overlay");
+        d.appendChild(o);
         const wrapper = document.createElement("div");
         wrapper.classList.add("wrapper");
+        const i = document.createElement("img");
+        i.classList.add("theImage");
         this.img = i;
         wrapper.appendChild(i);
         d.appendChild(wrapper);
@@ -51,7 +54,7 @@ class ImageViewer extends HTMLElement {
         this.buttons["close"] = close;
         controls.appendChild(close);
         const tags = document.createElement("div");
-        d.classList.add("tags");
+        tags.classList.add("tags");
         this.tagContainer = tags;
         d.appendChild(tags);
     }
@@ -62,7 +65,7 @@ class ImageViewer extends HTMLElement {
         b.appendChild(icon);
         return b;
     }
-    blahblah() {
+    getDisplayDims() {
         if (this.dimensions[0] > window.innerWidth) {
             // screen narrow,
             const aspect = this.dimensions[1] / this.dimensions[0];
@@ -86,10 +89,10 @@ class ImageViewer extends HTMLElement {
         };
     }
     setStyle() {
-        const { width, height } = this.blahblah();
+        const { width, height } = this.getDisplayDims();
         this._style.innerText = `
         div.pageSize {
-            position: fixed;
+           position: fixed;
             top: 0;
             width: 100vw;
             height: 100vh;
@@ -98,19 +101,37 @@ class ImageViewer extends HTMLElement {
             justify-content: center;
             align-items: center;
         }
+        div.overlay {
+            height:100%;
+            width:100%;
+            position: absolute;
+            background-color: #333;
+            opacity: .8;
+        }
         div.wrapper {
         }
         div.controls {
             z-index: 2;
-            opacity:.5;
-            transition: .05s;
         }
-        div.controls:hover {
-            opacity:1;
-            transition: .05s;
+        div.controls > button {
+          padding: 0;
         }
         div.tags {
-
+          position: absolute;
+          display: flex;
+          flex-direction: column;
+          left: calc((100vw - ${width}px)/2 + ${width}px);
+        }
+        div.tags > button {
+          text-decoration: none;
+          border: none;
+          margin: 4px;
+          background: none;
+          color: #6D6D6D;
+          font-weight: bolder;
+        }
+        div.tags > button:hover {
+          color: #333;
         }
 
         button > img {
