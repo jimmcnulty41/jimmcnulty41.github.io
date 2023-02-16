@@ -1,4 +1,4 @@
-import { call, fn, func } from "./vendor/types/three/examples/jsm/nodes/Nodes";
+import { PositionComponent } from "./components/PositionComponent";
 
 export function vec3Sum(vecs: { x: number; y: number; z: number }[]) {
   return vecs.reduce(

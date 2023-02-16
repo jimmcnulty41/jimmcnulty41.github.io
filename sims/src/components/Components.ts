@@ -16,12 +16,17 @@ import { ScaleComponent } from "./ScaleComponent";
 import { AgeComponent } from "./AgeComponent";
 import { ColorComponent } from "./ColorComponent";
 import { InitRenderComponent } from "./InitRenderComponent";
+import { WanderTowardComponent } from "./WanderTowardComponent";
+import { MetadataComponent } from "./MetadataComponent";
 
 // order should match corresponding system order
 type ComponentTypes = {
   wander: WanderComponent;
+  wanderToward: WanderTowardComponent;
   levitate: LevitateComponent;
   age: AgeComponent;
+
+  metadata: MetadataComponent;
 
   initRender: InitRenderComponent;
   render: RenderComponent;
