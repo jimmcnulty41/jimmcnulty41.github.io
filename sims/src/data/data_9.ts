@@ -25770,9 +25770,10 @@ export function getTags(sourceName: string) {
   );
   return data.images[idx].tags.join(",");
 }
-export function getMetadata(sourceName: string) {
+export function getMetadata(sourceName: string): ImageMetadata {
   const idx = Number.parseInt(
     sourceName.slice(sourceName.search(/\d*.jpg/)).split(".")[0]
   );
   return data.images[idx];
 }
+export type ImageMetadata = typeof data.images[0];

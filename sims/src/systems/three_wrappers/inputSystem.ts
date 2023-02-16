@@ -3,7 +3,6 @@ import { InputComponent } from "../../components/InputComponent.js";
 import { getTags } from "../../data/data_9.js";
 import { Vector2, Raycaster, Mesh } from "../../vendor/three.js";
 import { ResolvedTHREEManager } from "./THREEManager.js";
-import { getImageSourceURL, getTexture } from "./loadImages.js";
 import {
   instanceIdToEntityId,
   sceneIdToEntityId,

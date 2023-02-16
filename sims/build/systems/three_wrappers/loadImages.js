@@ -22,6 +22,7 @@ const imageSelection = [
 ];
 const numImages = imageSelection.length;
 const loadedTextures = Array(numImages);
+const imageToTextureId = {};
 export let numLoadedTextures = 0;
 const tl = new TextureLoader();
 const baseUrl = "https://sketchery-store.nyc3.cdn.digitaloceanspaces.com/";
@@ -37,20 +38,26 @@ Originally I just intended to redact names,
 But to you the viewer is there really,
 much a difference between a redacted name,
 and a redacted page`;
-async function loadImagesInBg() {
-    const loadCalls = imageSelection
-        .map((img) => `${baseUrl}${img}.jpg`)
-        .map((u) => tl
+function loadImage(i) {
+    const u = `${baseUrl}/${i.new}`;
+    return tl
         .loadAsync(u)
         .then((x) => {
-        loadedTextures[numLoadedTextures++] = x;
+        const idx = numLoadedTextures++;
+        imageToTextureId[i.new] = idx;
+        loadedTextures[idx] = x;
         return x;
     })
         .catch((error) => {
         if (getMetadata(u).flag?.includes("PRIVATE")) {
             messageToCallStack(msg, `Tried to access private file ${u}`);
         }
-    }));
+    });
+}
+async function loadImagesInBg() {
+    const loadCalls = imageSelection
+        .map((img) => getMetadata(`${img}.jpg`))
+        .map(loadImage);
     const textures = await Promise.all(loadCalls);
     console.log(textures);
 }

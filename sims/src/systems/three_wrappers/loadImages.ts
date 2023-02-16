@@ -1,4 +1,4 @@
-import { data, getMetadata } from "../../data/data_9.js";
+import { ImageMetadata, getMetadata } from "../../data/data_9.js";
 import { messageToCallStack } from "../../utils.js";
 import { Texture, TextureLoader } from "../../vendor/three.js";
 
@@ -23,6 +23,7 @@ const imageSelection = [
 ];
 const numImages = imageSelection.length;
 const loadedTextures: Texture[] = Array(numImages);
+const imageToTextureId: { [imageName: string]: number } = {};
 export let numLoadedTextures = 0;
 
 const tl = new TextureLoader();
@@ -42,23 +43,27 @@ But to you the viewer is there really,
 much a difference between a redacted name,
 and a redacted page`;
 
+function loadImage(i: ImageMetadata) {
+  const u = `${baseUrl}/${i.new}`;
+  return tl
+    .loadAsync(u)
+    .then((x) => {
+      const idx = numLoadedTextures++;
+      imageToTextureId[i.new] = idx;
+      loadedTextures[idx] = x;
+      return x;
+    })
+    .catch((error) => {
+      if (getMetadata(u).flag?.includes("PRIVATE")) {
+        messageToCallStack(msg, `Tried to access private file ${u}`);
+      }
+    });
+}
+
 async function loadImagesInBg() {
   const loadCalls = imageSelection
-    .map((img) => `${baseUrl}${img}.jpg`)
-    .map((u) =>
-      tl
-        .loadAsync(u)
-        .then((x) => {
-          loadedTextures[numLoadedTextures++] = x;
-
-          return x;
-        })
-        .catch((error) => {
-          if (getMetadata(u).flag?.includes("PRIVATE")) {
-            messageToCallStack(msg, `Tried to access private file ${u}`);
-          }
-        })
-    );
+    .map((img) => getMetadata(`${img}.jpg`))
+    .map(loadImage);
   const textures = await Promise.all(loadCalls);
   console.log(textures);
 }
