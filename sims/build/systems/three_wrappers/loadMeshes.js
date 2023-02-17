@@ -1,12 +1,12 @@
 import { DynamicDrawUsage, InstancedMesh, MeshLambertMaterial, Mesh, MeshBasicMaterial, PlaneGeometry, SphereGeometry, } from "../../vendor/three.js";
 import { getBufferGeometryFromGLTF, getMeshFromGLTF, loadGLTFsInBg, } from "./loadGLTFs.js";
-import { getRandomTexture } from "./loadImages.js";
+import { getTextureByName } from "./loadImages.js";
 import { instanceIdToEntityId, registers } from "./threeOptimizations.js";
 export const meshInitFuncs = {
     sphere: (tm) => new Mesh(new SphereGeometry(1, 2, 2), new MeshBasicMaterial({ color: 0xff00ff })),
     head_top: (tm) => tm.meshes["head_top"],
     head_bottom: (tm) => tm.meshes["head_bottom"],
-    sketchbook_page: (tm) => new Mesh(new PlaneGeometry(10, 12, 2, 2).rotateX(-Math.PI / 3), new MeshBasicMaterial({ map: getRandomTexture() })),
+    sketchbook_page: (tm, pageName) => new Mesh(new PlaneGeometry(10, 12, 2, 2).rotateX(-Math.PI / 3), new MeshBasicMaterial({ map: getTextureByName(pageName) })),
     plane: (tm) => new Mesh(new PlaneGeometry(10, 12, 2, 2), new MeshBasicMaterial({ color: 0xff00ff })),
 };
 loadGLTFsInBg([

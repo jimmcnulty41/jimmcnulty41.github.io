@@ -4,6 +4,7 @@ import { isEntityWith, EntityWith } from "../components/Components.js";
 import { tagSimilarity } from "../components/MetadataComponent.js";
 import {
   PositionComponent,
+  add,
   dot,
   isToLeft,
   manhattanDist,
@@ -51,7 +52,6 @@ export function wanderTowardSystem(model: Model): Model {
           (n) =>
             aBetweenBandC(n.components.position, position, wanderToward.target)
         );
-
         const targetAxis = subtract(wanderToward.target, position);
         const len = manhattanDist(targetAxis);
 
@@ -60,7 +60,7 @@ export function wanderTowardSystem(model: Model): Model {
           t: tagSimilarity(metadata, neighbor.components.metadata),
         }));
         const rotation = blah.reduce((sum, n) => n.d + sum, 0);
-        const resultingDir = rotate(targetAxis, rotation);
+        const resultingDir = rotate(targetAxis, rotation / wanderToward.speed);
 
         return {
           ...e,
@@ -74,14 +74,7 @@ export function wanderTowardSystem(model: Model): Model {
             metadata,
             wanderToward: {
               ...wanderToward,
-              target:
-                len < 0.02
-                  ? {
-                      x: wanderToward.target.y,
-                      y: wanderToward.target.x,
-                      z: wanderToward.target.z,
-                    }
-                  : wanderToward.target,
+              target: resultingDir,
             },
           },
         };

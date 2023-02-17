@@ -2,7 +2,6 @@ import { OrbitControls } from "../../vendor/OrbitControls.js";
 import {} from "../../vendor/three.js";
 import {
   Camera,
-  Mesh,
   Renderer,
   HemisphereLight,
   PerspectiveCamera,

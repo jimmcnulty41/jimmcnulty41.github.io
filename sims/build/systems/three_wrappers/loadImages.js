@@ -1,7 +1,7 @@
 import { getMetadata } from "../../data/data_9.js";
 import { messageToCallStack } from "../../utils.js";
 import { TextureLoader } from "../../vendor/three.js";
-const imageSelection = [
+export const imageSelection = [
     162, 415, 189, 258, 875, 28, 34, 640, 193, 333, 769, 148, 278, 351, 372, 347,
     168, 658, 31, 470, 490, 328, 64, 886, 362, 485, 446, 820, 108, 306, 488, 392,
     588, 483, 821, 216, 332, 176, 99, 86, 687, 143, 849, 824, 793, 215, 210, 423,
@@ -67,6 +67,18 @@ export async function getTexture(requestedTexture) {
         await new Promise((resolve) => setTimeout(resolve, 10));
     }
     return loadedTextures[requestedTexture];
+}
+export function getTextureByName(name) {
+    const idx = imageToTextureId[name];
+    if (!imageToTextureId[name]) {
+        console.error(name);
+        return loadedTextures[0];
+    }
+    return loadedTextures[imageToTextureId[name]];
+}
+export function getRandomImageName() {
+    const loadedImages = Object.keys(imageToTextureId);
+    return loadedImages[Math.floor(Math.random() * loadedImages.length)];
 }
 export function getRandomTexture() {
     const i = Math.floor(Math.random() * numLoadedTextures);

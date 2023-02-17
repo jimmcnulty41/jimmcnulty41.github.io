@@ -9,20 +9,13 @@ import { jumpOnSelectedSystem } from "./systems/jumpOnSelectedSystem.js";
 import { THREEManager, getResolvedTHREEManager, } from "./systems/three_wrappers/THREEManager.js";
 import { initTHREEObjectSystem } from "./systems/three_wrappers/initTHREEObjectSystem.js";
 import { wanderTowardSystem } from "./systems/wanderTowardSystem.js";
+import { getRandomImageName } from "./systems/three_wrappers/loadImages.js";
+import { getMetadata } from "./data/data_9.js";
 const disabledSystems = ["report"];
 let model = {
     time: 0,
     input: defaultInputComponent,
     entities: [
-        // {
-        //   id: "0",
-        //   components: {
-        //     render: {
-        //       type: "grid",
-        //     },
-        //     position: { x: 0, y: 0, z: 0 },
-        //   },
-        // },
         {
             id: "1",
             components: {
@@ -31,25 +24,10 @@ let model = {
                     axis: 1,
                     amt: 0,
                 },
-                calculatePosition: {
-                    calculation: (m, e) => {
-                        const t = m.time;
-                        const t2 = t - 20;
-                        if (t2 < 0)
-                            return { z: 0 };
-                        return { z: -t2 };
-                    },
-                },
-                calculateRotation: {
-                    calculation: (m, e) => {
-                        const t = m.time;
-                        return t;
-                    },
-                },
                 initRender: {
                     refName: "head_top",
                 },
-                position: { x: 0, y: -10, z: 0 },
+                position: { x: 0, y: 10, z: 0 },
             },
         },
         {
@@ -58,7 +36,7 @@ let model = {
                 initRender: {
                     refName: "head_bottom",
                 },
-                position: { x: 0, y: -10, z: 0 },
+                position: { x: 0, y: 10, z: 0 },
             },
         },
     ],
@@ -68,25 +46,31 @@ function newDefaultEntity(id) {
     const roll = Math.random();
     const roll2 = Math.random();
     const randomSpot = {
-        x: Math.random() * 10,
-        y: Math.random() * 10,
-        z: 0,
+        x: Math.random() * 100 - 50,
+        y: 0,
+        z: Math.random() * 100 - 50,
     };
+    const imageName = getRandomImageName();
+    const m = getMetadata(imageName);
     return {
         id,
         components: {
             age: {},
             initRender: {
                 refName: "sketchbook_page",
+                pageName: imageName,
+            },
+            metadata: {
+                tags: m.tags,
             },
             wanderToward: {
                 target: randomSpot,
-                speed: roll * 200,
-                friendliness: roll2,
+                speed: roll / 100,
+                friendliness: roll / 2,
             },
             position: {
-                x: -randomSpot.y,
-                y: randomSpot.x,
+                x: 0,
+                y: 0,
                 z: 0,
             },
             rotation: {
@@ -95,18 +79,18 @@ function newDefaultEntity(id) {
                 axis: 1,
             },
             scale: {
-                amt: 1,
+                amt: 1 - roll / 2,
             },
         },
     };
 }
-const blah = await getResolvedTHREEManager(new THREEManager(true));
+const blah = await getResolvedTHREEManager(new THREEManager(false));
 let systems = {
     advanceTimeSystem: (model) => ({
         ...model,
         time: model.time + 1,
     }),
-    addEntityEveryNTicksSystem: addEntityEveryNTicksSystem(newDefaultEntity, 10),
+    addEntityEveryNTicksSystem: addEntityEveryNTicksSystem(newDefaultEntity, 50),
     jumpOnSelectedSystem,
     ageSystem,
     wanderSystem,
@@ -122,12 +106,11 @@ function RunECS() {
     console.log("Simulation begins");
     update();
 }
-function update() {
+async function update() {
     window.requestAnimationFrame(() => update());
-    Object.keys(systems)
-        .filter((s) => !disabledSystems.includes(s))
-        .forEach((s) => {
-        model = systems[s](model);
-    });
+    const sys = Object.keys(systems).filter((s) => !disabledSystems.includes(s));
+    for (let i = 0; i < sys.length; ++i) {
+        model = await systems[sys[i]](model);
+    }
 }
 RunECS();

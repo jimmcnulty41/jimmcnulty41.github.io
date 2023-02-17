@@ -20,6 +20,7 @@ export function initTHREEObjectSystem(
     model.entities,
     (e): e is EntityWith<"initRender"> => e.components.initRender !== undefined
   );
+
   return {
     ...model,
     entities: [
@@ -31,7 +32,7 @@ export function initTHREEObjectSystem(
           components: {
             ...unaffected,
             render:
-              something[initRender.refName] === "instanced"
+              allocationStrategy[initRender.refName] === "instanced"
                 ? addObjectToTHREESceneFromInstance(tm, e)
                 : addObjectToTHREEScene(tm, e),
           },
@@ -69,7 +70,7 @@ function addObjectToTHREESceneFromInstance(
   };
 }
 
-const something: { [refName: string]: "instanced" | "standard" } = {
+const allocationStrategy: { [refName: string]: "instanced" | "standard" } = {
   rat: "instanced",
 };
 
@@ -83,7 +84,7 @@ function addObjectToTHREEScene(
     throw new Error("unknown refname");
   }
 
-  const o = meshFn(tm);
+  const o = meshFn(tm, e.components.initRender.pageName || "");
   tm.scene.add(o);
   const idx = tm.scene.children.findIndex((c) => c.id === o.id);
   sceneIdToEntityId[o.id] = e.id;

@@ -13,7 +13,7 @@ export function initTHREEObjectSystem(tm, model) {
                     ...e,
                     components: {
                         ...unaffected,
-                        render: something[initRender.refName] === "instanced"
+                        render: allocationStrategy[initRender.refName] === "instanced"
                             ? addObjectToTHREESceneFromInstance(tm, e)
                             : addObjectToTHREEScene(tm, e),
                     },
@@ -40,7 +40,7 @@ function addObjectToTHREESceneFromInstance(tm, entity) {
         id,
     };
 }
-const something = {
+const allocationStrategy = {
     rat: "instanced",
 };
 function addObjectToTHREEScene(tm, e) {
@@ -49,7 +49,7 @@ function addObjectToTHREEScene(tm, e) {
     if (!meshFn) {
         throw new Error("unknown refname");
     }
-    const o = meshFn(tm);
+    const o = meshFn(tm, e.components.initRender.pageName || "");
     tm.scene.add(o);
     const idx = tm.scene.children.findIndex((c) => c.id === o.id);
     sceneIdToEntityId[o.id] = e.id;

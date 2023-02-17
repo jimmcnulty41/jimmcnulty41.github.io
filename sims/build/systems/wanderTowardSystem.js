@@ -34,7 +34,7 @@ export function wanderTowardSystem(model) {
                     t: tagSimilarity(metadata, neighbor.components.metadata),
                 }));
                 const rotation = blah.reduce((sum, n) => n.d + sum, 0);
-                const resultingDir = rotate(targetAxis, rotation);
+                const resultingDir = rotate(targetAxis, rotation / wanderToward.speed);
                 return {
                     ...e,
                     components: {
@@ -47,13 +47,7 @@ export function wanderTowardSystem(model) {
                         metadata,
                         wanderToward: {
                             ...wanderToward,
-                            target: len < 0.02
-                                ? {
-                                    x: wanderToward.target.y,
-                                    y: wanderToward.target.x,
-                                    z: wanderToward.target.z,
-                                }
-                                : wanderToward.target,
+                            target: resultingDir,
                         },
                     },
                 };

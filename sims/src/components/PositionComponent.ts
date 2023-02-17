@@ -48,7 +48,7 @@ export function angleBetween(
 }
 
 function rotate90(v1: PositionComponent): PositionComponent {
-  return { x: -v1.y, y: v1.x, z: v1.z };
+  return { x: -v1.z, y: v1.y, z: v1.x };
 }
 
 function toRad(degrees: number): number {
@@ -67,14 +67,14 @@ export function rotate(
 ): PositionComponent {
   const r = toRad(degrees);
   return {
-    x: v1.x * Math.cos(r) - v1.y * Math.sin(r),
-    y: v1.x * Math.sin(r) + v1.y * Math.cos(r),
-    z: v1.z,
+    x: v1.x * Math.cos(r) - v1.z * Math.sin(r),
+    y: v1.y,
+    z: v1.x * Math.sin(r) + v1.z * Math.cos(r),
   };
 }
 
 function projectOntoGround(v1: PositionComponent) {
-  return { x: v1.x, y: v1.y, z: 0 };
+  return { x: v1.x, y: 0, z: v1.z };
 }
 
 export function isToLeft(

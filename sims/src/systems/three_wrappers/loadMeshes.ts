@@ -13,7 +13,7 @@ import {
   getMeshFromGLTF,
   loadGLTFsInBg,
 } from "./loadGLTFs.js";
-import { getRandomTexture } from "./loadImages.js";
+import { getRandomTexture, getTextureByName } from "./loadImages.js";
 import { instanceIdToEntityId, registers } from "./threeOptimizations.js";
 
 interface InstanceBookkeeping {
@@ -30,10 +30,10 @@ export const meshInitFuncs = {
     ),
   head_top: (tm: ResolvedTHREEManager) => tm.meshes["head_top"],
   head_bottom: (tm: ResolvedTHREEManager) => tm.meshes["head_bottom"],
-  sketchbook_page: (tm: ResolvedTHREEManager) =>
+  sketchbook_page: (tm: ResolvedTHREEManager, pageName: string) =>
     new Mesh(
       new PlaneGeometry(10, 12, 2, 2).rotateX(-Math.PI / 3),
-      new MeshBasicMaterial({ map: getRandomTexture() })
+      new MeshBasicMaterial({ map: getTextureByName(pageName) })
     ),
   plane: (tm: ResolvedTHREEManager) =>
     new Mesh(
