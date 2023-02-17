@@ -1,10 +1,13 @@
 import { isEntityWith } from "../components/Components.js";
 import { tagSimilarity } from "../components/MetadataComponent.js";
 import { dot, isToLeft, manhattanDist, rotate, subtract, } from "../components/PositionComponent.js";
-import { splitArray } from "../utils.js";
+import { report, splitArray } from "../utils.js";
+let vals = [];
+report(() => vals, "");
 function positionToBlock(p) {
-    const scale = 12;
-    return `${Math.floor(p.x / scale)}${Math.floor(p.y / scale)}${Math.floor(p.z / scale)}`;
+    const scale = 0.3;
+    const val = `${Math.floor(p.x / scale)},${Math.floor(p.y / scale)},${Math.floor(p.z / scale)}`;
+    return val;
 }
 function selection(entity) {
     return (isEntityWith(entity, "position") &&
@@ -20,6 +23,7 @@ export function wanderTowardSystem(model) {
             [key]: blockResidents[key] ? [...blockResidents[key], e] : [],
         };
     }, {});
+    vals.push(blockResidents);
     return {
         ...model,
         entities: [
@@ -31,19 +35,31 @@ export function wanderTowardSystem(model) {
                 const len = manhattanDist(targetAxis);
                 const blah = neighbors.map((neighbor) => ({
                     d: isToLeft(neighbor.components.position, targetAxis) ? -1 : 1,
-                    t: tagSimilarity(metadata, neighbor.components.metadata),
+                    t: neighbor.components.wanderToward.static
+                        ? 1
+                        : tagSimilarity(metadata, neighbor.components.metadata),
                 }));
-                const rotation = blah.reduce((sum, n) => n.d + sum, 0);
-                const resultingDir = rotate(targetAxis, rotation / wanderToward.speed);
+                const rotation = blah.reduce((sum, n) => {
+                    if (n.t > wanderToward.friendliness) {
+                        return sum + n.d;
+                    }
+                    else {
+                        return sum - n.d;
+                    }
+                }, 0);
+                const div = wanderToward.speed > 0 ? wanderToward.speed : 0.0000001;
+                const resultingDir = rotate(targetAxis, rotation / div);
                 return {
                     ...e,
                     components: {
                         ...unaffected,
-                        position: {
-                            x: position.x + resultingDir.x * wanderToward.speed,
-                            y: position.y + resultingDir.y * wanderToward.speed,
-                            z: position.z + resultingDir.z * wanderToward.speed,
-                        },
+                        position: wanderToward.static
+                            ? position
+                            : {
+                                x: position.x + resultingDir.x * wanderToward.speed,
+                                y: position.y + resultingDir.y * wanderToward.speed,
+                                z: position.z + resultingDir.z * wanderToward.speed,
+                            },
                         metadata,
                         wanderToward: {
                             ...wanderToward,

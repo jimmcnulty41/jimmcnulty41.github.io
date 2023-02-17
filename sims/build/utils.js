@@ -1,3 +1,10 @@
+export async function report(blah, yadda) {
+    while (blah().length < 1000) {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+    console.log(`${yadda || ""}:`);
+    console.log(blah());
+}
 export function vec3Sum(vecs) {
     return vecs.reduce((sum, p) => ({
         x: sum.x + p.x,

@@ -20,6 +20,7 @@ import {
   getResolvedTHREEManager,
 } from "./systems/three_wrappers/THREEManager.js";
 import { initTHREEObjectSystem } from "./systems/three_wrappers/initTHREEObjectSystem.js";
+import { getRandomImageName } from "./systems/three_wrappers/loadImages.js";
 
 const disabledSystems = ["report"];
 
@@ -79,23 +80,23 @@ let model: Model = {
 
 function newDefaultEntity(id: string): Entity {
   const internalRoll = Math.random();
-  const internalRoll2 = Math.random();
   const internalRoll3 = Math.random();
 
-  const center = { x: 0, y: 5, z: -10 };
+  const center = { x: 0, y: 5, z: 0 };
 
-  const p = remap(0, 1, 1, 200, true)(internalRoll);
-  const theta = remap(0, 1, 0, 2 * Math.PI)(internalRoll3);
+  const blah = Number.parseInt(id);
 
+  const nPerRow = 20;
+  const coneSize = Math.PI / 3;
+  const p = remap(0, 256, 6, 75, true)(blah);
+  const modAmt = (4 * Math.PI) / 3;
+  const theta = (blah % modAmt) + (3 * Math.PI) / 4;
   const target1 = {
     x: center.x + Math.cos(theta) * p,
     y: center.y - p / 4,
     z: center.z + Math.sin(theta) * p,
   };
-  const target2 = {
-    ...target1,
-    x: 0,
-  };
+
   return {
     id,
     components: {
@@ -103,6 +104,7 @@ function newDefaultEntity(id: string): Entity {
       age: {},
       initRender: {
         refName: "sketchbook_page",
+        pageName: getRandomImageName(),
       },
       position: {
         x: 0,
@@ -145,7 +147,7 @@ function newDefaultEntity(id: string): Entity {
             true
           )(getAge(m.time, e.components.age as AgeComponent));
           const target = {
-            x: lerp(target2.x, target1.x, t),
+            x: target1.x,
             y: m.input.entityUnderMouse === e.id ? target1.y + 5 : target1.y,
             z: target1.z,
           };

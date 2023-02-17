@@ -4,4 +4,5 @@ export interface WanderTowardComponent {
   target: PositionComponent;
   speed: number;
   friendliness: number; // 0-1
+  static?: boolean;
 }

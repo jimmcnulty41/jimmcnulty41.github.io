@@ -17,26 +17,43 @@ let model = {
     input: defaultInputComponent,
     entities: [
         {
-            id: "1",
+            id: "0",
             components: {
-                rotation: {
-                    style: "angle axis",
-                    axis: 1,
-                    amt: 0,
+                metadata: { tags: [] },
+                wanderToward: {
+                    target: { x: 0, y: 0, z: 0 },
+                    speed: 1,
+                    friendliness: 1,
+                    static: true,
                 },
                 initRender: {
-                    refName: "head_top",
+                    refName: "sphere",
                 },
-                position: { x: 0, y: 10, z: 0 },
+                position: {
+                    x: 0,
+                    y: 0,
+                    z: 0,
+                },
             },
         },
         {
-            id: "0",
+            id: "1",
             components: {
-                initRender: {
-                    refName: "head_bottom",
+                metadata: { tags: ["cover"] },
+                wanderToward: {
+                    target: { x: -20, y: 0, z: -20 },
+                    speed: 0.000001,
+                    friendliness: 1,
+                    static: true,
                 },
-                position: { x: 0, y: 10, z: 0 },
+                initRender: {
+                    refName: "sphere",
+                },
+                position: {
+                    x: -20,
+                    y: 0,
+                    z: -20,
+                },
             },
         },
     ],
@@ -84,13 +101,13 @@ function newDefaultEntity(id) {
         },
     };
 }
-const blah = await getResolvedTHREEManager(new THREEManager(false));
+const blah = await getResolvedTHREEManager(new THREEManager(true));
 let systems = {
     advanceTimeSystem: (model) => ({
         ...model,
         time: model.time + 1,
     }),
-    addEntityEveryNTicksSystem: addEntityEveryNTicksSystem(newDefaultEntity, 50),
+    addEntityEveryNTicksSystem: addEntityEveryNTicksSystem(newDefaultEntity, 5),
     jumpOnSelectedSystem,
     ageSystem,
     wanderSystem,

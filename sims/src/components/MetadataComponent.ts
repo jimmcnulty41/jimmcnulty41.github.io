@@ -1,3 +1,5 @@
+import { report } from "../utils.js";
+
 export interface MetadataComponent {
   tags: string[];
 }
@@ -11,8 +13,14 @@ export interface MetadataComponent {
  * @returns 0-1
  */
 export function tagSimilarity(a: MetadataComponent, b: MetadataComponent) {
-  return (
-    a.tags.reduce((sum, t) => (b.tags.includes(t) ? sum + 1 : sum), 0) /
-    a.tags.length
-  );
+  const val = a.tags.length
+    ? a.tags.reduce((sum, t) => (b.tags.includes(t) ? sum + 1 : sum), 0) /
+      a.tags.length
+    : 0;
+  vals.push(val);
+  if (isNaN(val)) console.log(a, b);
+  return val;
 }
+let vals: number[] = [];
+
+report(() => vals);

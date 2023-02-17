@@ -25,7 +25,7 @@ export type InstanceMeshes = { [name: string]: InstanceBookkeeping };
 export const meshInitFuncs = {
   sphere: (tm: ResolvedTHREEManager) =>
     new Mesh(
-      new SphereGeometry(1, 2, 2),
+      new SphereGeometry(1, 12, 12),
       new MeshBasicMaterial({ color: 0xff00ff })
     ),
   head_top: (tm: ResolvedTHREEManager) => tm.meshes["head_top"],

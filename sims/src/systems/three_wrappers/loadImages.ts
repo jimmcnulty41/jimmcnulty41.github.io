@@ -77,7 +77,7 @@ export async function getTexture(requestedTexture: number): Promise<Texture> {
 }
 export function getTextureByName(name: string): Texture {
   const idx = imageToTextureId[name];
-  if (!imageToTextureId[name]) {
+  if (imageToTextureId[name] === undefined) {
     console.error(name);
     return loadedTextures[0];
   }

@@ -1,5 +1,13 @@
 import { PositionComponent } from "./components/PositionComponent";
 
+export async function report(blah: () => unknown[], yadda?: string) {
+  while (blah().length < 1000) {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+  }
+  console.log(`${yadda || ""}:`);
+  console.log(blah());
+}
+
 export function vec3Sum(vecs: { x: number; y: number; z: number }[]) {
   return vecs.reduce(
     (sum, p) => ({

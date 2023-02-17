@@ -149,7 +149,7 @@ class ImageViewer extends HTMLElement {
           text-decoration: none;
           border: none;
           margin: 4px;
-          background: none;
+          background: yellow;
           color: #6D6D6D;
           font-weight: bolder;
         }
