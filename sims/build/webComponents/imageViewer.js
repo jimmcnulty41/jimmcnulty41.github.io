@@ -217,6 +217,13 @@ class ImageViewer extends HTMLElement {
             tags.forEach((t) => {
                 const tagEl = document.createElement("button");
                 tagEl.innerText = t;
+                tagEl.onclick = () => {
+                    const event = new CustomEvent("tagSelect", {
+                        detail: t,
+                    });
+                    window.dispatchEvent(event);
+                    this.parentNode?.removeChild(this);
+                };
                 this.tagContainer.appendChild(tagEl);
             });
         }

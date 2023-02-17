@@ -88,7 +88,7 @@ function newDefaultEntity(id: string): Entity {
 
   const nPerRow = 20;
   const coneSize = Math.PI / 3;
-  const p = remap(0, 256, 6, 75, true)(blah);
+  const p = remap(0, 256, 6, 100, true)(blah);
   const modAmt = (4 * Math.PI) / 3;
   const theta = (blah % modAmt) + (3 * Math.PI) / 4;
   const target1 = {
