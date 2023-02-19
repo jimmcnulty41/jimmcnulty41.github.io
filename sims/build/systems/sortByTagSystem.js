@@ -50,6 +50,7 @@ export function sortByTagSystem(model) {
                 age: {
                     birthday: model.time,
                 },
+                scale: 1,
                 calculateScale: undefined,
                 calculatePosition: [
                     getLerpToPosComponent(target1),
