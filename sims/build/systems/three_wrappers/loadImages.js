@@ -59,7 +59,7 @@ async function loadImagesInBg() {
         .map((img) => getMetadata(`${img}.jpg`))
         .map(loadImage);
     const textures = await Promise.all(loadCalls);
-    console.log(textures);
+    console.log(`textures loaded by ${performance.now()}`);
 }
 loadImagesInBg();
 export async function getTexture(requestedTexture) {
@@ -82,7 +82,6 @@ export function getRandomImageName() {
     let r = Math.floor(Math.random() * loadedImages.length);
     for (let i = 0; i < 100 && spawnedImages.includes(r); ++i) {
         r = Math.floor(Math.random() * loadedImages.length);
-        console.log("rerolling random image");
     }
     spawnedImages.push(r);
     return loadedImages[r];

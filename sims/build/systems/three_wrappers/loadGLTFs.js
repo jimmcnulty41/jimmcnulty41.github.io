@@ -43,7 +43,6 @@ export async function loadGLTFsInBg(pathObjects) {
     }));
     const gltfs = await Promise.all(loadCalls);
     console.log(`GLTFs loaded by ${performance.now()}`);
-    console.log(gltfs);
 }
 export async function getBufferGeometryFromGLTF(refName) {
     while (!Geometries[refName]) {

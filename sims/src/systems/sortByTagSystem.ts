@@ -22,7 +22,6 @@ export function sortByTagSystem(model: Model): Model {
   if (!changed) {
     return model;
   }
-  console.log(tag);
   changed = false;
   const currentTag = tag;
   const { matching, notMatching } = splitArray(model.entities, selection);

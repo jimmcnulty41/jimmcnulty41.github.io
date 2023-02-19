@@ -97,8 +97,6 @@ class ImageViewer extends HTMLElement {
     }
     if (this.dimensions[1] > window.innerHeight - 64) {
       // screen squat; 64 is button height
-      console.log("su");
-
       const aspect = this.dimensions[0] / this.dimensions[1];
       return {
         width: aspect * window.innerHeight,
