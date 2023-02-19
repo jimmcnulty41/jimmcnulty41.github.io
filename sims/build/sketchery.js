@@ -11,6 +11,8 @@ import { getAge } from "./components/AgeComponent.js";
 import { THREEManager, getResolvedTHREEManager, } from "./systems/three_wrappers/THREEManager.js";
 import { initTHREEObjectSystem } from "./systems/three_wrappers/initTHREEObjectSystem.js";
 import { getRandomImageName } from "./systems/three_wrappers/loadImages.js";
+import { sortByTagSystem } from "./systems/sortByTagSystem.js";
+import { getMetadata } from "./data/data_9.js";
 const disabledSystems = ["report"];
 let model = {
     time: 0,
@@ -83,6 +85,8 @@ function newDefaultEntity(id) {
         y: center.y - p / 4,
         z: center.z + Math.sin(theta) * p,
     };
+    const imageName = getRandomImageName();
+    const m = getMetadata(imageName);
     return {
         id,
         components: {
@@ -90,7 +94,10 @@ function newDefaultEntity(id) {
             age: {},
             initRender: {
                 refName: "sketchbook_page",
-                pageName: getRandomImageName(),
+                pageName: imageName,
+            },
+            metadata: {
+                tags: m.tags,
             },
             position: {
                 x: 0,
@@ -138,6 +145,7 @@ let systems = {
         ...model,
         time: model.time + 1,
     }),
+    sortByTagSystem,
     jumpOnSelectedSystem,
     ageSystem,
     wanderSystem,
