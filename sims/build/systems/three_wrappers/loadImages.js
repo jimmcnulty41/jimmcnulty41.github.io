@@ -76,9 +76,16 @@ export function getTextureByName(name) {
     }
     return loadedTextures[imageToTextureId[name]];
 }
+const spawnedImages = [];
 export function getRandomImageName() {
     const loadedImages = Object.keys(imageToTextureId);
-    return loadedImages[Math.floor(Math.random() * loadedImages.length)];
+    let r = Math.floor(Math.random() * loadedImages.length);
+    for (let i = 0; i < 100 && spawnedImages.includes(r); ++i) {
+        r = Math.floor(Math.random() * loadedImages.length);
+        console.log("rerolling random image");
+    }
+    spawnedImages.push(r);
+    return loadedImages[r];
 }
 export function getRandomTexture() {
     const i = Math.floor(Math.random() * numLoadedTextures);

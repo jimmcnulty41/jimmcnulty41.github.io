@@ -154,7 +154,7 @@ let systems = {
     calcScaleSystem,
     calcPositionSystem,
     //reportSystem,
-    addEntityEveryNTicksSystem: addEntityEveryNTicksSystem(newDefaultEntity, 1),
+    addEntityEveryNTicksSystem: addEntityEveryNTicksSystem(newDefaultEntity, 1, 0, 256),
     initTHREEObject: (m) => initTHREEObjectSystem(blah, m),
     updateTHREEScene: (m) => updateTHREEScene(blah, m),
 };
