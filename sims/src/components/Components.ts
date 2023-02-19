@@ -37,7 +37,7 @@ type ComponentTypes = {
   calculateScale: CalcScaleComponent;
   color: ColorComponent;
   position: PositionComponent;
-  calculatePosition: CalcPositionComponent;
+  calculatePosition: CalcPositionComponent[];
 };
 export type Components = Partial<ComponentTypes>;
 export function levitates(

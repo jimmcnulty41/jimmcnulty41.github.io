@@ -9,6 +9,7 @@ import {
   calcPositionSystem,
   calcRotationSystem,
   calcScaleSystem,
+  getLerpToPosComponent,
 } from "./systems/calcTransformSystem.js";
 import { ageSystem } from "./systems/ageSystem.js";
 import { defaultInputComponent } from "./components/InputComponent.js";
@@ -45,14 +46,16 @@ let model: Model = {
           axis: 1,
           amt: 0,
         },
-        calculatePosition: {
-          calculation: (m, e) => {
-            const t = m.time;
-            const t2 = t - 20;
-            if (t2 < 0) return { z: 0 };
-            return { z: -t2 };
+        calculatePosition: [
+          {
+            calculation: (m, e) => {
+              const t = m.time;
+              const t2 = t - 20;
+              if (t2 < 0) return { z: 0 };
+              return { z: -t2 };
+            },
           },
-        },
+        ],
         calculateRotation: {
           calculation: (m, e) => {
             const t = m.time;
@@ -137,27 +140,15 @@ function newDefaultEntity(id: string): Entity {
           );
         },
       },
-      calculatePosition: {
-        calculation: (m, e) => {
-          const t = remap(
-            0,
-            50,
-            0,
-            1,
-            true
-          )(getAge(m.time, e.components.age as AgeComponent));
-          const target = {
-            x: target1.x,
-            y: m.input.entityUnderMouse === e.id ? target1.y + 5 : target1.y,
-            z: target1.z,
-          };
-          return {
-            x: lerp(e.components.position.x, target.x, t),
-            y: lerp(e.components.position.y, target.y, t),
-            z: lerp(e.components.position.z, target.z, t),
-          };
+      calculatePosition: [
+        getLerpToPosComponent(target1),
+        {
+          calculation: (m, e) => {
+            const { position } = e.components;
+            return { y: m.input.entityUnderMouse === e.id ? 4 : 0 };
+          },
         },
-      },
+      ],
     },
   };
 }

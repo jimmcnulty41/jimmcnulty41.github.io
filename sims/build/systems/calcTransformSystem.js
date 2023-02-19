@@ -1,3 +1,5 @@
+import { getAge } from "../components/AgeComponent.js";
+import { lerp, remap } from "../utils.js";
 import { hasCalculatedPosition, hasCalculatedRotation, hasCalculatedScale, } from "../components/Components.js";
 export function calcRotationSystem(model) {
     return {
@@ -46,12 +48,14 @@ export function calcPositionSystem(model) {
             ...model.entities.filter((e) => !hasCalculatedPosition(e)),
             ...model.entities.filter(hasCalculatedPosition).map((e) => {
                 const { position, calculatePosition, ...unaffectedComponents } = e.components;
-                const { x, y, z } = calculatePosition.calculation(model, e);
-                const pos = {
-                    x: x === undefined ? position.x : x,
-                    y: y === undefined ? position.y : y,
-                    z: z === undefined ? position.z : z,
-                };
+                const pos = calculatePosition.reduce((pos, c) => {
+                    const { x, y, z } = c.calculation(model, e);
+                    return {
+                        x: x === undefined ? pos.x : pos.x + x,
+                        y: y === undefined ? pos.y : pos.y + y,
+                        z: z === undefined ? pos.z : pos.z + z,
+                    };
+                }, { x: 0, y: 0, z: 0 });
                 return {
                     ...e,
                     components: {
@@ -62,5 +66,17 @@ export function calcPositionSystem(model) {
                 };
             }),
         ],
+    };
+}
+export function getLerpToPosComponent(pos) {
+    return {
+        calculation: (m, e) => {
+            const t = remap(0, 50, 0, 1, true)(getAge(m.time, e.components.age));
+            return {
+                x: lerp(e.components.position.x, pos.x, t),
+                y: lerp(e.components.position.y, pos.y, t),
+                z: lerp(e.components.position.z, pos.z, t),
+            };
+        },
     };
 }
