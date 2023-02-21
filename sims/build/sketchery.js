@@ -1,18 +1,15 @@
 import { updateTHREEScene } from "./systems/three_wrappers/updateTHREESceneSystem.js";
 import { wanderSystem } from "./systems/wanderSystem.js";
 import { addEntityEveryNTicksSystem } from "./systems/addEntityEveryNTicksSystem.js";
-import { remap } from "./utils.js";
 import { levitateSystem } from "./systems/levitateSystem.js";
-import { calcPositionSystem, calcRotationSystem, calcScaleSystem, getLerpToPosComponent, } from "./systems/calcTransformSystem.js";
+import { calcPositionSystem, calcRotationSystem, calcScaleSystem, } from "./systems/calcTransformSystem.js";
 import { ageSystem } from "./systems/ageSystem.js";
 import { defaultInputComponent } from "./components/InputComponent.js";
 import { jumpOnSelectedSystem } from "./systems/jumpOnSelectedSystem.js";
-import { getAge } from "./components/AgeComponent.js";
 import { THREEManager, getResolvedTHREEManager, } from "./systems/three_wrappers/THREEManager.js";
 import { initTHREEObjectSystem } from "./systems/three_wrappers/initTHREEObjectSystem.js";
-import { getRandomImageName } from "./systems/three_wrappers/loadImages.js";
 import { sortByTagSystem } from "./systems/sortByTagSystem.js";
-import { getMetadata } from "./data/data_9.js";
+import { sketchbook_page_in_spiral } from "./entityLibrary.js";
 const disabledSystems = ["report"];
 let model = {
     time: 0,
@@ -70,75 +67,6 @@ let model = {
     ],
     idCounter: 2,
 };
-function newDefaultEntity(id) {
-    const internalRoll = Math.random();
-    const internalRoll3 = Math.random();
-    const center = { x: 0, y: 5, z: 0 };
-    const blah = Number.parseInt(id);
-    const nPerRow = 20;
-    const coneSize = Math.PI / 3;
-    const p = remap(0, 256, 6, 100, true)(blah);
-    const modAmt = (4 * Math.PI) / 3;
-    const theta = (blah % modAmt) + (3 * Math.PI) / 4;
-    const target1 = {
-        x: center.x + Math.cos(theta) * p,
-        y: center.y - p / 4,
-        z: center.z + Math.sin(theta) * p,
-    };
-    const imageName = getRandomImageName();
-    const m = getMetadata(imageName);
-    return {
-        id,
-        components: {
-            color: { r: 1, g: 1, b: 1 },
-            age: {},
-            initRender: {
-                refName: "sketchbook_page",
-                pageName: imageName,
-            },
-            metadata: {
-                tags: m.tags,
-            },
-            position: {
-                x: 0,
-                y: internalRoll3 * 4,
-                z: 0,
-            },
-            rotation: {
-                style: "angle axis",
-                amt: 0,
-                axis: 1,
-            },
-            scale: {
-                amt: 0,
-            },
-            calculateScale: {
-                calculation: (m, e) => {
-                    const t = e.components.age
-                        ? getAge(m.time, e.components.age)
-                        : m.time;
-                    return remap(0, 100, 0, 1, true)(t);
-                },
-            },
-            calculateRotation: {
-                calculation: (m, e) => {
-                    const t = m.input.entityUnderMouse === e.id ? m.time / 2 : m.time / 12;
-                    return (e.components.rotation.amt +
-                        Math.sin(t + internalRoll * 100) / 100);
-                },
-            },
-            calculatePosition: [
-                getLerpToPosComponent(target1),
-                {
-                    calculation: (m, e) => {
-                        const { position } = e.components;
-                        return { y: m.input.entityUnderMouse === e.id ? 4 : 0 };
-                    },
-                },
-            ],
-        },
-    };
-}
 const blah = await getResolvedTHREEManager(new THREEManager(false));
 let systems = {
     advanceTimeSystem: (model) => ({
@@ -154,7 +82,7 @@ let systems = {
     calcScaleSystem,
     calcPositionSystem,
     //reportSystem,
-    addEntityEveryNTicksSystem: addEntityEveryNTicksSystem(newDefaultEntity, 1, 0, 256),
+    addEntityEveryNTicksSystem: addEntityEveryNTicksSystem(sketchbook_page_in_spiral, 1, 0, 256),
     initTHREEObject: (m) => initTHREEObjectSystem(blah, m),
     updateTHREEScene: (m) => updateTHREEScene(blah, m),
 };

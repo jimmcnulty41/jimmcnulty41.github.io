@@ -91,3 +91,25 @@ export function messageToCallStack(message: string, errorMsg: string) {
 
   f();
 }
+
+export function spiral({
+  angle,
+  offset,
+  center,
+}: {
+  angle: number;
+  offset: number;
+  center: PositionComponent;
+}) {
+  const r = remap(0, 256, 6, 100, true);
+  function blah(i: number) {
+    const p = r(i);
+    const theta = (i % angle) + offset;
+    return {
+      x: center.x + Math.cos(theta) * p,
+      y: center.y - p / 4,
+      z: center.z + Math.sin(theta) * p,
+    };
+  }
+  return blah;
+}

@@ -2,7 +2,7 @@ import { Entity } from "../Entity.js";
 import { Model } from "../Model.js";
 import { CalcPositionComponent } from "../components/CalcTransformComponents.js";
 import { EntityWith, isEntityWith } from "../components/Components.js";
-import { remap, splitArray } from "../utils.js";
+import { spiral, splitArray } from "../utils.js";
 import { getLerpToPosComponent } from "./calcTransformSystem.js";
 
 let tag = "";
@@ -18,6 +18,12 @@ function selection(
 ): entity is EntityWith<"metadata" | "position"> {
   return isEntityWith(entity, "metadata") && isEntityWith(entity, "position");
 }
+const s = spiral({
+  angle: Math.PI,
+  offset: Math.PI,
+  center: { x: 0, y: 5, z: 0 },
+});
+
 export function sortByTagSystem(model: Model): Model {
   if (!changed) {
     return model;
@@ -41,17 +47,8 @@ export function sortByTagSystem(model: Model): Model {
       }
       return 0;
     })
-    .map((e, i) => {
-      const center = { x: 0, y: 5, z: 0 };
-
-      const p = remap(0, 256, 6, 100, true)(i);
-      const modAmt = (4 * Math.PI) / 3;
-      const theta = (i % modAmt) + (3 * Math.PI) / 4;
-      const target1 = {
-        x: center.x + Math.cos(theta) * p,
-        y: center.y - p / 4,
-        z: center.z + Math.sin(theta) * p,
-      };
+    .map((e, i): Entity => {
+      const target = s(i);
       return {
         ...e,
         components: {
@@ -62,13 +59,13 @@ export function sortByTagSystem(model: Model): Model {
           scale: { amt: 1 },
           calculateScale: undefined,
           calculatePosition: [
-            getLerpToPosComponent(target1),
+            getLerpToPosComponent(target),
             {
               calculation: (m, e) => {
                 const { position } = e.components;
                 return { y: m.input.entityUnderMouse === e.id ? 4 : 0 };
               },
-            } as CalcPositionComponent,
+            },
           ],
         },
       };
