@@ -107,8 +107,38 @@ export function spiral({
     const theta = (i % angle) + offset;
     return {
       x: center.x + Math.cos(theta) * p,
-      y: center.y - p / 4,
+      y: 0,
       z: center.z + Math.sin(theta) * p,
+    };
+  }
+  return blah;
+}
+
+interface GridParams {
+  start: PositionComponent;
+  end: PositionComponent;
+  numPerRow: number;
+  numPerColumn: number;
+}
+
+export function grid({
+  start,
+  end,
+  numPerRow,
+  numPerColumn,
+}: GridParams): (i: number) => { x: number; y: number; z: number } {
+  const rowSize = end.x - start.x;
+  const colSize = end.z - start.z;
+  const w = rowSize / numPerRow;
+  const h = colSize / numPerColumn;
+
+  function blah(i: number) {
+    const row = Math.floor(i / numPerRow);
+    const col = i % numPerRow;
+    return {
+      x: start.x + col * w,
+      y: 0,
+      z: start.z + row * h,
     };
   }
   return blah;

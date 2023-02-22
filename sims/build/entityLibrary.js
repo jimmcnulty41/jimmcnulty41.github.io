@@ -67,4 +67,66 @@ function sketchbook_page_in_spiral(id) {
         },
     };
 }
+function sketchbook_page_in_grid(g) {
+    function sketchbook_page_in_grid(id) {
+        const internalRoll = Math.random();
+        const internalRoll3 = Math.random();
+        const i = Number.parseInt(id);
+        const target1 = g(i);
+        const imageName = getRandomImageName();
+        const m = getMetadata(imageName);
+        return {
+            id,
+            components: {
+                color: { r: 1, g: 1, b: 1 },
+                age: {},
+                initRender: {
+                    refName: "sketchbook_page",
+                    pageName: imageName,
+                },
+                metadata: {
+                    tags: m.tags,
+                },
+                position: {
+                    x: 0,
+                    y: internalRoll3 * 4,
+                    z: 0,
+                },
+                rotation: {
+                    style: "angle axis",
+                    amt: 0,
+                    axis: 1,
+                },
+                scale: {
+                    amt: 0,
+                },
+                calculateScale: {
+                    calculation: (m, e) => {
+                        const t = e.components.age
+                            ? getAge(m.time, e.components.age)
+                            : m.time;
+                        return remap(0, 100, 0, 1, true)(t);
+                    },
+                },
+                calculateRotation: {
+                    calculation: (m, e) => {
+                        const t = m.input.entityUnderMouse === e.id ? m.time / 2 : m.time / 12;
+                        return (e.components.rotation.amt +
+                            Math.sin(t + internalRoll * 100) / 100);
+                    },
+                },
+                calculatePosition: [
+                    getLerpToPosComponent(target1),
+                    {
+                        calculation: (m, e) => {
+                            const { position } = e.components;
+                            return { y: m.input.entityUnderMouse === e.id ? 4 : 0 };
+                        },
+                    },
+                ],
+            },
+        };
+    }
+    return sketchbook_page_in_grid;
+}
 export { sketchbook_page_in_spiral };

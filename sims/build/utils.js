@@ -80,8 +80,24 @@ export function spiral({ angle, offset, center, }) {
         const theta = (i % angle) + offset;
         return {
             x: center.x + Math.cos(theta) * p,
-            y: center.y - p / 4,
+            y: 0,
             z: center.z + Math.sin(theta) * p,
+        };
+    }
+    return blah;
+}
+export function grid({ start, end, numPerRow, numPerColumn, }) {
+    const rowSize = end.x - start.x;
+    const colSize = end.z - start.z;
+    const w = rowSize / numPerRow;
+    const h = colSize / numPerColumn;
+    function blah(i) {
+        const row = Math.floor(i / numPerRow);
+        const col = i % numPerRow;
+        return {
+            x: start.x + col * w,
+            y: 0,
+            z: start.z + row * h,
         };
     }
     return blah;

@@ -8,7 +8,7 @@ import { defaultInputComponent } from "./components/InputComponent.js";
 import { jumpOnSelectedSystem } from "./systems/jumpOnSelectedSystem.js";
 import { THREEManager, getResolvedTHREEManager, } from "./systems/three_wrappers/THREEManager.js";
 import { initTHREEObjectSystem } from "./systems/three_wrappers/initTHREEObjectSystem.js";
-import { sortByTagSystem } from "./systems/sortByTagSystem.js";
+import { getSortByTagSystem, } from "./systems/sortByTagSystem.js";
 import { sketchbook_page_in_spiral } from "./entityLibrary.js";
 const disabledSystems = ["report"];
 let model = {
@@ -67,13 +67,13 @@ let model = {
     ],
     idCounter: 2,
 };
-const blah = await getResolvedTHREEManager(new THREEManager(false));
+const tm = await getResolvedTHREEManager(new THREEManager(false));
 let systems = {
     advanceTimeSystem: (model) => ({
         ...model,
         time: model.time + 1,
     }),
-    sortByTagSystem,
+    sortByTagSystem: getSortByTagSystem(tm),
     jumpOnSelectedSystem,
     ageSystem,
     wanderSystem,
@@ -83,8 +83,8 @@ let systems = {
     calcPositionSystem,
     //reportSystem,
     addEntityEveryNTicksSystem: addEntityEveryNTicksSystem(sketchbook_page_in_spiral, 1, 0, 256),
-    initTHREEObject: (m) => initTHREEObjectSystem(blah, m),
-    updateTHREEScene: (m) => updateTHREEScene(blah, m),
+    initTHREEObject: (m) => initTHREEObjectSystem(tm, m),
+    updateTHREEScene: (m) => updateTHREEScene(tm, m),
 };
 function RunECS() {
     console.log("Simulation begins");

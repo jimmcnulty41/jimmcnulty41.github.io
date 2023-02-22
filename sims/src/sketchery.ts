@@ -16,7 +16,10 @@ import {
   getResolvedTHREEManager,
 } from "./systems/three_wrappers/THREEManager.js";
 import { initTHREEObjectSystem } from "./systems/three_wrappers/initTHREEObjectSystem.js";
-import { sortByTagSystem } from "./systems/sortByTagSystem.js";
+import {
+  getSortByTagSystem,
+  sortByTagSystem,
+} from "./systems/sortByTagSystem.js";
 import { sketchbook_page_in_spiral } from "./entityLibrary.js";
 
 const disabledSystems = ["report"];
@@ -77,7 +80,7 @@ let model: Model = {
   idCounter: 2,
 };
 
-const blah = await getResolvedTHREEManager(new THREEManager(false));
+const tm = await getResolvedTHREEManager(new THREEManager(false));
 
 type System = (model: Model) => Model;
 type Systems = { [name: string]: System };
@@ -86,7 +89,7 @@ let systems: Systems = {
     ...model,
     time: model.time + 1,
   }),
-  sortByTagSystem,
+  sortByTagSystem: getSortByTagSystem(tm),
   jumpOnSelectedSystem,
   ageSystem,
   wanderSystem,
@@ -101,8 +104,8 @@ let systems: Systems = {
     0,
     256
   ),
-  initTHREEObject: (m) => initTHREEObjectSystem(blah, m),
-  updateTHREEScene: (m) => updateTHREEScene(blah, m),
+  initTHREEObject: (m) => initTHREEObjectSystem(tm, m),
+  updateTHREEScene: (m) => updateTHREEScene(tm, m),
 };
 
 function RunECS() {
