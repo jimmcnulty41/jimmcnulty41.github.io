@@ -1,5 +1,5 @@
 import { getTags } from "../../data/data_9.js";
-import { Vector2, Raycaster } from "../../vendor/three.js";
+import { Vector2, Raycaster, Vector3, Plane, } from "../../vendor/three.js";
 import { instanceIdToEntityId, sceneIdToEntityId, } from "./threeOptimizations.js";
 const raycaster = new Raycaster();
 const mouse_pos = new Vector2(1, 1);
@@ -45,6 +45,8 @@ export function inputSystem(tm, model) {
         };
     }
     raycaster.setFromCamera(mouse_pos, tm.camera);
+    const v = new Vector3();
+    raycaster.ray.intersectPlane(new Plane(new Vector3(0, 1, 0), 0), v);
     const intersection = raycaster.intersectObject(tm.scene, true);
     if (intersection.length <= 0) {
         return {
@@ -106,4 +108,8 @@ function handleDown(tm, model, entityUnderMouse) {
         imgV.setAttribute("tags", yadda);
         document.querySelector("body")?.appendChild(imgV);
     }
+}
+function getBounds(scene, camera) {
+    const target = new Vector3();
+    return [target];
 }

@@ -1,7 +1,15 @@
 import { Model } from "../../Model.js";
 import { InputComponent } from "../../components/InputComponent.js";
 import { getTags } from "../../data/data_9.js";
-import { Vector2, Raycaster, Mesh } from "../../vendor/three.js";
+import {
+  Vector2,
+  Raycaster,
+  Mesh,
+  Scene,
+  Camera,
+  Vector3,
+  Plane,
+} from "../../vendor/three.js";
 import { ResolvedTHREEManager } from "./THREEManager.js";
 import {
   instanceIdToEntityId,
@@ -57,6 +65,8 @@ export function inputSystem(tm: ResolvedTHREEManager, model: Model): Model {
     };
   }
   raycaster.setFromCamera(mouse_pos, tm.camera);
+  const v = new Vector3();
+  raycaster.ray.intersectPlane(new Plane(new Vector3(0, 1, 0), 0), v);
 
   const intersection = raycaster.intersectObject(tm.scene, true);
   if (intersection.length <= 0) {
@@ -133,4 +143,8 @@ function handleDown(
     imgV.setAttribute("tags", yadda);
     document.querySelector("body")?.appendChild(imgV);
   }
+}
+function getBounds(scene: Scene, camera: Camera): Vector3[] {
+  const target = new Vector3();
+  return [target];
 }

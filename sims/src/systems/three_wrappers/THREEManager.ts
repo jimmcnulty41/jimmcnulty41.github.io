@@ -1,5 +1,6 @@
 import { OrbitControls } from "../../vendor/OrbitControls.js";
-import {} from "../../vendor/three.js";
+import { Plane, Raycaster, Vector3 } from "../../vendor/three.js";
+import { Ray } from "../../vendor/three.js";
 import {
   Camera,
   Renderer,
@@ -25,8 +26,6 @@ export async function getResolvedTHREEManager(
   return tm as ResolvedTHREEManager;
 }
 
-interface CameraConfig {}
-
 export class THREEManager {
   scene: Scene;
   canvas: HTMLCanvasElement;
@@ -36,6 +35,8 @@ export class THREEManager {
 
   instanceMeshes?: InstanceMeshes;
   meshes?: Meshes;
+  raycaster: Raycaster;
+  screenToWorld: Function;
 
   constructor(enableOrbit: boolean) {
     let scene = new Scene();
@@ -77,9 +78,24 @@ export class THREEManager {
       this.orbitControls = orbitControls;
     }
 
+    this.raycaster = new Raycaster();
     this.scene = scene;
     this.canvas = canvas;
     this.camera = camera;
     this.renderer = renderer;
+    this.screenToWorld = (p: { x: number; y: number }) =>
+      sicikery(this.raycaster, this.camera, p);
   }
+}
+
+function sicikery(
+  raycaster: Raycaster,
+  camera: Camera,
+  pos: { x: number; y: number }
+) {
+  camera.updateWorldMatrix(false, false);
+  raycaster.setFromCamera(pos, camera);
+  const target = new Vector3();
+  raycaster.ray.intersectPlane(new Plane(new Vector3(0, 1, 0), 0), target);
+  return target;
 }
