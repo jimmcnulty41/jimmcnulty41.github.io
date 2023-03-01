@@ -51,7 +51,7 @@ function scrape() {
     )
     .map((x) => ({ ...x, id: generateId(x.text + x.source) }));
   const edges = nodes.slice(1).map((x, i) => ({
-    id: "e" + i,
+    id: nodes[i].id + "e" + x.id,
     from: nodes[i].id,
     to: x.id,
   }));
@@ -76,7 +76,7 @@ const cy = cytoscape({
       selector: "node",
       style: {
         "background-color": "#666",
-        label: "data(id)",
+        label: "data(text)",
         width: "100px",
         height: "50px",
         "text-valign": "center",
@@ -128,3 +128,17 @@ function updateView(data) {
     })
     .run();
 }
+
+import { test_data_1 } from "./test_data_1.js";
+import { test_data_2 } from "./test_data_2.js";
+const test1 = document.getElementById("test1");
+const test2 = document.getElementById("test2");
+
+test1.addEventListener("click", function () {
+  // code to copy to clipboard goes here
+  navigator.clipboard.writeText(JSON.stringify(test_data_1));
+});
+test2.addEventListener("click", function () {
+  // code to copy to clipboard goes here
+  navigator.clipboard.writeText(JSON.stringify(test_data_2));
+});
