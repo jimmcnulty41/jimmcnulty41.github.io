@@ -1,11 +1,16 @@
 import {
   DynamicDrawUsage,
+  BufferGeometry,
   InstancedMesh,
+  GridHelper,
+  Vector3,
+  Line,
   MeshLambertMaterial,
   Mesh,
   MeshBasicMaterial,
   PlaneGeometry,
   SphereGeometry,
+  LineBasicMaterial,
 } from "../../vendor/three.js";
 import { ResolvedTHREEManager } from "./THREEManager.js";
 import {
@@ -13,7 +18,7 @@ import {
   getMeshFromGLTF,
   loadGLTFsInBg,
 } from "./loadGLTFs.js";
-import { getRandomTexture, getTextureByName } from "./loadImages.js";
+import { getTextureByName } from "./loadImages.js";
 import { instanceIdToEntityId, registers } from "./threeOptimizations.js";
 
 interface InstanceBookkeeping {
@@ -40,6 +45,17 @@ export const meshInitFuncs = {
       new PlaneGeometry(10, 12, 2, 2),
       new MeshBasicMaterial({ color: 0xff00ff })
     ),
+  grid: (tm: ResolvedTHREEManager) => new GridHelper(10, 10),
+  line: (tm: ResolvedTHREEManager) => {
+    console.log("drawing line");
+    return new Line(
+      new BufferGeometry().setFromPoints([
+        new Vector3(0, 0, 0),
+        new Vector3(0, 10, 0),
+      ]),
+      new LineBasicMaterial({ color: 0x0000ff })
+    );
+  },
 };
 type InitFuncs = typeof meshInitFuncs;
 export type RefNames = keyof InitFuncs;

@@ -1,4 +1,4 @@
-import { Color, InstancedMesh, Vector3 } from "../../vendor/three.js";
+import { Line, Color, InstancedMesh, Vector3 } from "../../vendor/three.js";
 
 import { Model } from "../../Model.js";
 import {
@@ -19,6 +19,7 @@ import { ResolvedTHREEManager } from "./THREEManager.js";
 import { splitArray } from "../../utils.js";
 import {
   InstancedRenderComponent,
+  LineRenderComponent,
   StandardRenderComponent,
 } from "../../components/RenderComponent.js";
 
@@ -58,6 +59,27 @@ function standardUpdate(
     entity.components.position.y,
     entity.components.position.z
   );
+}
+
+function lineUpdate(
+  tm: ResolvedTHREEManager,
+  model: Model,
+  entity: RenderableEntity<LineRenderComponent>
+): void {
+  const { render } = entity.components;
+  const p1 = model.entities.find((e) => e.id === `${render.from}`);
+  const p2 = model.entities.find((e) => e.id === `${render.to}`);
+  const sceneLine = tm.scene.children[render.id] as Line;
+  if (!p1 || !p2) {
+    throw new Error("points not correctly specified for line");
+  }
+  const p1p = p1.components.position;
+  const p2p = p2.components.position;
+  if (!p1p || !p2p) throw new Error("no position on point");
+  sceneLine.geometry.setFromPoints([
+    new Vector3(p1p.x, p1p.y, p1p.z),
+    new Vector3(p2p.x, p2p.y, p2p.z),
+  ]);
 }
 
 const gradientStart = {
@@ -102,6 +124,8 @@ export function updateTHREEScene(
       case "standard":
         standardUpdate(tm, e as RenderableEntity<StandardRenderComponent>);
         return;
+      case "line":
+        lineUpdate(tm, model, e as RenderableEntity<LineRenderComponent>);
     }
   });
 

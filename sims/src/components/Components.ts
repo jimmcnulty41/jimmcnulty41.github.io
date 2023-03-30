@@ -4,7 +4,11 @@ import {
   RotationComponent,
 } from "./RotationComponent";
 import { PositionComponent } from "./PositionComponent";
-import { RenderComponent } from "./RenderComponent";
+import {
+  InitLineRenderComponent,
+  InitRenderComponent,
+  RenderComponent,
+} from "./RenderComponent";
 import { WanderComponent } from "./WanderComponent";
 import { LevitateComponent } from "./LevitateComponent";
 import {
@@ -15,7 +19,6 @@ import {
 import { ScaleComponent } from "./ScaleComponent";
 import { AgeComponent } from "./AgeComponent";
 import { ColorComponent } from "./ColorComponent";
-import { InitRenderComponent } from "./InitRenderComponent";
 import { WanderTowardComponent } from "./WanderTowardComponent";
 import { MetadataComponent } from "./MetadataComponent";
 
@@ -28,7 +31,7 @@ type ComponentTypes = {
 
   metadata: MetadataComponent;
 
-  initRender: InitRenderComponent;
+  initRender: InitRenderComponent | InitLineRenderComponent;
   render: RenderComponent;
 
   rotation: RotationComponent;

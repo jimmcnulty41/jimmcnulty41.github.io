@@ -70,8 +70,11 @@ function addObjectToTHREESceneFromInstance(
   };
 }
 
-const allocationStrategy: { [refName: string]: "instanced" | "standard" } = {
+const allocationStrategy: {
+  [refName: string]: "instanced" | "standard" | "line";
+} = {
   rat: "instanced",
+  line: "line",
 };
 
 function addObjectToTHREEScene(
@@ -90,8 +93,8 @@ function addObjectToTHREEScene(
   sceneIdToEntityId[o.id] = e.id;
 
   return {
-    type: "standard",
-    refName,
+    ...e.components.initRender,
+    type: allocationStrategy[refName] || "standard",
     id: idx,
-  };
+  } as RenderComponent;
 }

@@ -8,7 +8,7 @@ import { defaultInputComponent } from "./components/InputComponent.js";
 import { jumpOnSelectedSystem } from "./systems/jumpOnSelectedSystem.js";
 import { THREEManager, getResolvedTHREEManager, } from "./systems/three_wrappers/THREEManager.js";
 import { initTHREEObjectSystem } from "./systems/three_wrappers/initTHREEObjectSystem.js";
-import { getSortByTagSystem, } from "./systems/sortByTagSystem.js";
+import { getSortByTagSystem } from "./systems/sortByTagSystem.js";
 import { sketchbook_page_in_spiral } from "./entityLibrary.js";
 const disabledSystems = ["report"];
 let model = {
