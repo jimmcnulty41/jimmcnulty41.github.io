@@ -148,7 +148,7 @@ type Point = [number, number, number];
 export function mapToCurve<T extends {}>(x: T[]): (T & { position: Point })[] {
   const levels = Math.ceil(Math.log2(Math.sqrt(x.length) / 2)) + 1;
   console.log(`with ${x.length} recursion levels`);
-  const curve = boxFillingCurve(levels, 9);
+  const curve = octreeCurve(levels, 9);
   return x.map((x, i) => ({ ...x, position: curve[i] }));
 }
 

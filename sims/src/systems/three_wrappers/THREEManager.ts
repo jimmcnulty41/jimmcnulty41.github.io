@@ -46,9 +46,11 @@ export class THREEManager {
   constructor({
     enableOrbit,
     ortho,
+    cameraPos,
   }: {
     enableOrbit: boolean;
     ortho?: boolean;
+    cameraPos?: [number, number, number];
   }) {
     let scene = new Scene();
 
@@ -67,8 +69,13 @@ export class THREEManager {
           0.1,
           1000
         );
-    camera.position.set(0, 115, -25);
-    camera.lookAt(0, 0, -25);
+    if (cameraPos) {
+      camera.position.set(cameraPos[0], cameraPos[1], cameraPos[2]);
+    } else {
+      camera.position.set(0, 115, -25);
+    }
+
+    camera.lookAt(0, 0, 0);
 
     getMeshes().then((result) => {
       this.meshes = result;

@@ -105,7 +105,7 @@ export function grid({ start, end, numPerRow, numPerColumn, }) {
 export function mapToCurve(x) {
     const levels = Math.ceil(Math.log2(Math.sqrt(x.length) / 2)) + 1;
     console.log(`with ${x.length} recursion levels`);
-    const curve = boxFillingCurve(levels, 9);
+    const curve = octreeCurve(levels, 9);
     return x.map((x, i) => ({ ...x, position: curve[i] }));
 }
 /**

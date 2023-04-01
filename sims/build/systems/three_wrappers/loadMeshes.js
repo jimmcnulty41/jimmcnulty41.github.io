@@ -3,7 +3,7 @@ import { getBufferGeometryFromGLTF, getMeshFromGLTF, loadGLTFsInBg, } from "./lo
 import { getTextureByName } from "./loadImages.js";
 import { instanceIdToEntityId, registers } from "./threeOptimizations.js";
 export const meshInitFuncs = {
-    sphere: (tm) => new Mesh(new SphereGeometry(1, 12, 12), new MeshBasicMaterial({ color: 0xff00ff })),
+    sphere: (tm) => new Mesh(new SphereGeometry(1, 12, 12), new MeshBasicMaterial({ color: 0x4400ff })),
     head_top: (tm) => tm.meshes["head_top"],
     head_bottom: (tm) => tm.meshes["head_bottom"],
     sketchbook_page: (tm, pageName) => new Mesh(new PlaneGeometry(10, 12, 2, 2).rotateX(-Math.PI / 3), new MeshBasicMaterial({ map: getTextureByName(pageName) })),

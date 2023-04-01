@@ -79,7 +79,7 @@ let model: Model = {
 };
 
 const tm = await getResolvedTHREEManager(
-  new THREEManager({ enableOrbit: false })
+  new THREEManager({ enableOrbit: false, cameraPos: [0, 115, -25] })
 );
 
 type System = (model: Model) => Model;

@@ -68,7 +68,7 @@ let model = {
     ],
     idCounter: 2,
 };
-const tm = await getResolvedTHREEManager(new THREEManager({ enableOrbit: false }));
+const tm = await getResolvedTHREEManager(new THREEManager({ enableOrbit: false, cameraPos: [0, 115, -25] }));
 let systems = {
     advanceTimeSystem: (model) => ({
         ...model,

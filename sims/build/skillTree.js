@@ -8,15 +8,15 @@ const disabledSystems = ["report"];
 let model = {
     time: 0,
     entities: [
-        {
-            id: "0",
-            components: {
-                initRender: { refName: "grid" },
-                position: { x: 0, y: 0, z: 0 },
-            },
-        },
+    // {
+    //   id: "0",
+    //   components: {
+    //     initRender: { refName: "grid" },
+    //     position: { x: 0, y: 0, z: 0 },
+    //   },
+    // },
     ],
-    idCounter: 1,
+    idCounter: 0,
     input: defaultInputComponent,
     cameraRotation: 0,
 };
@@ -249,7 +249,11 @@ function newDefaultEntity(id) {
         },
     };
 }
-const tm = await getResolvedTHREEManager(new THREEManager({ enableOrbit: true, ortho: true }));
+const tm = await getResolvedTHREEManager(new THREEManager({
+    enableOrbit: false,
+    ortho: false,
+    cameraPos: [50, 20, 40],
+}));
 let systems = {
     advanceTimeSystem: (model) => ({
         ...model,
