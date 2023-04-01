@@ -13,7 +13,11 @@ import {
 import { initTHREEObjectSystem } from "./systems/three_wrappers/initTHREEObjectSystem.js";
 import { StateMachine } from "./StateMachine.js";
 import { CalcPositionComponent } from "./components/CalcTransformComponents.js";
-import { calcPositionSystem } from "./systems/calcTransformSystem.js";
+import {
+  calcPositionSystem,
+  calcRotationSystem,
+} from "./systems/calcTransformSystem.js";
+import { EntityWith } from "./components/Components.js";
 
 const disabledSystems = ["report"];
 
@@ -30,16 +34,17 @@ let model: Model = {
   ],
   idCounter: 1,
   input: defaultInputComponent,
+  cameraRotation: 0,
 };
 
 const DATA = [
   {
     skillName: "CSS",
-    examples: ["climb", "extrahop", "epic"],
+    examples: ["climb", "extrahop", "epic", "imageViewer"],
   },
   {
     skillName: "HTML",
-    examples: ["climb", "extrahop", "epic"],
+    examples: ["climb", "extrahop", "epic", "imageViewer"],
   },
   {
     skillName: "Hand Sawing",
@@ -72,6 +77,10 @@ const DATA = [
   {
     skillName: "webComponents",
     examples: ["imageViewer"],
+  },
+  {
+    skillName: "javascript",
+    examples: ["imageViewer", "climb", "extrahop"],
   },
 ];
 
@@ -152,6 +161,7 @@ function getEntities(model: Model): Model {
             y: points[i].position[1],
             z: points[i].position[2],
           },
+
           calculatePosition: [
             {
               calculation: (m, e) => ({
@@ -189,10 +199,49 @@ function getEntities(model: Model): Model {
     };
   });
 
+  const textEntities: Entity[] = graph.nodes.map((n, i) => ({
+    id: `${id++}`,
+    components: {
+      initRender: {
+        refName: "circle",
+      },
+      position: {
+        x: points[i].position[0],
+        y: points[i].position[1],
+        z: points[i].position[2],
+      },
+      rotation: {
+        amt: Math.PI,
+        style: "angle axis",
+        axis: 1,
+      },
+      calculateRotation: {
+        calculation: (model: Model, entity: Entity) => {
+          console.log(model.cameraRotation);
+          return model.cameraRotation;
+        },
+      },
+      calculatePosition: [
+        {
+          calculation: (m: Model, e: EntityWith<"position">) => {
+            const blah = m.entities.find((e) => e.id === `${nameToId[n.id]}`);
+            if (!blah) throw new Error("fuck");
+            return { ...blah.components.position };
+          },
+        },
+      ],
+    },
+  }));
+
   return {
     ...model,
     idCounter: id,
-    entities: [...model.entities, ...nodeEntities, ...edgeEntities],
+    entities: [
+      ...model.entities,
+      ...nodeEntities,
+      ...edgeEntities,
+      ...textEntities,
+    ],
   };
 }
 
@@ -245,7 +294,9 @@ function newDefaultEntity(id: string): Entity {
   };
 }
 
-const tm = await getResolvedTHREEManager(new THREEManager(true));
+const tm = await getResolvedTHREEManager(
+  new THREEManager({ enableOrbit: true, ortho: true })
+);
 
 type System = (model: Model) => Model;
 type Systems = { [name: string]: System };
@@ -255,6 +306,7 @@ let systems: Systems = {
     time: model.time + 1,
   }),
   calcPositionSystem,
+  calcRotationSystem,
   initTHREEScene: (m) => initTHREEObjectSystem(tm, m),
   updateTHREEScene: (m) => updateTHREEScene(tm, m),
 };

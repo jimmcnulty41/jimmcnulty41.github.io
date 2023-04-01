@@ -24,6 +24,7 @@ const disabledSystems = ["report"];
 let model: Model = {
   time: 0,
   input: defaultInputComponent,
+  cameraRotation: 0,
   entities: [
     // {
     //   id: "0",
@@ -77,7 +78,9 @@ let model: Model = {
   idCounter: 2,
 };
 
-const tm = await getResolvedTHREEManager(new THREEManager(false));
+const tm = await getResolvedTHREEManager(
+  new THREEManager({ enableOrbit: false })
+);
 
 type System = (model: Model) => Model;
 type Systems = { [name: string]: System };

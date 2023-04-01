@@ -11,6 +11,7 @@ import {
   PlaneGeometry,
   SphereGeometry,
   LineBasicMaterial,
+  CircleGeometry,
 } from "../../vendor/three.js";
 import { ResolvedTHREEManager } from "./THREEManager.js";
 import {
@@ -47,13 +48,18 @@ export const meshInitFuncs = {
     ),
   grid: (tm: ResolvedTHREEManager) => new GridHelper(10, 10),
   line: (tm: ResolvedTHREEManager) => {
-    console.log("drawing line");
     return new Line(
       new BufferGeometry().setFromPoints([
         new Vector3(0, 0, 0),
         new Vector3(0, 10, 0),
       ]),
       new LineBasicMaterial({ color: 0x0000ff })
+    );
+  },
+  circle: (tm: ResolvedTHREEManager) => {
+    return new Mesh(
+      new CircleGeometry(1.2, 12),
+      new MeshBasicMaterial({ color: 0xaa33bb })
     );
   },
 };

@@ -14,6 +14,7 @@ const disabledSystems = ["report"];
 let model = {
     time: 0,
     input: defaultInputComponent,
+    cameraRotation: 0,
     entities: [
         // {
         //   id: "0",
@@ -67,7 +68,7 @@ let model = {
     ],
     idCounter: 2,
 };
-const tm = await getResolvedTHREEManager(new THREEManager(false));
+const tm = await getResolvedTHREEManager(new THREEManager({ enableOrbit: false }));
 let systems = {
     advanceTimeSystem: (model) => ({
         ...model,

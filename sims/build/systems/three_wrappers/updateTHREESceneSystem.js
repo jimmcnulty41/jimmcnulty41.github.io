@@ -83,7 +83,10 @@ export function updateTHREEScene(tm, model) {
         setInstUpdate(tm.instanceMeshes[k].inst);
     });
     tm.renderer.render(tm.scene, tm.camera);
-    return inputSystem(tm, model);
+    return inputSystem(tm, {
+        ...model,
+        cameraRotation: Math.atan2(tm.camera.position.x, tm.camera.position.z),
+    });
 }
 function setInstUpdate(inst) {
     inst.instanceMatrix.needsUpdate = true;

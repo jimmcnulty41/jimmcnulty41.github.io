@@ -1,5 +1,10 @@
 import { OrbitControls } from "../../vendor/OrbitControls.js";
-import { Plane, Raycaster, Vector3 } from "../../vendor/three.js";
+import {
+  OrthographicCamera,
+  Plane,
+  Raycaster,
+  Vector3,
+} from "../../vendor/three.js";
 import { Ray } from "../../vendor/three.js";
 import {
   Camera,
@@ -38,7 +43,13 @@ export class THREEManager {
   raycaster: Raycaster;
   screenToWorld: Function;
 
-  constructor(enableOrbit: boolean) {
+  constructor({
+    enableOrbit,
+    ortho,
+  }: {
+    enableOrbit: boolean;
+    ortho?: boolean;
+  }) {
     let scene = new Scene();
 
     const canvas = document.querySelector("canvas");
@@ -48,12 +59,14 @@ export class THREEManager {
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.outputEncoding = sRGBEncoding;
 
-    const camera = new PerspectiveCamera(
-      35,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
-    );
+    const camera = ortho
+      ? new OrthographicCamera(-10, 10, 10, -10, 0.1, 1000)
+      : new PerspectiveCamera(
+          35,
+          window.innerWidth / window.innerHeight,
+          0.1,
+          1000
+        );
     camera.position.set(0, 115, -25);
     camera.lookAt(0, 0, -25);
 

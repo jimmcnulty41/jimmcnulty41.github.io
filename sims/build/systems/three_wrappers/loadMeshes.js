@@ -1,4 +1,4 @@
-import { DynamicDrawUsage, BufferGeometry, InstancedMesh, GridHelper, Vector3, Line, MeshLambertMaterial, Mesh, MeshBasicMaterial, PlaneGeometry, SphereGeometry, LineBasicMaterial, } from "../../vendor/three.js";
+import { DynamicDrawUsage, BufferGeometry, InstancedMesh, GridHelper, Vector3, Line, MeshLambertMaterial, Mesh, MeshBasicMaterial, PlaneGeometry, SphereGeometry, LineBasicMaterial, CircleGeometry, } from "../../vendor/three.js";
 import { getBufferGeometryFromGLTF, getMeshFromGLTF, loadGLTFsInBg, } from "./loadGLTFs.js";
 import { getTextureByName } from "./loadImages.js";
 import { instanceIdToEntityId, registers } from "./threeOptimizations.js";
@@ -10,11 +10,13 @@ export const meshInitFuncs = {
     plane: (tm) => new Mesh(new PlaneGeometry(10, 12, 2, 2), new MeshBasicMaterial({ color: 0xff00ff })),
     grid: (tm) => new GridHelper(10, 10),
     line: (tm) => {
-        console.log("drawing line");
         return new Line(new BufferGeometry().setFromPoints([
             new Vector3(0, 0, 0),
             new Vector3(0, 10, 0),
         ]), new LineBasicMaterial({ color: 0x0000ff }));
+    },
+    circle: (tm) => {
+        return new Mesh(new CircleGeometry(1.2, 12), new MeshBasicMaterial({ color: 0xaa33bb }));
     },
 };
 loadGLTFsInBg([
