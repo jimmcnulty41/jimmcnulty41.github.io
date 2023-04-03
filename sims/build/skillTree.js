@@ -160,7 +160,8 @@ function getEntities(model) {
         id: `${id++}`,
         components: {
             initRender: {
-                refName: "circle",
+                refName: "text",
+                text: n.id,
             },
             position: {
                 x: points[i].position[0],
@@ -185,6 +186,15 @@ function getEntities(model) {
                         if (!blah)
                             throw new Error("fuck");
                         return { ...blah.components.position };
+                    },
+                },
+                {
+                    calculation: (m, e) => {
+                        const diff = [
+                            e.components.position.x - tm.camera.position.x,
+                            e.components.position.y - tm.camera.position.y,
+                            e.components.position.z - tm.camera.position.z,
+                        ];
                     },
                 },
             ],
@@ -250,7 +260,7 @@ function newDefaultEntity(id) {
     };
 }
 const tm = await getResolvedTHREEManager(new THREEManager({
-    enableOrbit: false,
+    enableOrbit: true,
     ortho: false,
     cameraPos: [50, 20, 40],
 }));

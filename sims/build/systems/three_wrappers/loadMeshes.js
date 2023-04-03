@@ -1,12 +1,19 @@
 import { DynamicDrawUsage, BufferGeometry, InstancedMesh, GridHelper, Vector3, Line, MeshLambertMaterial, Mesh, MeshBasicMaterial, PlaneGeometry, SphereGeometry, LineBasicMaterial, CircleGeometry, } from "../../vendor/three.js";
+import { TextGeometry } from "../../vendor/TextGeometry.js";
+import { FontLoader } from "../../vendor/FontLoader.js";
 import { getBufferGeometryFromGLTF, getMeshFromGLTF, loadGLTFsInBg, } from "./loadGLTFs.js";
 import { getTextureByName } from "./loadImages.js";
 import { instanceIdToEntityId, registers } from "./threeOptimizations.js";
+const f = new FontLoader();
+let font;
+f.load("/assets/fonts/gentilis_bold.typeface.json", (res) => (font = res));
 export const meshInitFuncs = {
     sphere: (tm) => new Mesh(new SphereGeometry(1, 12, 12), new MeshBasicMaterial({ color: 0x4400ff })),
     head_top: (tm) => tm.meshes["head_top"],
     head_bottom: (tm) => tm.meshes["head_bottom"],
-    sketchbook_page: (tm, pageName) => new Mesh(new PlaneGeometry(10, 12, 2, 2).rotateX(-Math.PI / 3), new MeshBasicMaterial({ map: getTextureByName(pageName) })),
+    sketchbook_page: (tm, e) => new Mesh(new PlaneGeometry(10, 12, 2, 2).rotateX(-Math.PI / 3), new MeshBasicMaterial({
+        map: getTextureByName(e.components.initRender?.pageName || ""),
+    })),
     plane: (tm) => new Mesh(new PlaneGeometry(10, 12, 2, 2), new MeshBasicMaterial({ color: 0xff00ff })),
     grid: (tm) => new GridHelper(10, 10),
     line: (tm) => {
@@ -17,6 +24,10 @@ export const meshInitFuncs = {
     },
     circle: (tm) => {
         return new Mesh(new CircleGeometry(1.2, 12), new MeshBasicMaterial({ color: 0xaa33bb }));
+    },
+    text: (tm, e) => {
+        const init = e.components.initRender;
+        return new Mesh(new TextGeometry(init.text, { font, size: 1, height: 0.1 }), new MeshBasicMaterial({ color: 0x2244ff }));
     },
 };
 loadGLTFsInBg([

@@ -50,7 +50,7 @@ function addObjectToTHREEScene(tm, e) {
     if (!meshFn) {
         throw new Error("unknown refname");
     }
-    const o = meshFn(tm, e.components.initRender.pageName || "");
+    const o = meshFn(tm, e);
     tm.scene.add(o);
     const idx = tm.scene.children.findIndex((c) => c.id === o.id);
     sceneIdToEntityId[o.id] = e.id;

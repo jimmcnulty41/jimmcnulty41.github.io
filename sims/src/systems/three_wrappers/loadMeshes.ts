@@ -1,3 +1,4 @@
+import { Entity } from "../../Entity.js";
 import {
   DynamicDrawUsage,
   BufferGeometry,
@@ -13,6 +14,8 @@ import {
   LineBasicMaterial,
   CircleGeometry,
 } from "../../vendor/three.js";
+import { TextGeometry } from "../../vendor/TextGeometry.js";
+import { Font, FontLoader } from "../../vendor/FontLoader.js";
 import { ResolvedTHREEManager } from "./THREEManager.js";
 import {
   getBufferGeometryFromGLTF,
@@ -21,6 +24,11 @@ import {
 } from "./loadGLTFs.js";
 import { getTextureByName } from "./loadImages.js";
 import { instanceIdToEntityId, registers } from "./threeOptimizations.js";
+import { InitTextRenderComponent } from "../../components/RenderComponent.js";
+
+const f = new FontLoader();
+let font: Font;
+f.load("/assets/fonts/gentilis_bold.typeface.json", (res) => (font = res));
 
 interface InstanceBookkeeping {
   inst: InstancedMesh;
@@ -36,10 +44,12 @@ export const meshInitFuncs = {
     ),
   head_top: (tm: ResolvedTHREEManager) => tm.meshes["head_top"],
   head_bottom: (tm: ResolvedTHREEManager) => tm.meshes["head_bottom"],
-  sketchbook_page: (tm: ResolvedTHREEManager, pageName: string) =>
+  sketchbook_page: (tm: ResolvedTHREEManager, e: Entity) =>
     new Mesh(
       new PlaneGeometry(10, 12, 2, 2).rotateX(-Math.PI / 3),
-      new MeshBasicMaterial({ map: getTextureByName(pageName) })
+      new MeshBasicMaterial({
+        map: getTextureByName(e.components.initRender?.pageName || ""),
+      })
     ),
   plane: (tm: ResolvedTHREEManager) =>
     new Mesh(
@@ -60,6 +70,14 @@ export const meshInitFuncs = {
     return new Mesh(
       new CircleGeometry(1.2, 12),
       new MeshBasicMaterial({ color: 0xaa33bb })
+    );
+  },
+  text: (tm: ResolvedTHREEManager, e: Entity) => {
+    const init = e.components.initRender as InitTextRenderComponent;
+
+    return new Mesh(
+      new TextGeometry(init.text, { font, size: 1, height: 0.1 }),
+      new MeshBasicMaterial({ color: 0x2244ff })
     );
   },
 };

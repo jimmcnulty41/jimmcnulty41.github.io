@@ -7,6 +7,7 @@ import { PositionComponent } from "./PositionComponent";
 import {
   InitLineRenderComponent,
   InitRenderComponent,
+  InitTextRenderComponent,
   RenderComponent,
 } from "./RenderComponent";
 import { WanderComponent } from "./WanderComponent";
@@ -31,7 +32,10 @@ type ComponentTypes = {
 
   metadata: MetadataComponent;
 
-  initRender: InitRenderComponent | InitLineRenderComponent;
+  initRender:
+    | InitRenderComponent
+    | InitLineRenderComponent
+    | InitTextRenderComponent;
   render: RenderComponent;
 
   rotation: RotationComponent;

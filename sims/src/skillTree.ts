@@ -203,7 +203,8 @@ function getEntities(model: Model): Model {
     id: `${id++}`,
     components: {
       initRender: {
-        refName: "circle",
+        refName: "text",
+        text: n.id,
       },
       position: {
         x: points[i].position[0],
@@ -227,6 +228,15 @@ function getEntities(model: Model): Model {
             const blah = m.entities.find((e) => e.id === `${nameToId[n.id]}`);
             if (!blah) throw new Error("fuck");
             return { ...blah.components.position };
+          },
+        },
+        {
+          calculation: (m: Model, e: EntityWith<"position">) => {
+            const diff = [
+              e.components.position.x - tm.camera.position.x,
+              e.components.position.y - tm.camera.position.y,
+              e.components.position.z - tm.camera.position.z,
+            ];
           },
         },
       ],
@@ -296,7 +306,7 @@ function newDefaultEntity(id: string): Entity {
 
 const tm = await getResolvedTHREEManager(
   new THREEManager({
-    enableOrbit: false,
+    enableOrbit: true,
     ortho: false,
     cameraPos: [50, 20, 40],
   })

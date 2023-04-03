@@ -31,3 +31,9 @@ export interface InitLineRenderComponent {
   from?: number;
   to?: number;
 }
+
+export interface InitTextRenderComponent {
+  refName: "text";
+  text: string;
+  pageName: undefined;
+}
