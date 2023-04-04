@@ -22,6 +22,7 @@ import { AgeComponent } from "./AgeComponent";
 import { ColorComponent } from "./ColorComponent";
 import { WanderTowardComponent } from "./WanderTowardComponent";
 import { MetadataComponent } from "./MetadataComponent";
+import { ShaderComponent } from "./ShaderComponent";
 
 // order should match corresponding system order
 type ComponentTypes = {
@@ -37,6 +38,7 @@ type ComponentTypes = {
     | InitLineRenderComponent
     | InitTextRenderComponent;
   render: RenderComponent;
+  shader: ShaderComponent;
 
   rotation: RotationComponent;
   calculateRotation: CalcRotationComponent;

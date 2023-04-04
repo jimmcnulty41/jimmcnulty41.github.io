@@ -13,6 +13,7 @@ import {
   SphereGeometry,
   LineBasicMaterial,
   CircleGeometry,
+  ShaderMaterial,
 } from "../../vendor/three.js";
 import { TextGeometry } from "../../vendor/TextGeometry.js";
 import { Font, FontLoader } from "../../vendor/FontLoader.js";
@@ -74,10 +75,12 @@ export const meshInitFuncs = {
   },
   text: (tm: ResolvedTHREEManager, e: Entity) => {
     const init = e.components.initRender as InitTextRenderComponent;
+    const mat = e.components.shader
+      ? new ShaderMaterial({})
+      : new MeshBasicMaterial({ color: 0x2244ff });
 
     return new Mesh(
-      new TextGeometry(init.text, { font, size: 1, height: 0.1 }),
-      new MeshBasicMaterial({ color: 0x2244ff })
+      new TextGeometry(init.text, { font, size: 1, height: 0.1 })
     );
   },
 };
