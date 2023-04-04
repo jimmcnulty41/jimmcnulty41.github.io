@@ -17,6 +17,7 @@ import {
 } from "./threeOptimizations.js";
 
 const raycaster = new Raycaster();
+raycaster.layers.set(0);
 const mouse_pos = new Vector2(1, 1);
 let mouseState = "whatevs";
 
@@ -66,7 +67,6 @@ export function inputSystem(tm: ResolvedTHREEManager, model: Model): Model {
   }
   raycaster.setFromCamera(mouse_pos, tm.camera);
   const v = new Vector3();
-  raycaster.ray.intersectPlane(new Plane(new Vector3(0, 1, 0), 0), v);
 
   const intersection = raycaster.intersectObject(tm.scene, true);
   if (intersection.length <= 0) {
@@ -132,8 +132,11 @@ function handleDown(
   entityUnderMouse: string
 ) {
   const e = model.entities.find((e) => e.id === entityUnderMouse);
-  const id = e?.components.render?.id;
-  if (id) {
+  if (!e || !e.components.render) {
+    throw new Error(`invalid entity under mouse: ${entityUnderMouse}`);
+  }
+  const { id, refName } = e.components.render;
+  if (id && refName === "sketchbook_page") {
     // @ts-ignore
     const blah: HTMLImageElement = (tm.scene.children[id] as Mesh).material.map
       .source.data;
@@ -144,6 +147,7 @@ function handleDown(
     document.querySelector("body")?.appendChild(imgV);
   }
 }
+
 function getBounds(scene: Scene, camera: Camera): Vector3[] {
   const target = new Vector3();
   return [target];

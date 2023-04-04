@@ -75,6 +75,7 @@ export class THREEManager {
       camera.position.set(0, 115, -25);
     }
 
+    camera.layers.enable(1);
     camera.lookAt(0, 0, 0);
 
     getMeshes().then((result) => {

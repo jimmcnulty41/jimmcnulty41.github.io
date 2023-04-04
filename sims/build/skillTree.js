@@ -65,6 +65,10 @@ const DATA = [
         skillName: "javascript",
         examples: ["imageViewer", "climb", "extrahop"],
     },
+    {
+        skillName: "three.js",
+        examples: ["this site"],
+    },
 ];
 function dataWithSkillNodes(data) {
     const nodes = data.map((s) => ({ id: s.skillName }));

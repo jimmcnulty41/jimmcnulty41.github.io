@@ -82,6 +82,10 @@ const DATA = [
     skillName: "javascript",
     examples: ["imageViewer", "climb", "extrahop"],
   },
+  {
+    skillName: "three.js",
+    examples: ["this site"],
+  },
 ];
 
 interface Node {

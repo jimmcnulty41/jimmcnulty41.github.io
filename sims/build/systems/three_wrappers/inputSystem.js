@@ -1,7 +1,8 @@
 import { getTags } from "../../data/data_9.js";
-import { Vector2, Raycaster, Vector3, Plane, } from "../../vendor/three.js";
+import { Vector2, Raycaster, Vector3, } from "../../vendor/three.js";
 import { instanceIdToEntityId, sceneIdToEntityId, } from "./threeOptimizations.js";
 const raycaster = new Raycaster();
+raycaster.layers.set(0);
 const mouse_pos = new Vector2(1, 1);
 let mouseState = "whatevs";
 window.addEventListener("mousedown", onMouseDown);
@@ -46,7 +47,6 @@ export function inputSystem(tm, model) {
     }
     raycaster.setFromCamera(mouse_pos, tm.camera);
     const v = new Vector3();
-    raycaster.ray.intersectPlane(new Plane(new Vector3(0, 1, 0), 0), v);
     const intersection = raycaster.intersectObject(tm.scene, true);
     if (intersection.length <= 0) {
         return {
@@ -97,8 +97,11 @@ export function inputSystem(tm, model) {
 }
 function handleDown(tm, model, entityUnderMouse) {
     const e = model.entities.find((e) => e.id === entityUnderMouse);
-    const id = e?.components.render?.id;
-    if (id) {
+    if (!e || !e.components.render) {
+        throw new Error(`invalid entity under mouse: ${entityUnderMouse}`);
+    }
+    const { id, refName } = e.components.render;
+    if (id && refName === "sketchbook_page") {
         // @ts-ignore
         const blah = tm.scene.children[id].material.map
             .source.data;

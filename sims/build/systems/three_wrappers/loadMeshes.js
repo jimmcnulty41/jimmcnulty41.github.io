@@ -37,7 +37,9 @@ export const meshInitFuncs = {
                 },
             })
             : new MeshBasicMaterial({ color: 0x2244ff });
-        return new Mesh(new TextGeometry(init.text, { font, size: 1, height: 0.1 }), mat);
+        const m = new Mesh(new TextGeometry(init.text, { font, size: 1, height: 0.1 }), mat);
+        m.layers.set(1);
+        return m;
     },
 };
 loadGLTFsInBg([
