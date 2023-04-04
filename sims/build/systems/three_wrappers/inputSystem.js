@@ -1,4 +1,3 @@
-import { getTags } from "../../data/data_9.js";
 import { Vector2, Raycaster, Vector3, } from "../../vendor/three.js";
 import { instanceIdToEntityId, sceneIdToEntityId, } from "./threeOptimizations.js";
 const raycaster = new Raycaster();
@@ -96,21 +95,11 @@ export function inputSystem(tm, model) {
     }
 }
 function handleDown(tm, model, entityUnderMouse) {
-    const e = model.entities.find((e) => e.id === entityUnderMouse);
-    if (!e || !e.components.render) {
+    const entity = model.entities.find((e) => e.id === entityUnderMouse);
+    if (!entity || !entity.components.render) {
         throw new Error(`invalid entity under mouse: ${entityUnderMouse}`);
     }
-    const { id, refName } = e.components.render;
-    if (id && refName === "sketchbook_page") {
-        // @ts-ignore
-        const blah = tm.scene.children[id].material.map
-            .source.data;
-        const yadda = getTags(blah.src);
-        const imgV = document.createElement("image-viewer");
-        imgV.setAttribute("src", blah.src);
-        imgV.setAttribute("tags", yadda);
-        document.querySelector("body")?.appendChild(imgV);
-    }
+    document.dispatchEvent(new CustomEvent("JIM_entityClick", { detail: entity }));
 }
 function getBounds(scene, camera) {
     const target = new Vector3();

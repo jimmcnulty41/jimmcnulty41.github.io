@@ -18,6 +18,7 @@ import {
 import { initTHREEObjectSystem } from "./systems/three_wrappers/initTHREEObjectSystem.js";
 import { getSortByTagSystem } from "./systems/sortByTagSystem.js";
 import { sketchbook_page_in_spiral } from "./entityLibrary.js";
+import { getTags } from "./data/data_9.js";
 
 const disabledSystems = ["report"];
 
@@ -79,8 +80,23 @@ let model: Model = {
 };
 
 const tm = await getResolvedTHREEManager(
-  new THREEManager({ enableOrbit: false, cameraPos: [0, 115, -25] })
+  new THREEManager({
+    enableOrbit: false,
+    cameraPos: [0, 115, -25],
+    lookAt: [0, 0, -25],
+  })
 );
+
+document.addEventListener("JIM_entityClick", (event) => {
+  // @ts-ignore
+  const blah: HTMLImageElement = (tm.scene.children[event.detail.id] as Mesh)
+    .material.map.source.data;
+  const yadda = getTags(blah.src);
+  const imgV = document.createElement("image-viewer");
+  imgV.setAttribute("src", blah.src);
+  imgV.setAttribute("tags", yadda);
+  document.querySelector("body")?.appendChild(imgV);
+});
 
 type System = (model: Model) => Model;
 type Systems = { [name: string]: System };

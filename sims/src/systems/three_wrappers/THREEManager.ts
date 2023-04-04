@@ -47,10 +47,12 @@ export class THREEManager {
     enableOrbit,
     ortho,
     cameraPos,
+    lookAt,
   }: {
     enableOrbit: boolean;
     ortho?: boolean;
     cameraPos?: [number, number, number];
+    lookAt?: [number, number, number];
   }) {
     let scene = new Scene();
 
@@ -76,7 +78,12 @@ export class THREEManager {
     }
 
     camera.layers.enable(1);
-    camera.lookAt(0, 0, 0);
+
+    if (lookAt) {
+      camera.lookAt(lookAt[0], lookAt[1], lookAt[2]);
+    } else {
+      camera.lookAt(0, 0, 0);
+    }
 
     getMeshes().then((result) => {
       this.meshes = result;

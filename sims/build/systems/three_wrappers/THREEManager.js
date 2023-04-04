@@ -19,7 +19,7 @@ export class THREEManager {
     meshes;
     raycaster;
     screenToWorld;
-    constructor({ enableOrbit, ortho, cameraPos, }) {
+    constructor({ enableOrbit, ortho, cameraPos, lookAt, }) {
         let scene = new Scene();
         const canvas = document.querySelector("canvas");
         if (!canvas)
@@ -37,7 +37,12 @@ export class THREEManager {
             camera.position.set(0, 115, -25);
         }
         camera.layers.enable(1);
-        camera.lookAt(0, 0, 0);
+        if (lookAt) {
+            camera.lookAt(lookAt[0], lookAt[1], lookAt[2]);
+        }
+        else {
+            camera.lookAt(0, 0, 0);
+        }
         getMeshes().then((result) => {
             this.meshes = result;
         });
