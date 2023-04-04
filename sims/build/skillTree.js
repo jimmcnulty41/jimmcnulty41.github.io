@@ -169,7 +169,7 @@ function getEntities(model) {
                 z: points[i].position[2],
             },
             shader: {
-                key: "default",
+                key: "wrapAroundPoint",
             },
             rotation: {
                 amt: Math.PI,
@@ -178,7 +178,7 @@ function getEntities(model) {
             },
             calculateRotation: {
                 calculation: (model, entity) => {
-                    return model.cameraRotation;
+                    return -model.time / 60;
                 },
             },
             calculatePosition: [
@@ -197,7 +197,7 @@ function getEntities(model) {
                             e.components.position.y - tm.camera.position.y,
                             e.components.position.z - tm.camera.position.z,
                         ];
-                        return {};
+                        return { y: -0.5 };
                     },
                 },
             ],

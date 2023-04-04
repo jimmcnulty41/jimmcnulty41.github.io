@@ -82,7 +82,7 @@ export const meshInitFuncs = {
           vertexShader: SHADERS[e.components.shader.key].vert,
           fragmentShader: SHADERS[e.components.shader.key].frag,
           uniforms: {
-            color: { value: new Color(0xff0000) },
+            color: { value: new Color(0xff9900) },
           },
         })
       : new MeshBasicMaterial({ color: 0x2244ff });
