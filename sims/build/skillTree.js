@@ -178,7 +178,7 @@ function getEntities(model) {
             },
             calculateRotation: {
                 calculation: (model, entity) => {
-                    return -model.time / 60;
+                    return -model.time / 60 + Number.parseFloat(entity.id);
                 },
             },
             calculatePosition: [
