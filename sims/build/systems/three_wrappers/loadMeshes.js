@@ -1,9 +1,10 @@
-import { DynamicDrawUsage, BufferGeometry, InstancedMesh, GridHelper, Vector3, Line, MeshLambertMaterial, Mesh, MeshBasicMaterial, PlaneGeometry, SphereGeometry, LineBasicMaterial, CircleGeometry, } from "../../vendor/three.js";
+import { DynamicDrawUsage, BufferGeometry, InstancedMesh, GridHelper, Vector3, Line, MeshLambertMaterial, Mesh, MeshBasicMaterial, PlaneGeometry, SphereGeometry, LineBasicMaterial, CircleGeometry, ShaderMaterial, Color, } from "../../vendor/three.js";
 import { TextGeometry } from "../../vendor/TextGeometry.js";
 import { FontLoader } from "../../vendor/FontLoader.js";
 import { getBufferGeometryFromGLTF, getMeshFromGLTF, loadGLTFsInBg, } from "./loadGLTFs.js";
 import { getTextureByName } from "./loadImages.js";
 import { instanceIdToEntityId, registers } from "./threeOptimizations.js";
+import { SHADERS } from "../../components/ShaderComponent.js";
 const f = new FontLoader();
 let font;
 f.load("/assets/fonts/gentilis_bold.typeface.json", (res) => (font = res));
@@ -27,7 +28,16 @@ export const meshInitFuncs = {
     },
     text: (tm, e) => {
         const init = e.components.initRender;
-        return new Mesh(new TextGeometry(init.text, { font, size: 1, height: 0.1 }), new MeshBasicMaterial({ color: 0x2244ff }));
+        const mat = e.components.shader
+            ? new ShaderMaterial({
+                vertexShader: SHADERS[e.components.shader.key].vert,
+                fragmentShader: SHADERS[e.components.shader.key].frag,
+                uniforms: {
+                    color: { value: new Color(0xff0000) },
+                },
+            })
+            : new MeshBasicMaterial({ color: 0x2244ff });
+        return new Mesh(new TextGeometry(init.text, { font, size: 1, height: 0.1 }), mat);
     },
 };
 loadGLTFsInBg([

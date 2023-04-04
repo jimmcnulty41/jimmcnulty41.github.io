@@ -14,6 +14,7 @@ import {
   LineBasicMaterial,
   CircleGeometry,
   ShaderMaterial,
+  Color,
 } from "../../vendor/three.js";
 import { TextGeometry } from "../../vendor/TextGeometry.js";
 import { Font, FontLoader } from "../../vendor/FontLoader.js";
@@ -26,6 +27,7 @@ import {
 import { getTextureByName } from "./loadImages.js";
 import { instanceIdToEntityId, registers } from "./threeOptimizations.js";
 import { InitTextRenderComponent } from "../../components/RenderComponent.js";
+import { SHADERS } from "../../components/ShaderComponent.js";
 
 const f = new FontLoader();
 let font: Font;
@@ -76,11 +78,18 @@ export const meshInitFuncs = {
   text: (tm: ResolvedTHREEManager, e: Entity) => {
     const init = e.components.initRender as InitTextRenderComponent;
     const mat = e.components.shader
-      ? new ShaderMaterial({})
+      ? new ShaderMaterial({
+          vertexShader: SHADERS[e.components.shader.key].vert,
+          fragmentShader: SHADERS[e.components.shader.key].frag,
+          uniforms: {
+            color: { value: new Color(0xff0000) },
+          },
+        })
       : new MeshBasicMaterial({ color: 0x2244ff });
 
     return new Mesh(
-      new TextGeometry(init.text, { font, size: 1, height: 0.1 })
+      new TextGeometry(init.text, { font, size: 1, height: 0.1 }),
+      mat
     );
   },
 };

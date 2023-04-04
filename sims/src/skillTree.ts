@@ -211,6 +211,9 @@ function getEntities(model: Model): Model {
         y: points[i].position[1],
         z: points[i].position[2],
       },
+      shader: {
+        key: "default",
+      },
       rotation: {
         amt: Math.PI,
         style: "angle axis",
@@ -218,7 +221,6 @@ function getEntities(model: Model): Model {
       },
       calculateRotation: {
         calculation: (model: Model, entity: Entity) => {
-          console.log(model.cameraRotation);
           return model.cameraRotation;
         },
       },
@@ -237,6 +239,7 @@ function getEntities(model: Model): Model {
               e.components.position.y - tm.camera.position.y,
               e.components.position.z - tm.camera.position.z,
             ];
+            return {};
           },
         },
       ],
