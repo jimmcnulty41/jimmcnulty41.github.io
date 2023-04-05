@@ -18,7 +18,7 @@ import {
   calcRotationSystem,
 } from "./systems/calcTransformSystem.js";
 import { EntityWith } from "./components/Components.js";
-import { PROJECT_PAGES, SKILL_DATA } from "./data/skillData.js";
+import { PROJECT_PAGES, SKILLS, SKILL_DATA } from "./data/skillData.js";
 
 const disabledSystems = ["report"];
 
@@ -28,11 +28,42 @@ if (!iframe) throw new Error("forgot to add iframe to html");
 document.addEventListener("JIM_entityClick", (event) => {
   const entity: Entity = (event as CustomEvent).detail;
   const name = entity.components.metadata?.name || "";
-  const pageUrl = PROJECT_PAGES[name];
-  console.log(pageUrl);
-  if (!pageUrl) return;
 
-  iframe.src = pageUrl;
+  if (SKILLS.includes(name)) {
+    const list = document.querySelector("#context>ul");
+    if (!list) {
+      throw new Error("Jim IDK");
+    }
+    const skill = SKILL_DATA.find((s) => s.skillName === name);
+    if (!skill) {
+      throw new Error(`Couldn't find skill with name ${name}`);
+    }
+
+    list.innerHTML = "";
+    skill.examples.forEach((ex) => {
+      if (PROJECT_PAGES[ex]) {
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.onclick = () => {
+          const pageUrl = PROJECT_PAGES[ex];
+          if (!pageUrl) return;
+          iframe.src = pageUrl;
+        };
+        a.href = "#";
+        a.innerText = ex;
+        li.appendChild(a);
+        list.append(li);
+      } else {
+        const li = document.createElement("li");
+        li.innerText = ex;
+        list.append(li);
+      }
+    });
+  } else {
+    const pageUrl = PROJECT_PAGES[name];
+    if (!pageUrl) return;
+    iframe.src = pageUrl;
+  }
 });
 
 document.addEventListener("JIM_x", (event) => {

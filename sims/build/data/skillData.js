@@ -52,3 +52,10 @@ export const PROJECT_PAGES = {
     climb: "./projectPages/climb.html",
     sketchery: "https://jim.mcnulty.site/sims/sketchery.html",
 };
+export const EXAMPLES = SKILL_DATA.flatMap((s) => s.examples);
+export const SKILLS = SKILL_DATA.map((x) => x.skillName);
+EXAMPLES.forEach((e) => {
+    if (SKILLS.includes(e)) {
+        throw new Error(`JIM data validation: skill and example share name: "${e}"`);
+    }
+});
