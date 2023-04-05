@@ -51,7 +51,9 @@ export const SKILL_DATA = [
 
 export const PROJECT_PAGES: { [key: string]: string } = {
   climb: "./projectPages/climb.html",
-  sketchery: "https://jim.mcnulty.site/sims/sketchery.html",
+  sketchery: "./projectPages/sketcheryWriteup.html",
+  squatbot: "./projectPages/squatbot.html",
+  imageViewer: "./projectPages/sketcheryWriteup.html",
 };
 
 export const EXAMPLES = SKILL_DATA.flatMap((s) => s.examples);
