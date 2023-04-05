@@ -56,7 +56,7 @@ let model: Model = {
 };
 
 interface Node {
-  id: string;
+  name: string;
 }
 interface Edge {
   name: string;
@@ -65,7 +65,7 @@ interface Edge {
 }
 
 function dataWithSkillNodes(data: typeof SKILL_DATA) {
-  const nodes: Node[] = data.map((s) => ({ id: s.skillName }));
+  const nodes: Node[] = data.map((s) => ({ name: s.skillName }));
 
   const edgeNames = Object.keys(
     data.reduce((names, d) => {
@@ -111,13 +111,17 @@ function getEntities(model: Model): Model {
   let nameToId: { [blah: string]: number } = {};
 
   const nodeEntities: Entity[] = graph.nodes
-    .map((n) => {
+    .map(({ name }) => {
       const curId = id++;
-      nameToId[n.id] = curId;
+      nameToId[name] = curId;
       return {
         id: `${curId}`,
         components: {
           initRender: { refName: "sphere" },
+          metadata: {
+            tags: [],
+            name,
+          },
         },
       };
     })
@@ -179,7 +183,7 @@ function getEntities(model: Model): Model {
     components: {
       initRender: {
         refName: "text",
-        text: n.id,
+        text: n.name,
       },
       position: {
         x: points[i].position[0],
@@ -202,7 +206,7 @@ function getEntities(model: Model): Model {
       calculatePosition: [
         {
           calculation: (m: Model, e: EntityWith<"position">) => {
-            const blah = m.entities.find((e) => e.id === `${nameToId[n.id]}`);
+            const blah = m.entities.find((e) => e.id === `${nameToId[n.name]}`);
             if (!blah) throw new Error("fuck");
             return { ...blah.components.position };
           },

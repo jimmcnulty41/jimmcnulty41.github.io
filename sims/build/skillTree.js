@@ -37,7 +37,7 @@ let model = {
     cameraRotation: 0,
 };
 function dataWithSkillNodes(data) {
-    const nodes = data.map((s) => ({ id: s.skillName }));
+    const nodes = data.map((s) => ({ name: s.skillName }));
     const edgeNames = Object.keys(data.reduce((names, d) => {
         let additions = {};
         d.examples.forEach((e) => {
@@ -73,13 +73,17 @@ function getEntities(model) {
     }
     let nameToId = {};
     const nodeEntities = graph.nodes
-        .map((n) => {
+        .map(({ name }) => {
         const curId = id++;
-        nameToId[n.id] = curId;
+        nameToId[name] = curId;
         return {
             id: `${curId}`,
             components: {
                 initRender: { refName: "sphere" },
+                metadata: {
+                    tags: [],
+                    name,
+                },
             },
         };
     })
@@ -135,7 +139,7 @@ function getEntities(model) {
         components: {
             initRender: {
                 refName: "text",
-                text: n.id,
+                text: n.name,
             },
             position: {
                 x: points[i].position[0],
@@ -158,7 +162,7 @@ function getEntities(model) {
             calculatePosition: [
                 {
                     calculation: (m, e) => {
-                        const blah = m.entities.find((e) => e.id === `${nameToId[n.id]}`);
+                        const blah = m.entities.find((e) => e.id === `${nameToId[n.name]}`);
                         if (!blah)
                             throw new Error("fuck");
                         return { ...blah.components.position };
