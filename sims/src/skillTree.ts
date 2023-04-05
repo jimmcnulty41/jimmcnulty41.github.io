@@ -22,8 +22,8 @@ import { PROJECT_PAGES, SKILL_DATA } from "./data/skillData.js";
 
 const disabledSystems = ["report"];
 
-const iframe = document.createElement("iframe");
-(document.querySelector("body") || document).append(iframe);
+const iframe = document.querySelector("iframe");
+if (!iframe) throw new Error("forgot to add iframe to html");
 
 document.addEventListener("JIM_entityClick", (event) => {
   const entity: Entity = (event as CustomEvent).detail;
@@ -33,6 +33,10 @@ document.addEventListener("JIM_entityClick", (event) => {
   if (!pageUrl) return;
 
   iframe.src = pageUrl;
+});
+
+document.addEventListener("JIM_x", (event) => {
+  iframe.src = "";
 });
 
 let model: Model = {

@@ -7,18 +7,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         iframe[src]:not([src=""]) {
-            position: fixed;
-            top:0;
-            margin: 12px;
+            background: beige;
+            width:90%;
+            height: 90%;
+            pointer-events: all;
             border: 8px solid purple;
             border-radius: 12px;
             box-shadow: 2px 2px 2px grey;
+            display: block;
         }
+        a {
+            display:none;
+        }
+        iframe[src]:not([src=""]) ~ a{
+            display: block;
+            pointer-events: all;
+        }
+        iframe[src=""] {
+            display: none;
+        }
+        iframe[src=""] ~ a{
+            display: none;
+        }
+        .iframeframe {
+            pointer-events: none;
+            position: fixed;
+            top:0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column-reverse;
+            justify-content: center;
+            align-items: center;
+        }
+
     </style>
+    <script>
+        function exit() {
+            document.dispatchEvent(new Event("JIM_x"));
+        }
+    </script>
     <title>Jim McNulty Skill Tree</title>
 </head>
 <body>
     <canvas></canvas>
     <script type="module" src="./build/skillTree.js"></script>
+    <div class="iframeframe">
+        <iframe></iframe>
+        <a href='#' onclick='this.parentNode.children[0].src=""'>X</a>
+    </div>
 </body>
 </html>
