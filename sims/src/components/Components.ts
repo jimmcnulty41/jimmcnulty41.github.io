@@ -4,7 +4,12 @@ import {
   RotationComponent,
 } from "./RotationComponent";
 import { PositionComponent } from "./PositionComponent";
-import { RenderComponent } from "./RenderComponent";
+import {
+  InitLineRenderComponent,
+  InitRenderComponent,
+  InitTextRenderComponent,
+  RenderComponent,
+} from "./RenderComponent";
 import { WanderComponent } from "./WanderComponent";
 import { LevitateComponent } from "./LevitateComponent";
 import {
@@ -15,9 +20,9 @@ import {
 import { ScaleComponent } from "./ScaleComponent";
 import { AgeComponent } from "./AgeComponent";
 import { ColorComponent } from "./ColorComponent";
-import { InitRenderComponent } from "./InitRenderComponent";
 import { WanderTowardComponent } from "./WanderTowardComponent";
 import { MetadataComponent } from "./MetadataComponent";
+import { ShaderComponent } from "./ShaderComponent";
 
 // order should match corresponding system order
 type ComponentTypes = {
@@ -28,8 +33,12 @@ type ComponentTypes = {
 
   metadata: MetadataComponent;
 
-  initRender: InitRenderComponent;
+  initRender:
+    | InitRenderComponent
+    | InitLineRenderComponent
+    | InitTextRenderComponent;
   render: RenderComponent;
+  shader: ShaderComponent;
 
   rotation: RotationComponent;
   calculateRotation: CalcRotationComponent;

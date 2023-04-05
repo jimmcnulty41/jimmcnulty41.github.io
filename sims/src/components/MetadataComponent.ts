@@ -2,6 +2,7 @@ import { report } from "../utils.js";
 
 export interface MetadataComponent {
   tags: string[];
+  name?: string;
 }
 
 /**

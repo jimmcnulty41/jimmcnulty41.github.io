@@ -2,12 +2,13 @@ import { defaultInputComponent } from "./components/InputComponent.js";
 import { THREEManager, getResolvedTHREEManager, } from "./systems/three_wrappers/THREEManager.js";
 import { initTHREEObjectSystem } from "./systems/three_wrappers/initTHREEObjectSystem.js";
 import { updateTHREEScene } from "./systems/three_wrappers/updateTHREESceneSystem.js";
-const blah = await getResolvedTHREEManager(new THREEManager(false));
+const blah = await getResolvedTHREEManager(new THREEManager({ enableOrbit: false }));
 let model = {
     time: 0,
     input: defaultInputComponent,
     entities: [],
     idCounter: 0,
+    cameraRotation: 0,
 };
 let systems = {
     blaya: (m) => {

@@ -42,6 +42,7 @@ function addObjectToTHREESceneFromInstance(tm, entity) {
 }
 const allocationStrategy = {
     rat: "instanced",
+    line: "line",
 };
 function addObjectToTHREEScene(tm, e) {
     const { refName } = e.components.initRender;
@@ -49,13 +50,13 @@ function addObjectToTHREEScene(tm, e) {
     if (!meshFn) {
         throw new Error("unknown refname");
     }
-    const o = meshFn(tm, e.components.initRender.pageName || "");
+    const o = meshFn(tm, e);
     tm.scene.add(o);
     const idx = tm.scene.children.findIndex((c) => c.id === o.id);
     sceneIdToEntityId[o.id] = e.id;
     return {
-        type: "standard",
-        refName,
+        ...e.components.initRender,
+        type: allocationStrategy[refName] || "standard",
         id: idx,
     };
 }

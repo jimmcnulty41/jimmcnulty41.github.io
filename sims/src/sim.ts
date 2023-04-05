@@ -29,6 +29,7 @@ let model: Model = {
   ],
   idCounter: 0,
   input: defaultInputComponent,
+  cameraRotation: 0,
 };
 
 function newDefaultEntity(id: string): Entity {
@@ -80,7 +81,9 @@ function newDefaultEntity(id: string): Entity {
   };
 }
 
-const tm = await getResolvedTHREEManager(new THREEManager(true));
+const tm = await getResolvedTHREEManager(
+  new THREEManager({ enableOrbit: true })
+);
 
 type System = (model: Model) => Model;
 type Systems = { [name: string]: System };

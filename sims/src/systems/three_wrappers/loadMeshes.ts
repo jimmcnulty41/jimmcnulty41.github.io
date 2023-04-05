@@ -1,20 +1,37 @@
+import { Entity } from "../../Entity.js";
 import {
   DynamicDrawUsage,
+  BufferGeometry,
   InstancedMesh,
+  GridHelper,
+  Vector3,
+  Line,
   MeshLambertMaterial,
   Mesh,
   MeshBasicMaterial,
   PlaneGeometry,
   SphereGeometry,
+  LineBasicMaterial,
+  CircleGeometry,
+  ShaderMaterial,
+  Color,
 } from "../../vendor/three.js";
+import { TextGeometry } from "../../vendor/TextGeometry.js";
+import { Font, FontLoader } from "../../vendor/FontLoader.js";
 import { ResolvedTHREEManager } from "./THREEManager.js";
 import {
   getBufferGeometryFromGLTF,
   getMeshFromGLTF,
   loadGLTFsInBg,
 } from "./loadGLTFs.js";
-import { getRandomTexture, getTextureByName } from "./loadImages.js";
+import { getTextureByName } from "./loadImages.js";
 import { instanceIdToEntityId, registers } from "./threeOptimizations.js";
+import { InitTextRenderComponent } from "../../components/RenderComponent.js";
+import { SHADERS } from "../../components/ShaderComponent.js";
+
+const f = new FontLoader();
+let font: Font;
+f.load("/assets/fonts/gentilis_bold.typeface.json", (res) => (font = res));
 
 interface InstanceBookkeeping {
   inst: InstancedMesh;
@@ -26,20 +43,57 @@ export const meshInitFuncs = {
   sphere: (tm: ResolvedTHREEManager) =>
     new Mesh(
       new SphereGeometry(1, 12, 12),
-      new MeshBasicMaterial({ color: 0xff00ff })
+      new MeshBasicMaterial({ color: 0x4400ff })
     ),
   head_top: (tm: ResolvedTHREEManager) => tm.meshes["head_top"],
   head_bottom: (tm: ResolvedTHREEManager) => tm.meshes["head_bottom"],
-  sketchbook_page: (tm: ResolvedTHREEManager, pageName: string) =>
+  sketchbook_page: (tm: ResolvedTHREEManager, e: Entity) =>
     new Mesh(
       new PlaneGeometry(10, 12, 2, 2).rotateX(-Math.PI / 3),
-      new MeshBasicMaterial({ map: getTextureByName(pageName) })
+      new MeshBasicMaterial({
+        map: getTextureByName(e.components.initRender?.pageName || ""),
+      })
     ),
   plane: (tm: ResolvedTHREEManager) =>
     new Mesh(
       new PlaneGeometry(10, 12, 2, 2),
       new MeshBasicMaterial({ color: 0xff00ff })
     ),
+  grid: (tm: ResolvedTHREEManager) => new GridHelper(10, 10),
+  line: (tm: ResolvedTHREEManager) => {
+    return new Line(
+      new BufferGeometry().setFromPoints([
+        new Vector3(0, 0, 0),
+        new Vector3(0, 10, 0),
+      ]),
+      new LineBasicMaterial({ color: 0x0000ff })
+    );
+  },
+  circle: (tm: ResolvedTHREEManager) => {
+    return new Mesh(
+      new CircleGeometry(1.2, 12),
+      new MeshBasicMaterial({ color: 0xaa33bb })
+    );
+  },
+  text: (tm: ResolvedTHREEManager, e: Entity) => {
+    const init = e.components.initRender as InitTextRenderComponent;
+    const mat = e.components.shader
+      ? new ShaderMaterial({
+          vertexShader: SHADERS[e.components.shader.key].vert,
+          fragmentShader: SHADERS[e.components.shader.key].frag,
+          uniforms: {
+            color: { value: new Color(0xff9900) },
+          },
+        })
+      : new MeshBasicMaterial({ color: 0x2244ff });
+
+    const m = new Mesh(
+      new TextGeometry(init.text, { font, size: 1, height: 0.1 }),
+      mat
+    );
+    m.layers.set(1);
+    return m;
+  },
 };
 type InitFuncs = typeof meshInitFuncs;
 export type RefNames = keyof InitFuncs;

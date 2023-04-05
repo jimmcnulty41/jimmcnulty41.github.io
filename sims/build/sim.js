@@ -21,6 +21,7 @@ let model = {
     ],
     idCounter: 0,
     input: defaultInputComponent,
+    cameraRotation: 0,
 };
 function newDefaultEntity(id) {
     const internalRoll = remap(0, 1, 0.1, 0.4)(Math.random());
@@ -70,7 +71,7 @@ function newDefaultEntity(id) {
         },
     };
 }
-const tm = await getResolvedTHREEManager(new THREEManager(true));
+const tm = await getResolvedTHREEManager(new THREEManager({ enableOrbit: true }));
 let systems = {
     advanceTimeSystem: (model) => ({
         ...model,

@@ -1,5 +1,10 @@
 import { OrbitControls } from "../../vendor/OrbitControls.js";
-import { Plane, Raycaster, Vector3 } from "../../vendor/three.js";
+import {
+  OrthographicCamera,
+  Plane,
+  Raycaster,
+  Vector3,
+} from "../../vendor/three.js";
 import { Ray } from "../../vendor/three.js";
 import {
   Camera,
@@ -38,7 +43,17 @@ export class THREEManager {
   raycaster: Raycaster;
   screenToWorld: Function;
 
-  constructor(enableOrbit: boolean) {
+  constructor({
+    enableOrbit,
+    ortho,
+    cameraPos,
+    lookAt,
+  }: {
+    enableOrbit: boolean;
+    ortho?: boolean;
+    cameraPos?: [number, number, number];
+    lookAt?: [number, number, number];
+  }) {
     let scene = new Scene();
 
     const canvas = document.querySelector("canvas");
@@ -48,14 +63,27 @@ export class THREEManager {
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.outputEncoding = sRGBEncoding;
 
-    const camera = new PerspectiveCamera(
-      35,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
-    );
-    camera.position.set(0, 115, -25);
-    camera.lookAt(0, 0, -25);
+    const camera = ortho
+      ? new OrthographicCamera(-10, 10, 10, -10, 0.1, 1000)
+      : new PerspectiveCamera(
+          35,
+          window.innerWidth / window.innerHeight,
+          0.1,
+          1000
+        );
+    if (cameraPos) {
+      camera.position.set(cameraPos[0], cameraPos[1], cameraPos[2]);
+    } else {
+      camera.position.set(0, 115, -25);
+    }
+
+    camera.layers.enable(1);
+
+    if (lookAt) {
+      camera.lookAt(lookAt[0], lookAt[1], lookAt[2]);
+    } else {
+      camera.lookAt(0, 0, 0);
+    }
 
     getMeshes().then((result) => {
       this.meshes = result;

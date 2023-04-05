@@ -1,6 +1,6 @@
 import { AgeComponent, getAge } from "../components/AgeComponent.js";
 import { CalcPositionComponent } from "../components/CalcTransformComponents.js";
-import { lerp, remap } from "../utils.js";
+import { lerp, remap, splitArray } from "../utils.js";
 import { Model } from "../Model.js";
 import { PositionComponent } from "../components/PositionComponent.js";
 import {
@@ -10,11 +10,15 @@ import {
 } from "../components/Components.js";
 
 export function calcRotationSystem(model: Model): Model {
+  const { matching, notMatching } = splitArray(
+    model.entities,
+    hasCalculatedRotation
+  );
   return {
     ...model,
     entities: [
-      ...model.entities.filter((e) => !hasCalculatedRotation(e)),
-      ...model.entities.filter(hasCalculatedRotation).map((e) => {
+      ...notMatching,
+      ...matching.map((e) => {
         const { rotation, calculateRotation, ...unaffectedComponents } =
           e.components;
         rotation.amt = calculateRotation.calculation(model, e);

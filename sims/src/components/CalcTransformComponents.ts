@@ -10,7 +10,7 @@ export interface CalcScaleComponent {
 }
 export interface CalcPositionComponent {
   calculation: (
-    mode: Model,
+    model: Model,
     entity: EntityWith<"position" | "calculatePosition">
   ) => { x?: number; y?: number; z?: number };
 }

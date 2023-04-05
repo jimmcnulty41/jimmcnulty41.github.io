@@ -8,12 +8,14 @@ import { defaultInputComponent } from "./components/InputComponent.js";
 import { jumpOnSelectedSystem } from "./systems/jumpOnSelectedSystem.js";
 import { THREEManager, getResolvedTHREEManager, } from "./systems/three_wrappers/THREEManager.js";
 import { initTHREEObjectSystem } from "./systems/three_wrappers/initTHREEObjectSystem.js";
-import { getSortByTagSystem, } from "./systems/sortByTagSystem.js";
+import { getSortByTagSystem } from "./systems/sortByTagSystem.js";
 import { sketchbook_page_in_spiral } from "./entityLibrary.js";
+import { getTags } from "./data/data_9.js";
 const disabledSystems = ["report"];
 let model = {
     time: 0,
     input: defaultInputComponent,
+    cameraRotation: 0,
     entities: [
         // {
         //   id: "0",
@@ -67,7 +69,21 @@ let model = {
     ],
     idCounter: 2,
 };
-const tm = await getResolvedTHREEManager(new THREEManager(false));
+const tm = await getResolvedTHREEManager(new THREEManager({
+    enableOrbit: false,
+    cameraPos: [0, 115, -25],
+    lookAt: [0, 0, -25],
+}));
+document.addEventListener("JIM_entityClick", (event) => {
+    // @ts-ignore
+    const blah = tm.scene.children[event.detail.id]
+        .material.map.source.data;
+    const yadda = getTags(blah.src);
+    const imgV = document.createElement("image-viewer");
+    imgV.setAttribute("src", blah.src);
+    imgV.setAttribute("tags", yadda);
+    document.querySelector("body")?.appendChild(imgV);
+});
 let systems = {
     advanceTimeSystem: (model) => ({
         ...model,
