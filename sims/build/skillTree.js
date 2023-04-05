@@ -6,6 +6,8 @@ import { initTHREEObjectSystem } from "./systems/three_wrappers/initTHREEObjectS
 import { calcPositionSystem, calcRotationSystem, } from "./systems/calcTransformSystem.js";
 import { PROJECT_PAGES, SKILL_DATA } from "./data/skillData.js";
 const disabledSystems = ["report"];
+const iframe = document.createElement("iframe");
+(document.querySelector("body") || document).append(iframe);
 document.addEventListener("JIM_entityClick", (event) => {
     const entity = event.detail;
     const name = entity.components.metadata?.name || "";
@@ -13,9 +15,7 @@ document.addEventListener("JIM_entityClick", (event) => {
     console.log(pageUrl);
     if (!pageUrl)
         return;
-    const iframe = document.createElement("iframe");
     iframe.src = pageUrl;
-    (document.querySelector("body") || document).append(iframe);
 });
 let model = {
     time: 0,
