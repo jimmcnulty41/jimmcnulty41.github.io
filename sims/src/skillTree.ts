@@ -18,8 +18,21 @@ import {
   calcRotationSystem,
 } from "./systems/calcTransformSystem.js";
 import { EntityWith } from "./components/Components.js";
+import { PROJECT_PAGES, SKILL_DATA } from "./data/skillData.js";
 
 const disabledSystems = ["report"];
+
+document.addEventListener("JIM_entityClick", (event) => {
+  const entity: Entity = (event as CustomEvent).detail;
+  const name = entity.components.metadata?.name || "";
+  const pageUrl = PROJECT_PAGES[name];
+  console.log(pageUrl);
+  if (!pageUrl) return;
+
+  const iframe = document.createElement("iframe");
+  iframe.src = pageUrl;
+  (document.querySelector("body") || document).append(iframe);
+});
 
 let model: Model = {
   time: 0,
@@ -37,57 +50,6 @@ let model: Model = {
   cameraRotation: 0,
 };
 
-const DATA = [
-  {
-    skillName: "CSS",
-    examples: ["climb", "extrahop", "epic", "imageViewer"],
-  },
-  {
-    skillName: "HTML",
-    examples: ["climb", "extrahop", "epic", "imageViewer"],
-  },
-  {
-    skillName: "Hand Sawing",
-    examples: ["the tower", "the bed", "the roach motel", "the desk"],
-  },
-  {
-    skillName: "Machine sawing",
-    examples: ["the triangles"],
-  },
-  {
-    skillName: "Ropes",
-    examples: ["the tower"],
-  },
-  {
-    skillName: "Illustration",
-    examples: ["sketchery"],
-  },
-  {
-    skillName: "Animation",
-    examples: ["jim.mcnulty.site/gifs", "squatbot", "404page"],
-  },
-  {
-    skillName: "d3",
-    examples: ["observable"],
-  },
-  {
-    skillName: "react",
-    examples: ["extrahop", "climb"],
-  },
-  {
-    skillName: "webComponents",
-    examples: ["imageViewer"],
-  },
-  {
-    skillName: "javascript",
-    examples: ["imageViewer", "climb", "extrahop"],
-  },
-  {
-    skillName: "three.js",
-    examples: ["this site"],
-  },
-];
-
 interface Node {
   id: string;
 }
@@ -97,11 +59,11 @@ interface Edge {
   to: string;
 }
 
-function dataWithSkillNodes(data: typeof DATA) {
-  const nodes = data.map((s) => ({ id: s.skillName }));
+function dataWithSkillNodes(data: typeof SKILL_DATA) {
+  const nodes: Node[] = data.map((s) => ({ id: s.skillName }));
 
   const edgeNames = Object.keys(
-    DATA.reduce((names, d) => {
+    data.reduce((names, d) => {
       let additions: { [blah: string]: string } = {};
       d.examples.forEach((e) => {
         additions[e] = "";
@@ -129,7 +91,7 @@ function dataWithSkillNodes(data: typeof DATA) {
 function getEntities(model: Model): Model {
   let id = model.idCounter;
 
-  const graph = dataWithSkillNodes(DATA);
+  const graph = dataWithSkillNodes(SKILL_DATA);
 
   const points = mapToCurve([...Array(graph.nodes.length)].map((x) => ({})));
 
@@ -193,6 +155,10 @@ function getEntities(model: Model): Model {
           refName: "line",
           from: nameToId[edge.from],
           to: nameToId[edge.to],
+        },
+        metadata: {
+          tags: [],
+          name: edge.name,
         },
         position: {
           x: points[i].position[0],
