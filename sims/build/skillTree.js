@@ -248,6 +248,10 @@ let systems = {
     }),
     calcPositionSystem,
     calcRotationSystem,
+    report: (model) => {
+        console.log(tm.camera.position);
+        return model;
+    },
     initTHREEScene: (m) => initTHREEObjectSystem(tm, m),
     updateTHREEScene: (m) => updateTHREEScene(tm, m),
 };

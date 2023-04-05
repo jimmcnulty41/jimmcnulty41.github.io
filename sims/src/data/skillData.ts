@@ -16,7 +16,7 @@ export const SKILL_DATA = [
     examples: ["the triangles"],
   },
   {
-    skillName: "Ropes",
+    skillName: "Knots",
     examples: ["the tower"],
   },
   {
@@ -45,10 +45,11 @@ export const SKILL_DATA = [
   },
   {
     skillName: "three.js",
-    examples: ["this site"],
+    examples: ["sketchery"],
   },
 ];
 
 export const PROJECT_PAGES: { [key: string]: string } = {
   climb: "./projectPages/climb.html",
+  sketchery: "https://jim.mcnulty.site/sims/sketchery.html",
 };
