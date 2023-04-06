@@ -53,6 +53,7 @@ export const PROJECT_PAGES = {
     sketchery: "./projectPages/sketcheryWriteup.html",
     squatbot: "./projectPages/squatbot.html",
     imageViewer: "./projectPages/sketcheryWriteup.html",
+    "404page": "./projectPages/climb.html",
 };
 export const EXAMPLES = SKILL_DATA.flatMap((s) => s.examples);
 export const SKILLS = SKILL_DATA.map((x) => x.skillName);
