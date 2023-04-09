@@ -9,6 +9,7 @@ const disabledSystems = ["report"];
 const iframe = document.querySelector("iframe");
 if (!iframe)
     throw new Error("forgot to add iframe to html");
+iframe.src = "";
 document.addEventListener("JIM_entityClick", (event) => {
     const entity = event.detail;
     const name = entity.components.metadata?.name || "";
@@ -31,6 +32,12 @@ document.addEventListener("JIM_entityClick", (event) => {
                     if (!pageUrl)
                         return;
                     iframe.src = pageUrl;
+                    const s = document.querySelector("style")?.cloneNode(true);
+                    iframe.onload = (e) => {
+                        const head = iframe.contentDocument?.head;
+                        console.log(head);
+                        head?.appendChild(s);
+                    };
                 };
                 a.href = "#";
                 a.innerText = ex;
