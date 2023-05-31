@@ -6,7 +6,10 @@ img.hero {
 
 @media only screen and (min-width: 709px) {
   img.hero {
-    margin-top: -206px; } }
+    margin-top: -226px; }
+
+  .pane > img.smol {
+    width: 20vw; } }
 .face {
   width: 200px;
   border: 1px solid #ebc68c;
@@ -18,6 +21,7 @@ h1 {
   font-family: "Shrikhand", cursive;
   font-size: 40px;
   color: #1e2d2f;
+  margin-top: 20px;
   margin-bottom: 20px; }
 
 h1 > .large {

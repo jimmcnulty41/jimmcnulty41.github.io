@@ -12,9 +12,14 @@ body {
 img.hero {
     width: 100vw;
 }
+
+
 @media only screen and (min-width: #{$desktop-breakpoint}) {
     img.hero {
-        margin-top: -206px;
+        margin-top: -226px;
+    }
+    .pane > img.smol {
+        width: 20vw;
     }
 }
 
@@ -33,6 +38,7 @@ h1 {
     font-size: $title-size;
 
     color: $color-1;
+    margin-top: 20px;
     margin-bottom: 20px;
 }
 
