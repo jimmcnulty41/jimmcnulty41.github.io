@@ -59,9 +59,9 @@ p {
 }
 
 a {
-    color: $color-2;
+   font-family: "Shrikhand", cursive;
+   font-size: $title-size;
 
-    text-decoration: none;
 }
 
 .secret {
@@ -79,4 +79,9 @@ a {
 
 .pane > img {
     width: 50vw;
+}
+
+hr {
+    border: 120px solid black;
+    width: 100vw;
 }
