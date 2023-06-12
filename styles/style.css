@@ -37,8 +37,8 @@ p {
   line-height: 1.3; }
 
 a {
-  color: #ebc68c;
-  text-decoration: none; }
+  font-family: "Shrikhand", cursive;
+  font-size: 40px; }
 
 .secret {
   color: #c57b57; }
@@ -52,5 +52,9 @@ a {
 
 .pane > img {
   width: 50vw; }
+
+hr {
+  border: 120px solid black;
+  width: 100vw; }
 
 /*# sourceMappingURL=style.css.map */
