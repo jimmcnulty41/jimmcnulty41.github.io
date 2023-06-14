@@ -25771,3 +25771,7 @@ export function getMetadata(sourceName) {
     const idx = Number.parseInt(sourceName.slice(sourceName.search(/\d*.jpg/)).split(".")[0]);
     return data.images[idx];
 }
+const baseUrl = "https://sketchery-store.nyc3.cdn.digitaloceanspaces.com/";
+export function dataToUrl(imageData) {
+    return `${baseUrl}${imageData.new}`;
+}
