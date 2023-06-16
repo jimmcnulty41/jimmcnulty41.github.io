@@ -13,23 +13,23 @@ body {
   width: 100vw;
   padding: 24px 0px; }
 
+.preview {
+  display: none; }
+
 @media only screen and (min-width: 709px) {
   .container {
     max-width: 709px;
     border: 6px double #211405;
+    border-radius: 12px;
     padding: 24px 24px;
-    margin: 24px 24px; } }
-.preview {
-  display: none; }
-
-@media only screen and (min-width: 426px) {
-  .container {
-    max-width: 426px; }
+    margin: 24px 24px;
+    max-width: 378px; }
 
   .preview {
     display: block;
     margin-bottom: 24px;
     border: 16px solid orange;
+    border-radius: 12px;
     height: 320px; } }
 
 /*# sourceMappingURL=columnLayout.css.map */

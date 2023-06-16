@@ -13,6 +13,10 @@ img.hero {
     width: 100vw;
 }
 
+.bar {
+    background-color: black;
+}
+
 
 @media only screen and (min-width: #{$desktop-breakpoint}) {
     img.hero {
@@ -84,4 +88,16 @@ a {
 hr {
     border: 120px solid black;
     width: 100vw;
+}
+
+.bar {
+    width: 100vw;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 12px 0;
+}
+
+.bar i {
+    color: white;
 }

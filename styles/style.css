@@ -4,6 +4,9 @@ body {
 img.hero {
   width: 100vw; }
 
+.bar {
+  background-color: black; }
+
 @media only screen and (min-width: 709px) {
   img.hero {
     margin-top: -226px; }
@@ -56,5 +59,15 @@ a {
 hr {
   border: 120px solid black;
   width: 100vw; }
+
+.bar {
+  width: 100vw;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  padding: 12px 0; }
+
+.bar i {
+  color: white; }
 
 /*# sourceMappingURL=style.css.map */
