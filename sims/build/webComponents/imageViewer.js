@@ -187,9 +187,11 @@ class ImageViewer extends HTMLElement {
                 if (response.ok) {
                     return response.blob();
                 }
-                throw new Error(`error loading enhanced ${name}`);
+                console.log(`error loading enhanced ${name}`);
             })
                 .then((blob) => {
+                if (!blob)
+                    return;
                 const bloburl = URL.createObjectURL(blob);
                 this.localUrls["highQ"] = bloburl;
                 registerIntoCache(enhancedUrl, bloburl);

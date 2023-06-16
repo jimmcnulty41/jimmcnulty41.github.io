@@ -1,39 +1,79 @@
-import { data, dataToUrl, getTags } from "./data/data_9.js";
+import {
+  data,
+  dataToEnhancedUrl,
+  dataToUrl,
+  getFilteredImages,
+  getTags,
+} from "./data/data_10.js";
+import { remap } from "./utils.js";
 
-const missingImgs: string[] = [];
+const loadedImages = [];
 
-data.images.forEach((imgData) => {
-  const i = document.createElement("img");
-  const src = dataToUrl(imgData);
-  i.src = src;
-  i.classList.add("loading");
-  i.onclick = (e) => {
-    const yadda = getTags(i.src);
-    const imgV = document.createElement("image-viewer");
-    imgV.setAttribute("src", i.src);
-    imgV.setAttribute("tags", yadda);
-    document.querySelector("body")?.appendChild(imgV);
-  };
-  const container = document.querySelector("#images");
-  i.addEventListener("load", () => {
-    container?.appendChild(i);
-    i.classList.remove("loading");
-  });
-  i.addEventListener("error", (e) => {
-    missingImgs.push(src);
-    e.preventDefault();
-  });
+let missingFiles: string[] = [];
+const body = document.querySelector("body");
+
+getFilteredImages().map((imageDatum) => {
+  const url = dataToUrl(imageDatum);
+  fetch(url)
+    .then((resp) => {
+      if (!resp.ok) return;
+      return resp.blob();
+    })
+    .then((blob) => {
+      if (!blob) {
+        missingFiles.push(imageDatum.new);
+        return;
+      }
+      const objectURL = URL.createObjectURL(blob);
+      const imgEl = document.createElement("img");
+      imgEl.src = objectURL;
+      imgEl.addEventListener("click", (e) => {
+        fetch(dataToEnhancedUrl(imageDatum))
+          .then((resp) => {
+            if (!resp.ok) return;
+            return resp.blob();
+          })
+          .then((enhBlob) => {
+            if (!enhBlob) {
+              missingFiles.push(imageDatum.new);
+              return;
+            }
+            const enhObjUrl = URL.createObjectURL(enhBlob);
+            const featureImg = document.createElement("img");
+            featureImg.id = "feature";
+            featureImg.src = enhObjUrl;
+            featureImg.addEventListener("click", () =>
+              body?.removeChild(featureImg)
+            );
+            document.querySelector("body")?.appendChild(featureImg);
+          });
+      });
+      document.querySelector("#images")?.appendChild(imgEl);
+    });
 });
 
-window.addEventListener("error", (e) => {
-  const el = e.currentTarget as HTMLElement;
-  console.log(el.tagName);
-  if (el.tagName === "IMG") {
-  }
-  e.preventDefault();
-});
-
-setTimeout(() => {
-  console.log("the following images are missing from the server:");
-  console.log(missingImgs);
+setInterval(() => {
+  console.log(`missing files: ${missingFiles}`);
+  missingFiles = [];
 }, 10000);
+
+const scrollContainer = document.querySelector("#images");
+
+const scalingFn = remap(0, 1000, 1, 0, true);
+
+addEventListener("DOMContentLoaded", () => {
+  const imageContainer = document.querySelector("#images") as HTMLDivElement;
+
+  imageContainer.addEventListener("scroll", (e) => {
+    const currentScroll = imageContainer.scrollLeft;
+    imageContainer.childNodes.forEach((n) => {
+      if ((n as HTMLElement).tagName !== "IMG") return;
+
+      const elOffset = (n as HTMLImageElement).offsetLeft;
+      const blah = scalingFn(
+        Math.abs(elOffset - currentScroll - window.innerWidth / 4)
+      );
+      (n as HTMLImageElement).style.scale = `${blah}`;
+    });
+  });
+});

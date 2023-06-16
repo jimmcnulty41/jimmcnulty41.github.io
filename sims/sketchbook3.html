@@ -1,33 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Icons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <!-- Icons -->
+
+
     <meta charset="UTF-8">
+    <title>Jim McNulty's Sketchbooks</title>
     <link rel="stylesheet" type="text/css" href="/styles/reset.css" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="build/webComponents/imageViewer.js"></script>
     <style>
         #images {
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             align-items: center;
             width: 100vw;
-            height: 60vh;
+            height: 80vh;
             overflow: scroll;
+            background-color: black;
         }
 
-        #images > img {
+        #images > * {
             width: calc(50%-12px);
             display: block;
+            margin: 12px;
         }
+
+        img:nth-child(odd) {
+            transform: translateY(10px);
+        }
+        img:nth-child(n + 7) {
+            transform: translateY(40px);
+        }
+
         #images > img.loading {
             display: none;
+        }
+
+        #feature {
+            position: absolute;
+            top: 10vh;
+            max-height: 80vh;
+            max-width: 100vw;
         }
     </style>
     <title>Document</title>
 </head>
 <body>
     <script type="module" src="./build/sketchbook3.js"></script>
-    <div id="images"></div>
+    <div id="images">
+        <p style="color:white; margin-left: 48px">Click to enhance, again to close</p>
+    </div>
 </body>
 </html>
