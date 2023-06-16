@@ -32,6 +32,7 @@ const sources = [
   "25.gif",
   "26.gif",
   "27.gif",
+  "addy_dancing_robot.gif",
   "28.gif",
   "29.gif",
   "30.gif",
