@@ -47,6 +47,14 @@ export const SKILL_DATA = [
     skillName: "three.js",
     examples: ["sketchery"],
   },
+  {
+    skillName: "pixel art",
+    examples: [],
+  },
+  {
+    skillName: "Blender",
+    examples: ["blenderBackgrounds"],
+  },
 ];
 
 export const PROJECT_PAGES: { [key: string]: string } = {
@@ -54,6 +62,7 @@ export const PROJECT_PAGES: { [key: string]: string } = {
   sketchery: "./projectPages/sketcheryWriteup.html",
   squatbot: "./projectPages/squatbot.html",
   imageViewer: "./projectPages/sketcheryWriteup.html",
+  blenderBackgrounds: "./projectPages/blenderBackgrounds.html",
   "404page": "./projectPages/climb.html",
 };
 

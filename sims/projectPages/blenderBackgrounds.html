@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Web component to compare images-->
+    <script
+        defer
+        src="https://unpkg.com/img-comparison-slider@7/dist/index.js"
+    ></script>
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/img-comparison-slider@7/dist/styles.css"
+    />
+    <!-- -->
+    <title>Blender Backgrounds</title>
+</head>
+<body>
+    <h1>Blender World shaders</h1>
+    <p>
+        As soon as I learned that you could <a href="https://docs.blender.org/manual/en/2.79/data_system/files/startup_file.html">override everything for blender's default scene</a>, I knew I had to make some key personalizations.
+        First and foremost, I wanted an <a href="https://en.wikipedia.org/wiki/Image-based_lighting">IBL setup</a>.
+        Since most of my concepts take place in an outdoor city environment, I found an urban HDRI on <a href="https://hdri-haven.com/category/outdoor/urban?page=3">HDRI haven</a> and dumped it into my startup file.
+        I added a world shader that resamples the image and darkens the darkest shadows for a more painterly effect.
+    </p>
+    <img-comparison-slider tabindex="0" class="rendered">
+        <img slot="second" src="/assets/images/old_painted_hdri_pre.jpg" width="100%">
+        <img slot="first" src="/assets/images/old_painted_hdri.jpg" width="100%">
+    </img-comparison-slider>
+    <img src="/assets/images/painterly_node_tree.jpg" />
+
+    <p>
+        I've been using this setup for about 2 years tho, so it seems like it's time for a new one.
+        Since I've also been playing around with some pixel art, a pixel shader seems appropriate.
+        I used <a href="https://hdreye.app/">an app</a> to take an HDRI from a roof it did a bunch of hard stitching work and shat out some great assets for me to use.
+        Then I do a quick downscale upscale with pixelization in the world shader, reduce the number of colors used (with posterization), and do some curve fiddling to make the colors look nice.
+    </p>
+    <img-comparison-slider tabindex="0" class="rendered">
+        <img slot="first" src="/assets/images/pixl_hdri.jpg" width="100%">
+        <img slot="second" src="/assets/images/pixl_hdri_pre.jpg" width="100%">
+    </img-comparison-slider>
+    <img src="/assets/images/pixl_node_tree.jpg" />
+    <p>
+        And we can play around with making stuff more or less pixelated.
+    </p>
+    <img-comparison-slider tabindex="0" class="rendered">
+        <img slot="first" src="/assets/images/pixl_hdri.jpg" width="100%">
+        <img slot="second" src="/assets/images/pixl_hdri_2.jpg" width="100%">
+    </img-comparison-slider>
+    <p>
+        And that all works fine for a background,
+        but the real magic happens when we zoom in on particular areas
+        and tweak everything to match.
+    </p>
+    <img src="/assets/images/pixel_tree2.png"/>
+    <img src="/assets/images/pix_skyline_view1.png"/>
+    <img src="/assets/images/pixel_tree3.png"/>
+    <img src="/assets/images/pixel_tree6.png"/>
+    <p>
+        -- Jim McNulty, 2023
+    </p>
+</body>
+</html>
