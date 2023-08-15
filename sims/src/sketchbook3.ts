@@ -11,9 +11,19 @@ const loadedImages = [];
 
 let missingFiles: string[] = [];
 const body = document.querySelector("body");
+const numColumns = Math.floor(
+  window.innerWidth / (256 /*max size*/ + 24) /*margin*/
+);
+const scrollCont = document.querySelector("#images");
+[...Array(numColumns)].map((x, i) => {
+  const d = document.createElement("div");
+  d.id = `imageCol_${i}`;
+  scrollCont?.appendChild(d);
+});
 
-getFilteredImages().map((imageDatum) => {
+getFilteredImages().map((imageDatum, i) => {
   const url = dataToUrl(imageDatum);
+  console.log(i);
   fetch(url)
     .then((resp) => {
       if (!resp.ok) return;
@@ -48,7 +58,9 @@ getFilteredImages().map((imageDatum) => {
             document.querySelector("body")?.appendChild(featureImg);
           });
       });
-      document.querySelector("#images")?.appendChild(imgEl);
+      const parent = document.querySelector(`#imageCol_${i % numColumns}`);
+      console.log(parent);
+      parent?.appendChild(imgEl);
     });
 });
 
@@ -57,22 +69,18 @@ setInterval(() => {
   missingFiles = [];
 }, 10000);
 
-const scrollContainer = document.querySelector("#images");
-
 const scalingFn = remap(0, 1000, 1, 0, true);
 
 addEventListener("DOMContentLoaded", () => {
   const imageContainer = document.querySelector("#images") as HTMLDivElement;
 
   imageContainer.addEventListener("scroll", (e) => {
-    const currentScroll = imageContainer.scrollLeft;
+    const currentScroll = imageContainer.scrollTop;
     imageContainer.childNodes.forEach((n) => {
       if ((n as HTMLElement).tagName !== "IMG") return;
 
-      const elOffset = (n as HTMLImageElement).offsetLeft;
-      const blah = scalingFn(
-        Math.abs(elOffset - currentScroll - window.innerWidth / 4)
-      );
+      const elOffset = (n as HTMLImageElement).offsetTop;
+      const blah = scalingFn(Math.abs(elOffset - currentScroll));
       (n as HTMLImageElement).style.scale = `${blah}`;
     });
   });

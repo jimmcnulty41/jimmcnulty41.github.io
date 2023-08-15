@@ -18,7 +18,8 @@
         #images {
             display: flex;
             flex-direction: row;
-            align-items: center;
+            align-items: flex-start;
+            justify-content: center;
             width: 100vw;
             height: 80vh;
             overflow: scroll;
@@ -26,19 +27,15 @@
         }
 
         #images > * {
-            width: calc(50%-12px);
-            display: block;
+            display: flex;
+            flex-direction: column;
             margin: 12px;
         }
 
-        img:nth-child(odd) {
-            transform: translateY(10px);
+        div > img {
+            margin-bottom: 24px;
         }
-        img:nth-child(n + 7) {
-            transform: translateY(40px);
-        }
-
-        #images > img.loading {
+        img.loading {
             display: none;
         }
 
@@ -54,7 +51,6 @@
 <body>
     <script type="module" src="./build/sketchbook3.js"></script>
     <div id="images">
-        <p style="color:white; margin-left: 48px">Click to enhance, again to close</p>
     </div>
 </body>
 </html>
