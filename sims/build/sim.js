@@ -73,7 +73,7 @@ function newDefaultEntity(id) {
         },
     };
 }
-const tm = await getResolvedTHREEManager(new THREEManager({ enableOrbit: true, cameraPos: [100, 100, 100] }));
+const tm = await getResolvedTHREEManager(new THREEManager({ enableOrbit: true, cameraPos: [100, 100, 200] }));
 function getDist(es) {
     const positions = es
         .map((e) => e.components.position)
@@ -83,8 +83,8 @@ function getDist(es) {
 }
 const achievements = [
     (es) => es.filter((e) => e.components.position).length > 10 ? "Cute rat pets!" : "",
-    (es) => es.filter((e) => e.components.position).length > 400
-        ? "Now that's a rat colony!"
+    (es) => es.filter((e) => e.components.position).length > 600
+        ? "Your pets have established a vibrant colony"
         : "",
     (es) => getDist(es) > 200 ? "Your rats have begun to leave the nest" : "",
     (es) => getDist(es) > 600

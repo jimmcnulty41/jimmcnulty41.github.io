@@ -85,7 +85,7 @@ function newDefaultEntity(id: string): Entity {
 }
 
 const tm = await getResolvedTHREEManager(
-  new THREEManager({ enableOrbit: true, cameraPos: [100, 100, 100] })
+  new THREEManager({ enableOrbit: true, cameraPos: [100, 100, 200] })
 );
 
 function getDist(es: Entity[]) {
@@ -100,8 +100,8 @@ const achievements: Achievement[] = [
   (es: Entity[]) =>
     es.filter((e) => e.components.position).length > 10 ? "Cute rat pets!" : "",
   (es: Entity[]) =>
-    es.filter((e) => e.components.position).length > 400
-      ? "Now that's a rat colony!"
+    es.filter((e) => e.components.position).length > 600
+      ? "Your pets have established a vibrant colony"
       : "",
   (es: Entity[]) =>
     getDist(es) > 200 ? "Your rats have begun to leave the nest" : "",
