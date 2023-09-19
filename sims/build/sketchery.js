@@ -68,6 +68,8 @@ let model = {
         },
     ],
     idCounter: 2,
+    achievements: [],
+    toasts: [],
 };
 const tm = await getResolvedTHREEManager(new THREEManager({
     enableOrbit: false,

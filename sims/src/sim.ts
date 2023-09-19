@@ -1,16 +1,17 @@
-import { Model } from "./Model.js";
-import { updateTHREEScene } from "./systems/three_wrappers/updateTHREESceneSystem.js";
-import { reportSystem } from "./systems/reportSystem.js";
-import { wanderSystem } from "./systems/wanderSystem.js";
+import { Achievement, Model, Toast } from "./Model.js";
 import { addEntityEveryNTicksSystem } from "./systems/addEntityEveryNTicksSystem.js";
-import { Entity } from "./Entity.js";
-import { remap } from "./utils.js";
 import { defaultInputComponent } from "./components/InputComponent.js";
+import { Entity } from "./Entity.js";
+import { initTHREEObjectSystem } from "./systems/three_wrappers/initTHREEObjectSystem.js";
+import { remap, splitArray } from "./utils.js";
+import { reportSystem } from "./systems/reportSystem.js";
+import { updateTHREEScene } from "./systems/three_wrappers/updateTHREESceneSystem.js";
+import { wanderSystem } from "./systems/wanderSystem.js";
 import {
   THREEManager,
   getResolvedTHREEManager,
 } from "./systems/three_wrappers/THREEManager.js";
-import { initTHREEObjectSystem } from "./systems/three_wrappers/initTHREEObjectSystem.js";
+import { PositionComponent } from "./components/PositionComponent.js";
 
 const disabledSystems = ["report"];
 
@@ -30,6 +31,8 @@ let model: Model = {
   idCounter: 0,
   input: defaultInputComponent,
   cameraRotation: 0,
+  achievements: [],
+  toasts: [],
 };
 
 function newDefaultEntity(id: string): Entity {
@@ -82,8 +85,125 @@ function newDefaultEntity(id: string): Entity {
 }
 
 const tm = await getResolvedTHREEManager(
-  new THREEManager({ enableOrbit: true })
+  new THREEManager({ enableOrbit: true, cameraPos: [100, 100, 100] })
 );
+
+function getDist(es: Entity[]) {
+  const positions = es
+    .map((e) => e.components.position)
+    .filter((x): x is PositionComponent => x !== undefined)
+    .flatMap((p) => [p.x, p.y, p.z]);
+  return Math.max(...positions) - Math.min(...positions);
+}
+
+const achievements: Achievement[] = [
+  (es: Entity[]) =>
+    es.filter((e) => e.components.position).length > 10 ? "Cute rat pets!" : "",
+  (es: Entity[]) =>
+    es.filter((e) => e.components.position).length > 400
+      ? "Now that's a rat colony!"
+      : "",
+  (es: Entity[]) =>
+    getDist(es) > 200 ? "Your rats have begun to leave the nest" : "",
+  (es: Entity[]) =>
+    getDist(es) > 600
+      ? "The fastest rats have pushed the boundaries of ratdom outward"
+      : "",
+  (es: Entity[]) =>
+    getDist(es) > 1000 ? "The extent of the rat world knows no bounds!" : "",
+  (es: Entity[]) =>
+    getDist(es) > 2000
+      ? "Some great rat adventurers have discovered distant lands!"
+      : "",
+  (es: Entity[]) =>
+    es.filter((e) => e.components.position).length > 999
+      ? "Oh wow, you've got a whole civilization!"
+      : "",
+];
+
+const toastDuration = 1000;
+function achievementSystem(model: Model): Model {
+  const earnedAchievements = achievements
+    .map((achieveFn) => achieveFn(model.entities))
+    .filter((x) => x);
+
+  const diff = earnedAchievements.filter(
+    (e) => !model.achievements.some((alreadyEarned) => alreadyEarned === e)
+  );
+
+  const toasts = diff.length
+    ? [
+        ...model.toasts,
+        ...diff.map((newAchievement) => ({
+          expirationTime: model.time + toastDuration,
+          message: newAchievement,
+          needsInit: true,
+        })),
+      ]
+    : model.toasts;
+
+  return {
+    ...model,
+    toasts,
+    achievements: earnedAchievements,
+  };
+}
+
+function needsInit(t: Toast): t is Toast {
+  return t.needsInit;
+}
+
+let toastSegmentAdded = false;
+function getToastContainer(): HTMLDivElement {
+  if (toastSegmentAdded) {
+    const blah = document.querySelector("#toasts");
+    if (!blah) {
+      throw new Error("lied about adding toast segment");
+    }
+    return blah as HTMLDivElement;
+  } else {
+    const el = document.createElement("div");
+    el.id = "toasts";
+    document.querySelector("body")?.append(el);
+    toastSegmentAdded = true;
+    return el;
+  }
+}
+
+function toastSystem(model: Model): Model {
+  const { matching: newToasts, notMatching: existingToasts } = splitArray(
+    model.toasts,
+    needsInit
+  );
+  const { matching: expiredToasts, notMatching: aliveToasts } = splitArray(
+    existingToasts,
+    (e): e is Toast => e.expirationTime < model.time
+  );
+
+  newToasts.forEach((t) => {
+    const toast = document.createElement("div");
+    toast.id = t.message.replaceAll(/\W/g, "");
+    const icon = document.createElement("i");
+    icon.classList.add("fa-solid");
+    icon.classList.add("fa-trophy");
+    toast.append(icon);
+    const p = document.createElement("p");
+    p.innerText = t.message;
+    toast.append(p);
+    getToastContainer().append(toast);
+  });
+  expiredToasts.forEach((t) => {
+    document.querySelector(`#${t.message.replaceAll(/\W/g, "")}`)?.remove();
+  });
+
+  return {
+    ...model,
+    toasts: [
+      ...aliveToasts,
+      ...newToasts.map((t) => ({ ...t, needsInit: false })),
+    ],
+  };
+}
 
 type System = (model: Model) => Model;
 type Systems = { [name: string]: System };
@@ -94,9 +214,11 @@ let systems: Systems = {
   }),
   addEntityEveryNTicksSystem: addEntityEveryNTicksSystem(newDefaultEntity, 1),
   wanderSystem,
+  achievementSystem,
   //reportSystem,
   initTHREEScene: (m) => initTHREEObjectSystem(tm, m),
   updateTHREEScene: (m) => updateTHREEScene(tm, m),
+  toastSystem,
 };
 
 function RunECS() {

@@ -59,6 +59,8 @@ let model = {
         },
     ],
     idCounter: 2,
+    achievements: [],
+    toasts: [],
 };
 function newDefaultEntity(id) {
     const roll = Math.random();

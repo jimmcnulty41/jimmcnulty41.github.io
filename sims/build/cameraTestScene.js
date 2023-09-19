@@ -9,6 +9,8 @@ let model = {
     entities: [],
     idCounter: 0,
     cameraRotation: 0,
+    achievements: [],
+    toasts: [],
 };
 let systems = {
     blaya: (m) => {

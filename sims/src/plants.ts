@@ -30,6 +30,8 @@ let model: Model = {
   idCounter: 0,
   input: defaultInputComponent,
   cameraRotation: 0,
+  toasts: [],
+  achievements: [],
 };
 
 function newDefaultEntity(id: string): Entity {

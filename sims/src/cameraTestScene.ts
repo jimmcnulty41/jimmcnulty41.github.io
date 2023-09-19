@@ -16,6 +16,8 @@ let model: Model = {
   entities: [],
   idCounter: 0,
   cameraRotation: 0,
+  achievements: [],
+  toasts: [],
 };
 type System = (model: Model) => Model;
 type Systems = { [name: string]: System };

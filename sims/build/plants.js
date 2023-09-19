@@ -22,6 +22,8 @@ let model = {
     idCounter: 0,
     input: defaultInputComponent,
     cameraRotation: 0,
+    toasts: [],
+    achievements: [],
 };
 function newDefaultEntity(id) {
     const internalRoll = remap(0, 1, 0.1, 0.4)(Math.random());

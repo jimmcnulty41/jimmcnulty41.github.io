@@ -2,16 +2,60 @@
 <html lang="en">
 <head>
         <!-- Icons -->
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-        <link rel="manifest" href="/site.webmanifest">
-        <!-- Icons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <!-- Icons -->
+
+    <script src="https://kit.fontawesome.com/db132f905c.js" crossorigin="anonymous"></script>
+
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="/styles/reset.css" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+        #toasts {
+            position: fixed;
+            top: 24px;
+            left: 12px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #toasts > div {
+            font-size: 18px;
+            width: 400px;
+            background-color: white;
+            border-radius: 4px;
+            height: 42px;
+            margin: 12px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+
+            position: relative;
+            border: 1px dashed black;
+
+            animation-name: toast-in;
+            animation-duration: 0.2s;
+            animation-timing-function: ease-in-out;
+        }
+        @keyframes toast-in {
+            0% {
+                left: -100px;
+            }
+            100% {
+                left: 0px;
+            }
+        }
+
+        #toasts > div > * {
+            margin: 12px;
+        }
+
+    </style>
 </head>
 <body>
     <canvas></canvas>

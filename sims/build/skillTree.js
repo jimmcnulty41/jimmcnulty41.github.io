@@ -1,10 +1,10 @@
-import { updateTHREEScene } from "./systems/three_wrappers/updateTHREESceneSystem.js";
-import { mapToCurve, remap } from "./utils.js";
 import { defaultInputComponent } from "./components/InputComponent.js";
-import { THREEManager, getResolvedTHREEManager, } from "./systems/three_wrappers/THREEManager.js";
 import { initTHREEObjectSystem } from "./systems/three_wrappers/initTHREEObjectSystem.js";
+import { mapToCurve, remap } from "./utils.js";
+import { PROJECT_PAGES, SKILL_DATA, SKILLS } from "./data/skillData.js";
+import { updateTHREEScene } from "./systems/three_wrappers/updateTHREESceneSystem.js";
+import { THREEManager, getResolvedTHREEManager, } from "./systems/three_wrappers/THREEManager.js";
 import { calcPositionSystem, calcRotationSystem, } from "./systems/calcTransformSystem.js";
-import { PROJECT_PAGES, SKILLS, SKILL_DATA } from "./data/skillData.js";
 const disabledSystems = ["report"];
 const iframe = document.querySelector("iframe");
 if (!iframe)
@@ -75,6 +75,8 @@ let model = {
     idCounter: 0,
     input: defaultInputComponent,
     cameraRotation: 0,
+    achievements: [],
+    toasts: [],
 };
 function dataWithSkillNodes(data) {
     const nodes = data.map((s) => ({ name: s.skillName }));
