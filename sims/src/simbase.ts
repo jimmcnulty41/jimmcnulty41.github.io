@@ -12,8 +12,6 @@ import {
 } from "./systems/three_wrappers/THREEManager.js";
 import { initTHREEObjectSystem } from "./systems/three_wrappers/initTHREEObjectSystem.js";
 
-const disabledSystems = ["report"];
-
 let model: Model = {
   time: 0,
   entities: [
@@ -34,31 +32,6 @@ let model: Model = {
   achievements: [],
 };
 
-function newDefaultEntity(id: string): Entity {
-  const internalRoll = remap(0, 1, 0.1, 0.4)(Math.random());
-  const internalRoll2 = Math.random();
-  return {
-    id,
-    components: {
-      initRender: { refName: "rat" },
-      color: {
-        r: 0.5,
-        g: 0.5,
-        b: 0.2,
-      },
-      rotation: {
-        style: "standard",
-        dix: 0,
-      },
-      position: {
-        x: 0,
-        y: internalRoll2 * 10,
-        z: (internalRoll * 10) % 10,
-      },
-    },
-  };
-}
-
 const tm = await getResolvedTHREEManager(
   new THREEManager({
     enableOrbit: false,
@@ -74,8 +47,6 @@ let systems: Systems = {
     ...model,
     time: model.time + 1,
   }),
-  addEntityEveryNTicksSystem: addEntityEveryNTicksSystem(newDefaultEntity, 1),
-  wanderSystem,
   //reportSystem,
   initTHREEScene: (m) => initTHREEObjectSystem(tm, m),
   updateTHREEScene: (m) => updateTHREEScene(tm, m),
@@ -89,11 +60,9 @@ function RunECS() {
 function update() {
   window.requestAnimationFrame(() => update());
 
-  Object.keys(systems)
-    .filter((s) => !disabledSystems.includes(s))
-    .forEach((s) => {
-      model = systems[s](model);
-    });
+  Object.keys(systems).forEach((s) => {
+    model = systems[s](model);
+  });
 }
 
 RunECS();
