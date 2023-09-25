@@ -21,9 +21,12 @@
             align-items: flex-start;
             justify-content: center;
             width: 100vw;
-            height: 80vh;
+            height: 100vh;
             overflow: scroll;
             background-color: black;
+            pointer-events: all;
+            position: fixed;
+            top:0;
         }
 
         #images > * {
@@ -39,17 +42,38 @@
             display: none;
         }
 
+        #featureContainer {
+            display: flex;
+            flex-direction: column;
+            width: 100vw;
+            height: 100vh;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #featureContainer.active {
+            position: fixed;
+            top: 0;
+            background-color: #999999d4;
+            z-index: 1;
+        }
+
         #feature {
-            position: absolute;
-            top: 10vh;
+            pointer-events: all;
             max-height: 80vh;
             max-width: 100vw;
+        }
+
+        #featureContainer.active ~ #images {
+            pointer-events: none;
         }
     </style>
     <title>Document</title>
 </head>
 <body>
     <script type="module" src="./build/sketchbook3.js"></script>
+    <div id="featureContainer">
+    </div>
     <div id="images">
     </div>
 </body>
