@@ -1,11 +1,11 @@
-import { Model } from "./Model.js";
-import { defaultInputComponent } from "./components/InputComponent.js";
+import { Model } from "../lib/Model.js";
+import { defaultInputComponent } from "../components/InputComponent.js";
 import {
   THREEManager,
   getResolvedTHREEManager,
-} from "./systems/three_wrappers/THREEManager.js";
-import { initTHREEObjectSystem } from "./systems/three_wrappers/initTHREEObjectSystem.js";
-import { updateTHREEScene } from "./systems/three_wrappers/updateTHREESceneSystem.js";
+} from "../systems/three_wrappers/THREEManager.js";
+import { initTHREEObjectSystem } from "../systems/three_wrappers/initTHREEObjectSystem.js";
+import { updateTHREEScene } from "../systems/three_wrappers/updateTHREESceneSystem.js";
 
 const blah = await getResolvedTHREEManager(
   new THREEManager({ enableOrbit: false })

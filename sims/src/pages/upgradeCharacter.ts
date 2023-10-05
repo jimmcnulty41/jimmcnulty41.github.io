@@ -1,11 +1,11 @@
-import { Model } from "./Model.js";
-import { defaultInputComponent } from "./components/InputComponent.js";
-import { initTHREEObjectSystem } from "./systems/three_wrappers/initTHREEObjectSystem.js";
-import { updateTHREEScene } from "./systems/three_wrappers/updateTHREESceneSystem.js";
+import { Model } from "../lib/Model.js";
+import { defaultInputComponent } from "../components/InputComponent.js";
+import { initTHREEObjectSystem } from "../systems/three_wrappers/initTHREEObjectSystem.js";
+import { updateTHREEScene } from "../systems/three_wrappers/updateTHREESceneSystem.js";
 import {
   THREEManager,
   getResolvedTHREEManager,
-} from "./systems/three_wrappers/THREEManager.js";
+} from "../systems/three_wrappers/THREEManager.js";
 
 let model: Model = {
   time: 0,
@@ -13,9 +13,9 @@ let model: Model = {
     {
       id: "0",
       components: {
-        render: {
-          refName: "grid",
-        },
+        // render: {
+        //   refName: "grid",
+        // },
         position: { x: 0, y: 0, z: 0 },
       },
     },
@@ -51,11 +51,9 @@ function RunECS() {
 function update() {
   window.requestAnimationFrame(() => update());
 
-  Object.keys(systems)
-    .filter((s) => !disabledSystems.includes(s))
-    .forEach((s) => {
-      model = systems[s](model);
-    });
+  Object.keys(systems).forEach((s) => {
+    model = systems[s](model);
+  });
 }
 
 RunECS();

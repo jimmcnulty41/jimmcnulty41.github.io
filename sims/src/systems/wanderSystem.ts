@@ -1,6 +1,6 @@
-import { updateStateMachine } from "../StateMachine.js";
-import { Model } from "../Model.js";
-import { Entity } from "../Entity.js";
+import { updateStateMachine } from "../lib/StateMachine.js";
+import { Model } from "../lib/Model.js";
+import { Entity } from "../lib/Entity.js";
 import { EntityWith, canWander } from "../components/Components.js";
 import { dirs } from "../components/RotationComponent.js";
 

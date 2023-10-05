@@ -1,4 +1,4 @@
-import { Model } from "../Model.js";
+import { Model } from "../lib/Model.js";
 import { canWander } from "../components/Components.js";
 
 export function reportSystem(model: Model): Model {

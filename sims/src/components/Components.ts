@@ -1,4 +1,4 @@
-import { Entity } from "../Entity";
+import { Entity } from "../lib/Entity";
 import {
   AngleAxisRotationComponent,
   RotationComponent,

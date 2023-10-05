@@ -1,5 +1,5 @@
-import { Entity } from "../Entity.js";
-import { Model } from "../Model.js";
+import { Entity } from "../lib/Entity.js";
+import { Model } from "../lib/Model.js";
 import { EntityWith } from "./Components.js";
 
 export interface CalcRotationComponent {

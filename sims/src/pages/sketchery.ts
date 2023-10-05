@@ -1,24 +1,25 @@
-import { Model } from "./Model.js";
-import { updateTHREEScene } from "./systems/three_wrappers/updateTHREESceneSystem.js";
-import { wanderSystem } from "./systems/wanderSystem.js";
-import { addEntityEveryNTicksSystem } from "./systems/addEntityEveryNTicksSystem.js";
-import { levitateSystem } from "./systems/levitateSystem.js";
+import { addEntityEveryNTicksSystem } from "../systems/addEntityEveryNTicksSystem.js";
+import { ageSystem } from "../systems/ageSystem.js";
+import { defaultInputComponent } from "../components/InputComponent.js";
+import { getSortByTagSystem } from "../systems/sortByTagSystem.js";
+import { getTags } from "../data/data_9.js";
+import { initTHREEObjectSystem } from "../systems/three_wrappers/initTHREEObjectSystem.js";
+import { jumpOnSelectedSystem } from "../systems/jumpOnSelectedSystem.js";
+import { levitateSystem } from "../systems/levitateSystem.js";
+import { Model } from "../lib/Model.js";
+import { sketchbook_page_in_spiral } from "../lib/entityLibrary.js";
+import { updateTHREEScene } from "../systems/three_wrappers/updateTHREESceneSystem.js";
+import { wanderSystem } from "../systems/wanderSystem.js";
+
 import {
   calcPositionSystem,
   calcRotationSystem,
   calcScaleSystem,
-} from "./systems/calcTransformSystem.js";
-import { ageSystem } from "./systems/ageSystem.js";
-import { defaultInputComponent } from "./components/InputComponent.js";
-import { jumpOnSelectedSystem } from "./systems/jumpOnSelectedSystem.js";
+} from "../systems/calcTransformSystem.js";
 import {
   THREEManager,
   getResolvedTHREEManager,
-} from "./systems/three_wrappers/THREEManager.js";
-import { initTHREEObjectSystem } from "./systems/three_wrappers/initTHREEObjectSystem.js";
-import { getSortByTagSystem } from "./systems/sortByTagSystem.js";
-import { sketchbook_page_in_spiral } from "./entityLibrary.js";
-import { getTags } from "./data/data_9.js";
+} from "../systems/three_wrappers/THREEManager.js";
 
 const disabledSystems = ["report"];
 

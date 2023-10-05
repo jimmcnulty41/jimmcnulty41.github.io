@@ -1,4 +1,4 @@
-import { Vector2, Raycaster, Vector3, } from "../../vendor/three.js";
+import { Raycaster, Vector2, Vector3, } from "../../vendor/three.js";
 import { instanceIdToEntityId, sceneIdToEntityId, } from "./threeOptimizations.js";
 const raycaster = new Raycaster();
 raycaster.layers.set(0);

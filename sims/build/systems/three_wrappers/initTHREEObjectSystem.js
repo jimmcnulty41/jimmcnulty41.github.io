@@ -1,4 +1,4 @@
-import { splitArray } from "../../utils.js";
+import { splitArray } from "../../lib/utils.js";
 import { meshInitFuncs } from "./loadMeshes.js";
 import { instanceIdToEntityId, registers, sceneIdToEntityId, updateColorRegister, updateMatrixRegister, } from "./threeOptimizations.js";
 export function initTHREEObjectSystem(tm, model) {

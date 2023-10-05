@@ -1,6 +1,5 @@
 import { Entity } from "./Entity.js";
-import { InputComponent } from "./components/InputComponent.js";
-import { Euler } from "./vendor/three.js";
+import { InputComponent } from "../components/InputComponent.js";
 
 export type Achievement = (e: Entity[]) => string;
 

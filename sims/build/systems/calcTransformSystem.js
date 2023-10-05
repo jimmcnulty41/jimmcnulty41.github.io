@@ -1,5 +1,5 @@
 import { getAge } from "../components/AgeComponent.js";
-import { lerp, remap, splitArray } from "../utils.js";
+import { lerp, remap, splitArray } from "../lib/utils.js";
 import { hasCalculatedPosition, hasCalculatedRotation, hasCalculatedScale, } from "../components/Components.js";
 export function calcRotationSystem(model) {
     const { matching, notMatching } = splitArray(model.entities, hasCalculatedRotation);

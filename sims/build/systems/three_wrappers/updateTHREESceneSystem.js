@@ -2,7 +2,7 @@ import { Color, Vector3 } from "../../vendor/three.js";
 import { hasRotation, isEntityWith, } from "../../components/Components.js";
 import { inputSystem } from "./inputSystem.js";
 import { registers, updateColorRegister, updateMatrixRegister, } from "./threeOptimizations.js";
-import { splitArray } from "../../utils.js";
+import { splitArray } from "../../lib/utils.js";
 function instancedUpdate(tm, entity) {
     const { id, refName } = entity.components.render;
     const { inst } = tm.instanceMeshes[refName];

@@ -1,4 +1,4 @@
-import { StateMachine } from "../StateMachine.js";
+import { StateMachine } from "../lib/StateMachine.js";
 
 export type WanderStates = "turning" | "forward";
 

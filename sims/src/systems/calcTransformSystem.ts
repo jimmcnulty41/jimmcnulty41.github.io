@@ -1,7 +1,7 @@
 import { AgeComponent, getAge } from "../components/AgeComponent.js";
 import { CalcPositionComponent } from "../components/CalcTransformComponents.js";
-import { lerp, remap, splitArray } from "../utils.js";
-import { Model } from "../Model.js";
+import { lerp, remap, splitArray } from "../lib/utils.js";
+import { Model } from "../lib/Model.js";
 import { PositionComponent } from "../components/PositionComponent.js";
 import {
   hasCalculatedPosition,

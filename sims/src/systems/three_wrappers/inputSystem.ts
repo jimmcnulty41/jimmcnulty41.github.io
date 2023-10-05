@@ -1,14 +1,12 @@
-import { Model } from "../../Model.js";
-import { InputComponent } from "../../components/InputComponent.js";
 import {
-  Vector2,
-  Raycaster,
-  Mesh,
-  Scene,
   Camera,
+  Raycaster,
+  Scene,
+  Vector2,
   Vector3,
-  Plane,
 } from "../../vendor/three.js";
+import { InputComponent } from "../../components/InputComponent.js";
+import { Model } from "../../lib/Model.js";
 import { ResolvedTHREEManager } from "./THREEManager.js";
 import {
   instanceIdToEntityId,

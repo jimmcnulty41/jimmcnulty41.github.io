@@ -1,6 +1,6 @@
 import { Line, Color, InstancedMesh, Vector3 } from "../../vendor/three.js";
 
-import { Model } from "../../Model.js";
+import { Model } from "../../lib/Model.js";
 import {
   Components,
   EntityWith,
@@ -16,7 +16,7 @@ import {
   updateMatrixRegister,
 } from "./threeOptimizations.js";
 import { ResolvedTHREEManager } from "./THREEManager.js";
-import { splitArray } from "../../utils.js";
+import { splitArray } from "../../lib/utils.js";
 import {
   InstancedRenderComponent,
   LineRenderComponent,

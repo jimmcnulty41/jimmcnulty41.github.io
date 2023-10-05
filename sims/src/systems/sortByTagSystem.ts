@@ -1,8 +1,8 @@
-import { Entity } from "../Entity.js";
-import { Model } from "../Model.js";
+import { Entity } from "../lib/Entity.js";
+import { Model } from "../lib/Model.js";
 import { CalcPositionComponent } from "../components/CalcTransformComponents.js";
 import { EntityWith, isEntityWith } from "../components/Components.js";
-import { grid, spiral, splitArray } from "../utils.js";
+import { grid, spiral, splitArray } from "../lib/utils.js";
 import { getLerpToPosComponent } from "./calcTransformSystem.js";
 import { ResolvedTHREEManager } from "./three_wrappers/THREEManager.js";
 

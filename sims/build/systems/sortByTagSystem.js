@@ -1,5 +1,5 @@
 import { isEntityWith } from "../components/Components.js";
-import { grid, splitArray } from "../utils.js";
+import { grid, splitArray } from "../lib/utils.js";
 import { getLerpToPosComponent } from "./calcTransformSystem.js";
 let tag = "";
 let changed = false;

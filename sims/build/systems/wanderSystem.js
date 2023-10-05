@@ -1,4 +1,4 @@
-import { updateStateMachine } from "../StateMachine.js";
+import { updateStateMachine } from "../lib/StateMachine.js";
 import { canWander } from "../components/Components.js";
 import { dirs } from "../components/RotationComponent.js";
 function entityWander(e) {

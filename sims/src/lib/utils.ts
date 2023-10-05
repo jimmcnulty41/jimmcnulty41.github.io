@@ -1,4 +1,4 @@
-import { PositionComponent } from "./components/PositionComponent";
+import { PositionComponent } from "../components/PositionComponent";
 
 export async function report(blah: () => unknown[], yadda?: string) {
   while (blah().length < 1000) {

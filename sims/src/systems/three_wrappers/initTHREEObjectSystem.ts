@@ -1,7 +1,7 @@
-import { Model } from "../../Model.js";
+import { Model } from "../../lib/Model.js";
 import { EntityWith } from "../../components/Components.js";
 import { RenderComponent } from "../../components/RenderComponent.js";
-import { splitArray } from "../../utils.js";
+import { splitArray } from "../../lib/utils.js";
 import { ResolvedTHREEManager } from "./THREEManager.js";
 import { RefNames, meshInitFuncs } from "./loadMeshes.js";
 import {

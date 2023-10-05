@@ -1,17 +1,16 @@
-import { Achievement, Model, Toast } from "./Model.js";
-import { addEntityEveryNTicksSystem } from "./systems/addEntityEveryNTicksSystem.js";
-import { defaultInputComponent } from "./components/InputComponent.js";
-import { Entity } from "./Entity.js";
-import { initTHREEObjectSystem } from "./systems/three_wrappers/initTHREEObjectSystem.js";
-import { remap, splitArray } from "./utils.js";
-import { reportSystem } from "./systems/reportSystem.js";
-import { updateTHREEScene } from "./systems/three_wrappers/updateTHREESceneSystem.js";
-import { wanderSystem } from "./systems/wanderSystem.js";
+import { Achievement, Model, Toast } from "../lib/Model.js";
+import { addEntityEveryNTicksSystem } from "../systems/addEntityEveryNTicksSystem.js";
+import { defaultInputComponent } from "../components/InputComponent.js";
+import { Entity } from "../lib/Entity.js";
+import { initTHREEObjectSystem } from "../systems/three_wrappers/initTHREEObjectSystem.js";
+import { PositionComponent } from "../components/PositionComponent.js";
+import { remap, splitArray } from "../lib/utils.js";
+import { updateTHREEScene } from "../systems/three_wrappers/updateTHREESceneSystem.js";
+import { wanderSystem } from "../systems/wanderSystem.js";
 import {
   THREEManager,
   getResolvedTHREEManager,
-} from "./systems/three_wrappers/THREEManager.js";
-import { PositionComponent } from "./components/PositionComponent.js";
+} from "../systems/three_wrappers/THREEManager.js";
 
 const disabledSystems = ["report"];
 

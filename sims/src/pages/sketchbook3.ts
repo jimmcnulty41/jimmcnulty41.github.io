@@ -1,11 +1,9 @@
 import {
-  data,
   dataToEnhancedUrl,
   dataToUrl,
   getFilteredImages,
-  getTags,
-} from "./data/data_10.js";
-import { getElementRotation, remap } from "./utils.js";
+} from "../data/data_10.js";
+import { remap } from "../lib/utils.js";
 
 const loadedImages = [];
 

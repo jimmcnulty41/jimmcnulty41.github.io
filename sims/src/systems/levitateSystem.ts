@@ -1,4 +1,4 @@
-import { Model } from "../Model.js";
+import { Model } from "../lib/Model.js";
 import { EntityWith, levitates } from "../components/Components.js";
 
 function update(e: EntityWith<"levitate" | "position">, t: number) {

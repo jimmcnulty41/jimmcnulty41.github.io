@@ -1,4 +1,4 @@
-import { Entity } from "../../Entity.js";
+import { Entity } from "../../lib/Entity.js";
 import {
   DynamicDrawUsage,
   BufferGeometry,

@@ -1,24 +1,20 @@
-import { addEntityEveryNTicksSystem } from "./systems/addEntityEveryNTicksSystem.js";
-import { CalcPositionComponent } from "./components/CalcTransformComponents.js";
-import { defaultInputComponent } from "./components/InputComponent.js";
-import { Entity } from "./Entity.js";
-import { EntityWith } from "./components/Components.js";
-import { initTHREEObjectSystem } from "./systems/three_wrappers/initTHREEObjectSystem.js";
-import { mapToCurve, octreeCurve, remap } from "./utils.js";
-import { Model } from "./Model.js";
-import { PROJECT_PAGES, SKILL_DATA, SKILLS } from "./data/skillData.js";
-import { reportSystem } from "./systems/reportSystem.js";
-import { StateMachine } from "./StateMachine.js";
-import { updateTHREEScene } from "./systems/three_wrappers/updateTHREESceneSystem.js";
-import { wanderSystem } from "./systems/wanderSystem.js";
+import { CalcPositionComponent } from "../components/CalcTransformComponents.js";
+import { defaultInputComponent } from "../components/InputComponent.js";
+import { Entity } from "../lib/Entity.js";
+import { EntityWith } from "../components/Components.js";
+import { initTHREEObjectSystem } from "../systems/three_wrappers/initTHREEObjectSystem.js";
+import { mapToCurve, remap } from "../lib/utils.js";
+import { Model } from "../lib/Model.js";
+import { PROJECT_PAGES, SKILL_DATA, SKILLS } from "../data/skillData.js";
+import { updateTHREEScene } from "../systems/three_wrappers/updateTHREESceneSystem.js";
 import {
   THREEManager,
   getResolvedTHREEManager,
-} from "./systems/three_wrappers/THREEManager.js";
+} from "../systems/three_wrappers/THREEManager.js";
 import {
   calcPositionSystem,
   calcRotationSystem,
-} from "./systems/calcTransformSystem.js";
+} from "../systems/calcTransformSystem.js";
 
 const disabledSystems = ["report"];
 

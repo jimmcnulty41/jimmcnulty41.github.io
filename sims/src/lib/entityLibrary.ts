@@ -1,9 +1,10 @@
 import { Entity } from "./Entity.js";
-import { getAge } from "./components/AgeComponent.js";
-import { AngleAxisRotationComponent } from "./components/RotationComponent.js";
-import { getMetadata } from "./data/data_9.js";
-import { getLerpToPosComponent } from "./systems/calcTransformSystem.js";
-import { getRandomImageName } from "./systems/three_wrappers/loadImages.js";
+import { getAge } from "../components/AgeComponent.js";
+import { AngleAxisRotationComponent } from "../components/RotationComponent.js";
+import { getMetadata } from "../data/data_9.js";
+import { getLerpToPosComponent } from "../systems/calcTransformSystem.js";
+import { getRandomImageName } from "../systems/three_wrappers/loadImages.js";
+
 import { grid, remap, spiral } from "./utils.js";
 
 const s = spiral({

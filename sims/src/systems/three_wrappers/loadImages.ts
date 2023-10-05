@@ -1,5 +1,5 @@
 import { ImageMetadata, getMetadata } from "../../data/data_9.js";
-import { messageToCallStack } from "../../utils.js";
+import { messageToCallStack } from "../../lib/utils.js";
 import { Texture, TextureLoader } from "../../vendor/three.js";
 
 export const imageSelection = [

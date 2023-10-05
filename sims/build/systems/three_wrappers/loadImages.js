@@ -1,5 +1,5 @@
 import { getMetadata } from "../../data/data_9.js";
-import { messageToCallStack } from "../../utils.js";
+import { messageToCallStack } from "../../lib/utils.js";
 import { TextureLoader } from "../../vendor/three.js";
 export const imageSelection = [
     162, 415, 189, 258, 875, 28, 34, 640, 193, 333, 769, 148, 278, 351, 372, 347,

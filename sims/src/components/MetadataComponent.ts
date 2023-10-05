@@ -1,4 +1,4 @@
-import { report } from "../utils.js";
+import { report } from "../lib/utils.js";
 
 export interface MetadataComponent {
   tags: string[];

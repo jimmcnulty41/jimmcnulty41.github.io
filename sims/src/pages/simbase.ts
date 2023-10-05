@@ -1,16 +1,11 @@
-import { Model } from "./Model.js";
-import { updateTHREEScene } from "./systems/three_wrappers/updateTHREESceneSystem.js";
-import { reportSystem } from "./systems/reportSystem.js";
-import { wanderSystem } from "./systems/wanderSystem.js";
-import { addEntityEveryNTicksSystem } from "./systems/addEntityEveryNTicksSystem.js";
-import { Entity } from "./Entity.js";
-import { remap } from "./utils.js";
-import { defaultInputComponent } from "./components/InputComponent.js";
+import { defaultInputComponent } from "../components/InputComponent.js";
+import { initTHREEObjectSystem } from "../systems/three_wrappers/initTHREEObjectSystem.js";
+import { Model } from "../lib/Model.js";
+import { updateTHREEScene } from "../systems/three_wrappers/updateTHREESceneSystem.js";
 import {
   THREEManager,
   getResolvedTHREEManager,
-} from "./systems/three_wrappers/THREEManager.js";
-import { initTHREEObjectSystem } from "./systems/three_wrappers/initTHREEObjectSystem.js";
+} from "../systems/three_wrappers/THREEManager.js";
 
 let model: Model = {
   time: 0,
