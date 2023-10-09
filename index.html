@@ -27,6 +27,25 @@
       type="module"
       src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"
     ></script>
+
+    <script type="module">
+      import init, {World} from './rustedRoot/wasm-test/pkg/wasm_test.js';
+
+
+        await init();
+        let world = World.new();
+        let pre = document.querySelector("#game-of-life")
+
+        const render = () => {
+          pre.textContent = world.render();
+          world.tick();
+          setTimeout(() => requestAnimationFrame(render), 333);
+        };
+        requestAnimationFrame(render);
+
+
+    </script>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   </head>
 
@@ -94,7 +113,10 @@
       </div>
     </div>
     <div>
-      <img style="width:100%"src="/assets/images/shadows_1.png"/>
+      <img style="width:100vw" src="/assets/images/shadows_1.png"/>
+    </div>
+    <div>
+      <pre style="width:100vw" id="game-of-life"></pre>
     </div>
   </body>
 </html>
