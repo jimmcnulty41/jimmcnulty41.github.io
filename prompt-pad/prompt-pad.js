@@ -1,7 +1,5 @@
 import cytoscape from "./cytoscape.esm.min.js";
 
-console.log("loaded");
-
 /**
  * {
  * nodes: {[id:string]: Node} },
@@ -40,15 +38,19 @@ function scrape() {
     }
     return hash.toString();
   }
-  let blocks =
-    document.querySelector("main").children[0].children[0].children[0]
-      .children[0].children;
+  let blocks = [...document.querySelectorAll("[data-testid]")]
+    .filter((x) => x.getAttribute("data-testid").includes("conversation"))
+    .map((x) => x.querySelectorAll(".break-words > div")[0]);
+
   const nodes = [...blocks]
-    .slice(0, blocks.length - 1)
-    .map((b) => b.children[0].children[1].children[0].children[0].innerHTML)
-    .map((x, i) =>
-      i % 2 ? { text: x, source: "AI" } : { text: x, source: "User" }
-    )
+    .map((x, i) => {
+      const n =
+        i % 2
+          ? { text: x.innerHTML, source: "AI" }
+          : { text: x.textContent, source: "User" };
+      console.log(x);
+      return n;
+    })
     .map((x) => ({ ...x, id: generateId(x.text + x.source) }));
   const edges = nodes.slice(1).map((x, i) => ({
     id: nodes[i].id + "e" + x.id,
@@ -127,6 +129,7 @@ function updateView(data) {
       circle: true,
     })
     .run();
+  cy.reset();
 }
 
 import { test_data_1 } from "./test_data_1.js";
