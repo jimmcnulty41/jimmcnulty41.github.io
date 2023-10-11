@@ -1,11 +1,11 @@
 export const SKILL_DATA = [
   {
     skillName: "CSS",
-    examples: ["climb", "extrahop", "epic", "imageViewer"],
+    examples: ["climb", "extrahop", "epic", "imageViewer", "promptPad"],
   },
   {
     skillName: "HTML",
-    examples: ["climb", "extrahop", "epic", "imageViewer"],
+    examples: ["climb", "extrahop", "epic", "imageViewer", "promptPad"],
   },
   {
     skillName: "Hand Sawing",
@@ -41,12 +41,17 @@ export const SKILL_DATA = [
   },
   {
     skillName: "javascript",
-    examples: ["imageViewer", "climb", "extrahop"],
+    examples: ["imageViewer", "climb", "extrahop", "promptPad"],
   },
   {
     skillName: "three.js",
     examples: ["sketchery"],
   },
+  {
+    skillName: "cytoscape.js",
+    examples: ["promptPad"],
+  },
+
   {
     skillName: "pixel art",
     examples: [],
@@ -64,6 +69,7 @@ export const PROJECT_PAGES: { [key: string]: string } = {
   imageViewer: "./projectPages/sketcheryWriteup.html",
   blenderBackgrounds: "./projectPages/blenderBackgrounds.html",
   "404page": "./projectPages/climb.html",
+  promptPad: "./projectPages/promptPad.html",
 };
 
 export const EXAMPLES = SKILL_DATA.flatMap((s) => s.examples);
