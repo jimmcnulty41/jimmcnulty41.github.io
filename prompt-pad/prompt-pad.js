@@ -78,13 +78,15 @@ const cy = cytoscape({
       selector: "node",
       style: {
         "background-color": "#666",
-        label: "data(text)",
-        width: "100px",
-        height: "50px",
+        label: "data(shortText)",
+        width: "200px",
+        height: "200px",
         "text-valign": "center",
         "text-halign": "center",
         color: "#fff",
         shape: "rectangle",
+        "text-wrap": "wrap",
+        "text-max-width": "180px",
       },
     },
     {
@@ -100,6 +102,43 @@ const cy = cytoscape({
   ],
 });
 
+function Popover({ position, text }) {
+  const el = document.createElement("div");
+  el.style = `position: fixed; top: ${position.y}px; left: ${position.x}px; background-color: honeydew; border-radius: 12px; padding: 20px;`;
+  el.id = "popover";
+  if (text.indexOf("<div") === 0) {
+    el.innerHTML = text;
+  } else {
+    el.innerText = text;
+  }
+  return el;
+}
+
+function clearPopover() {
+  const existing = document.querySelector("#popover");
+  if (existing) {
+    document.body.removeChild(existing);
+  }
+}
+
+cy.on("tap", () => {
+  clearPopover();
+});
+
+cy.on("tap", "node", (n) => {
+  clearPopover();
+  document.body.appendChild(
+    Popover({ position: n.renderedPosition, text: n.target.data().text })
+  );
+});
+
+cy.on("tapdrag", (n) => {
+  if (n.originalEvent.type === "mousemove") {
+    if (n.originalEvent.buttons !== 1) return;
+  }
+  clearPopover();
+});
+
 function updateView(data) {
   const elements = [
     ...Object.values(data.nodes).map((n) => ({
@@ -109,6 +148,7 @@ function updateView(data) {
         id: n.id,
         source: n.source,
         text: n.text,
+        shortText: n.text.slice(0, 128),
       },
     })),
     ...Object.values(data.edges).map((e) => ({
