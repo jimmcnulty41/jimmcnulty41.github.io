@@ -92,7 +92,7 @@ const cy = cytoscape({
     {
       selector: "edge",
       style: {
-        width: 3,
+        width: 24,
         "line-color": "#ccc",
         "target-arrow-color": "#ccc",
         "target-arrow-shape": "triangle",
@@ -165,11 +165,8 @@ function updateView(data) {
     .layout({
       name: "breadthfirst",
       directed: true,
-      padding: 30,
-      circle: true,
     })
     .run();
-  cy.reset();
 }
 
 import { test_data_1 } from "./test_data_1.js";
