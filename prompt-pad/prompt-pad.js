@@ -77,14 +77,15 @@ const cy = cytoscape({
     {
       selector: "node",
       style: {
-        "background-color": "#666",
         label: "data(shortText)",
         width: "200px",
         height: "200px",
+        "border-radius": "12px",
         "text-valign": "center",
         "text-halign": "center",
-        color: "#fff",
-        shape: "rectangle",
+        "background-color": "data(color)",
+        color: "white",
+        shape: "round-rectangle",
         "text-wrap": "wrap",
         "text-max-width": "180px",
       },
@@ -103,8 +104,14 @@ const cy = cytoscape({
 });
 
 function Popover({ position, text }) {
+  const offset = document.querySelector("#cy").offsetTop;
   const el = document.createElement("div");
-  el.style = `position: fixed; top: ${position.y}px; left: ${position.x}px; background-color: honeydew; border-radius: 12px; padding: 20px;`;
+  const y = position.y + offset;
+  el.style = `position: fixed; top: ${y}px; left: ${
+    position.x
+  }px; background-color: honeydew; border-radius: 12px; padding: 20px; max-height: ${
+    window.innerHeight - y - 12
+  }px; max-width: ${window.innerWidth - position.x - 12}px; overflow: scroll;`;
   el.id = "popover";
   if (text.indexOf("<div") === 0) {
     el.innerHTML = text;
@@ -139,6 +146,12 @@ cy.on("tapdrag", (n) => {
   clearPopover();
 });
 
+function toShortText(htmlString) {
+  const el = document.createElement("div");
+  el.innerHTML = htmlString;
+  return el.children[0].innerText.slice(0, 128);
+}
+
 function updateView(data) {
   const elements = [
     ...Object.values(data.nodes).map((n) => ({
@@ -148,7 +161,11 @@ function updateView(data) {
         id: n.id,
         source: n.source,
         text: n.text,
-        shortText: n.text.slice(0, 128),
+        color: n.source === "User" ? "#000" : "#666",
+        shortText:
+          n.text.indexOf("<div") === 0
+            ? toShortText(n.text)
+            : n.text.slice(0, 128),
       },
     })),
     ...Object.values(data.edges).map((e) => ({

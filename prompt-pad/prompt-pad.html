@@ -7,34 +7,41 @@
     <title>Prompt Pad</title>
     <script src="./prompt-pad.js" type="module"></script>
 </head>
-<body>
-    <h1>⭐ Prompt Pad ⭐</h1>
-    <e>A little ChatGPT companion for prompt engineering</e>
-    <p>
-        <ul>
-            <li>
-                <button id="copy-button">Copy scrape code to Clipboard</button>
-            </li>
-            <li>
-                Open dev tools in your chat GPT window
-            </li>
-            <li>
-                Paste and run the code in the console
-            </li>
-            <li>
-                This should give you an object that represents your current conversation. Copy that object (right click, Copy Object)
-            </li>
-            <li>
-                Paste anywhere on the prompt pad page
-            </li>
-            <li>
-                Repeat these steps each time you try a new prompt. The application will build changes into a graph.
-                You can click on a node to view the full text
-            </li>
-        </ul>
-    </p>
-    <div id="cy" style="border: 4px solid purple; border-radius: 4px; height: 40vh;"></div>
-    <button id="test1">Copy test 1</button>
-    <button id="test2">Copy test 2</button>
+<body style="display: flex; flex-direction: row">
+    <div style="width: 50vw; height: 100vh; padding: 12px">
+        <h1 style="margin: 0; text-align: center">⭐ Prompt Pad ⭐</h1>
+        <em>A little ChatGPT companion for prompt engineering</em>
+        <p>
+            <ul>
+                <li>
+                    <button id="copy-button">Copy scrape code to Clipboard</button>
+                </li>
+                <li>
+                    Open dev tools in your chat GPT window
+                </li>
+                <li>
+                    Paste and run the code in the console
+                </li>
+                <li>
+                    This should give you an object that represents your current conversation. Copy that object (right click, Copy Object)
+                </li>
+                <li>
+                    Paste anywhere on the prompt pad page
+                </li>
+                <li>
+                    Repeat these steps each time you try a new prompt. The application will build changes into a graph.
+                    You can click on a node to view the full text
+                </li>
+                <li>
+                    Tip: use as one half of your screen, with the chatGPT window as the other half
+                </li>
+            </ul>
+        </p>
+    </div>
+    <div style="width: 50vw; height: 100vh; padding: 12px">
+        <div id="cy" style="border: 4px solid purple; border-radius: 4px; height: 90vh;"></div>
+        <button id="test1">Copy test 1</button>
+        <button id="test2">Copy test 2</button>
+    </div>
 </body>
 </html>
