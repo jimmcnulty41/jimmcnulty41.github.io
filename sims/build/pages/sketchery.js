@@ -77,9 +77,12 @@ const tm = await getResolvedTHREEManager(new THREEManager({
     lookAt: [0, 0, -25],
 }));
 document.addEventListener("JIM_entityClick", (event) => {
+    const index = tm.scene.children.findIndex(
     // @ts-ignore
-    const blah = tm.scene.children[event.detail.id]
-        .material.map.source.data;
+    (c) => c.id === event.detail.sceneId);
+    // @ts-ignore
+    const blah = tm.scene.children[index].material.map
+        .source.data;
     const yadda = getTags(blah.src);
     const imgV = document.createElement("image-viewer");
     imgV.setAttribute("src", blah.src);

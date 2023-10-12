@@ -89,7 +89,7 @@ export function inputSystem(tm: ResolvedTHREEManager, model: Model): Model {
         : undefined;
 
     if (mouseState === "down") {
-      handleDown(tm, model, entityUnderMouse);
+      handleDown(tm, model, entityUnderMouse, instanceId);
     }
 
     return {
@@ -104,7 +104,7 @@ export function inputSystem(tm: ResolvedTHREEManager, model: Model): Model {
   } else {
     const entityUnderMouse = sceneIdToEntityId[id];
     if (mouseState === "down") {
-      handleDown(tm, model, entityUnderMouse);
+      handleDown(tm, model, entityUnderMouse, id);
     }
 
     const prevEntityUnderMouse =
@@ -126,14 +126,15 @@ export function inputSystem(tm: ResolvedTHREEManager, model: Model): Model {
 function handleDown(
   tm: ResolvedTHREEManager,
   model: Model,
-  entityUnderMouse: string
+  entityUnderMouse: string,
+  sceneId: number
 ) {
   const entity = model.entities.find((e) => e.id === entityUnderMouse);
   if (!entity || !entity.components.render) {
     throw new Error(`invalid entity under mouse: ${entityUnderMouse}`);
   }
   document.dispatchEvent(
-    new CustomEvent("JIM_entityClick", { detail: entity })
+    new CustomEvent("JIM_entityClick", { detail: { ...entity, sceneId } })
   );
 }
 

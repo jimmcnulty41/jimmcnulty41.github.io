@@ -63,7 +63,7 @@ export function inputSystem(tm, model) {
             ? model.input.entityUnderMouse
             : undefined;
         if (mouseState === "down") {
-            handleDown(tm, model, entityUnderMouse);
+            handleDown(tm, model, entityUnderMouse, instanceId);
         }
         return {
             ...model,
@@ -78,7 +78,7 @@ export function inputSystem(tm, model) {
     else {
         const entityUnderMouse = sceneIdToEntityId[id];
         if (mouseState === "down") {
-            handleDown(tm, model, entityUnderMouse);
+            handleDown(tm, model, entityUnderMouse, id);
         }
         const prevEntityUnderMouse = model.input.entityUnderMouse === entityUnderMouse
             ? undefined
@@ -94,12 +94,12 @@ export function inputSystem(tm, model) {
         };
     }
 }
-function handleDown(tm, model, entityUnderMouse) {
+function handleDown(tm, model, entityUnderMouse, sceneId) {
     const entity = model.entities.find((e) => e.id === entityUnderMouse);
     if (!entity || !entity.components.render) {
         throw new Error(`invalid entity under mouse: ${entityUnderMouse}`);
     }
-    document.dispatchEvent(new CustomEvent("JIM_entityClick", { detail: entity }));
+    document.dispatchEvent(new CustomEvent("JIM_entityClick", { detail: { ...entity, sceneId } }));
 }
 function getBounds(scene, camera) {
     const target = new Vector3();

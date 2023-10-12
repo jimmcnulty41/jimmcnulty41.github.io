@@ -91,9 +91,13 @@ const tm = await getResolvedTHREEManager(
 );
 
 document.addEventListener("JIM_entityClick", (event) => {
+  const index = tm.scene.children.findIndex(
+    // @ts-ignore
+    (c) => c.id === event.detail.sceneId
+  );
   // @ts-ignore
-  const blah: HTMLImageElement = (tm.scene.children[event.detail.id] as Mesh)
-    .material.map.source.data;
+  const blah: HTMLImageElement = (tm.scene.children[index] as Mesh).material.map
+    .source.data;
   const yadda = getTags(blah.src);
   const imgV = document.createElement("image-viewer");
   imgV.setAttribute("src", blah.src);
