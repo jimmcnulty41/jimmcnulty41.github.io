@@ -90,26 +90,17 @@ class ImageViewer extends HTMLElement {
   }
 
   private getDisplayDims() {
-    if (this.dimensions[0] > window.innerWidth) {
-      // screen narrow,
+    const larger = Math.max(this.dimensions[0], this.dimensions[1]);
+    const smallerWindowDim = Math.min(
+      window.innerWidth,
+      window.innerHeight - 128
+    );
 
-      const aspect = this.dimensions[1] / this.dimensions[0];
-      return {
-        width: window.innerWidth,
-        height: aspect * window.innerWidth,
-      };
-    }
-    if (this.dimensions[1] > window.innerHeight - 64) {
-      // screen squat; 64 is button height
-      const aspect = this.dimensions[0] / this.dimensions[1];
-      return {
-        width: aspect * window.innerHeight,
-        height: window.innerHeight - 64,
-      };
-    }
+    const scale = smallerWindowDim / larger;
+
     return {
-      width: this.dimensions[0],
-      height: this.dimensions[1],
+      width: this.dimensions[0] * scale,
+      height: this.dimensions[1] * scale,
     };
   }
 
