@@ -1,15 +1,14 @@
+import { defaultInputComponent } from "../components/InputComponent.js";
+import { getTags } from "../data/data_9.js";
+import { sketchbook_page_in_spiral } from "../lib/entityLibrary.js";
 import { addEntityEveryNTicksSystem } from "../systems/addEntityEveryNTicksSystem.js";
 import { ageSystem } from "../systems/ageSystem.js";
-import { defaultInputComponent } from "../components/InputComponent.js";
-import { getSortByTagSystem } from "../systems/sortByTagSystem.js";
-import { getTags } from "../data/data_9.js";
-import { initTHREEObjectSystem } from "../systems/three_wrappers/initTHREEObjectSystem.js";
-import { jumpOnSelectedSystem } from "../systems/jumpOnSelectedSystem.js";
 import { levitateSystem } from "../systems/levitateSystem.js";
-import { sketchbook_page_in_spiral } from "../lib/entityLibrary.js";
+import { initTHREEObjectSystem } from "../systems/three_wrappers/initTHREEObjectSystem.js";
 import { updateTHREEScene } from "../systems/three_wrappers/updateTHREESceneSystem.js";
 import { wanderSystem } from "../systems/wanderSystem.js";
 import { calcPositionSystem, calcRotationSystem, calcScaleSystem, } from "../systems/calcTransformSystem.js";
+import { getFilterTagSystem } from "../systems/filterTagSystem.js";
 import { THREEManager, getResolvedTHREEManager, } from "../systems/three_wrappers/THREEManager.js";
 const disabledSystems = ["report"];
 let model = {
@@ -89,13 +88,13 @@ document.addEventListener("JIM_entityClick", (event) => {
     imgV.setAttribute("tags", yadda);
     document.querySelector("body")?.appendChild(imgV);
 });
+document.addEventListener("JIM_tagSelect", (event) => { });
 let systems = {
     advanceTimeSystem: (model) => ({
         ...model,
         time: model.time + 1,
     }),
-    sortByTagSystem: getSortByTagSystem(tm),
-    jumpOnSelectedSystem,
+    filterTagSystem: getFilterTagSystem(tm),
     ageSystem,
     wanderSystem,
     levitateSystem,

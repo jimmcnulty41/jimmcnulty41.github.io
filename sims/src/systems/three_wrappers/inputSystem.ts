@@ -116,7 +116,7 @@ export function inputSystem(tm: ResolvedTHREEManager, model: Model): Model {
       input: {
         mouseState: "whatevs",
         prevEntityUnderMouse,
-        entityUnderMouse: sceneIdToEntityId[id],
+        entityUnderMouse,
         mouse: [mouse_pos.x, mouse_pos.y],
       },
     };

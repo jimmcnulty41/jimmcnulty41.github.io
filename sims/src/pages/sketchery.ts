@@ -1,13 +1,13 @@
-import { addEntityEveryNTicksSystem } from "../systems/addEntityEveryNTicksSystem.js";
-import { ageSystem } from "../systems/ageSystem.js";
 import { defaultInputComponent } from "../components/InputComponent.js";
-import { getSortByTagSystem } from "../systems/sortByTagSystem.js";
 import { getTags } from "../data/data_9.js";
-import { initTHREEObjectSystem } from "../systems/three_wrappers/initTHREEObjectSystem.js";
-import { jumpOnSelectedSystem } from "../systems/jumpOnSelectedSystem.js";
-import { levitateSystem } from "../systems/levitateSystem.js";
 import { Model } from "../lib/Model.js";
 import { sketchbook_page_in_spiral } from "../lib/entityLibrary.js";
+import { addEntityEveryNTicksSystem } from "../systems/addEntityEveryNTicksSystem.js";
+import { ageSystem } from "../systems/ageSystem.js";
+import { jumpOnSelectedSystem } from "../systems/jumpOnSelectedSystem.js";
+import { levitateSystem } from "../systems/levitateSystem.js";
+import { getSortByTagSystem } from "../systems/sortByTagSystem.js";
+import { initTHREEObjectSystem } from "../systems/three_wrappers/initTHREEObjectSystem.js";
 import { updateTHREEScene } from "../systems/three_wrappers/updateTHREESceneSystem.js";
 import { wanderSystem } from "../systems/wanderSystem.js";
 
@@ -16,6 +16,7 @@ import {
   calcRotationSystem,
   calcScaleSystem,
 } from "../systems/calcTransformSystem.js";
+import { getFilterTagSystem } from "../systems/filterTagSystem.js";
 import {
   THREEManager,
   getResolvedTHREEManager,
@@ -90,7 +91,7 @@ const tm = await getResolvedTHREEManager(
   })
 );
 
-document.addEventListener("JIM_entityClick", (event) => {
+document.addEventListener("JIM_entityClick", (event: Event) => {
   const index = tm.scene.children.findIndex(
     // @ts-ignore
     (c) => c.id === event.detail.sceneId
@@ -105,6 +106,8 @@ document.addEventListener("JIM_entityClick", (event) => {
   document.querySelector("body")?.appendChild(imgV);
 });
 
+document.addEventListener("JIM_tagSelect", (event: Event) => {});
+
 type System = (model: Model) => Model;
 type Systems = { [name: string]: System };
 let systems: Systems = {
@@ -112,8 +115,7 @@ let systems: Systems = {
     ...model,
     time: model.time + 1,
   }),
-  sortByTagSystem: getSortByTagSystem(tm),
-  jumpOnSelectedSystem,
+  filterTagSystem: getFilterTagSystem(tm),
   ageSystem,
   wanderSystem,
   levitateSystem,

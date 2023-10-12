@@ -47,6 +47,7 @@ type ComponentTypes = {
   color: ColorComponent;
   position: PositionComponent;
   calculatePosition: CalcPositionComponent[];
+  tagActive: boolean;
 };
 export type Components = Partial<ComponentTypes>;
 export function levitates(

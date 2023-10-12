@@ -59,22 +59,26 @@ class ImageViewer extends HTMLElement {
     controls.classList.add("controls");
     d.appendChild(controls);
 
+    const buttonDiv = document.createElement("div");
+    buttonDiv.classList.add("buttons");
+    controls.appendChild(buttonDiv);
+
     const l = this.getButton("rotateLeft");
     this.buttons["rotateLeft"] = l;
-    controls.appendChild(l);
+    buttonDiv.appendChild(l);
 
     const r = this.getButton("rotateRight");
     this.buttons["rotateRight"] = r;
-    controls.appendChild(r);
+    buttonDiv.appendChild(r);
 
     const close = this.getButton("close");
     this.buttons["close"] = close;
-    controls.appendChild(close);
+    buttonDiv.appendChild(close);
 
     const tags = document.createElement("div");
     tags.classList.add("tags");
     this.tagContainer = tags;
-    d.appendChild(tags);
+    controls.appendChild(tags);
   }
 
   private getButton(name: string) {
@@ -132,16 +136,20 @@ class ImageViewer extends HTMLElement {
         div.wrapper {
         }
         div.controls {
-            z-index: 2;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          z-index: 2;
         }
-        div.controls > button {
+        div.buttons > button {
           padding: 0;
         }
         div.tags {
-          position: absolute;
           display: flex;
-          flex-direction: column;
-          left: calc((100vw - ${width}px)/2 + ${width}px);
+          flex-direction: row;
+          flex-wrap: wrap;
+          justify-content: space-between;
+          overflow: scrolly;
         }
         div.tags > button {
           text-decoration: none;
@@ -243,7 +251,7 @@ class ImageViewer extends HTMLElement {
         const tagEl = document.createElement("button");
         tagEl.innerText = t;
         tagEl.onclick = () => {
-          const event = new CustomEvent("tagSelect", {
+          const event = new CustomEvent("JIM_tagSelect", {
             detail: t,
           });
           window.dispatchEvent(event);

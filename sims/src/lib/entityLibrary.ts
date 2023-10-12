@@ -51,13 +51,19 @@ function sketchbook_page_in_spiral(id: string): Entity {
           const t = e.components.age
             ? getAge(m.time, e.components.age)
             : m.time;
-          return remap(0, 100, 0, 1, true)(t);
+          if (m.input.entityUnderMouse === e.id || e.components.tagActive) {
+            return 1.2;
+          }
+          return remap(0, 100, 0, 0.6, true)(t);
         },
       },
+      tagActive: false,
       calculateRotation: {
         calculation: (m, e) => {
           const t =
-            m.input.entityUnderMouse === e.id ? m.time / 2 : m.time / 12;
+            m.input.entityUnderMouse === e.id || e.components.tagActive
+              ? m.time / 2
+              : m.time / 12;
           return (
             (e.components.rotation as AngleAxisRotationComponent).amt +
             Math.sin(t + internalRoll * 100) / 100
@@ -69,7 +75,12 @@ function sketchbook_page_in_spiral(id: string): Entity {
         {
           calculation: (m, e) => {
             const { position } = e.components;
-            return { y: m.input.entityUnderMouse === e.id ? 4 : 0 };
+            return {
+              y:
+                m.input.entityUnderMouse === e.id || e.components.tagActive
+                  ? 4
+                  : 0,
+            };
           },
         },
       ],

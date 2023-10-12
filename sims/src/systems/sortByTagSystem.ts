@@ -9,7 +9,7 @@ import { ResolvedTHREEManager } from "./three_wrappers/THREEManager.js";
 let tag = "";
 let changed = false;
 
-window.addEventListener("tagSelect", (e) => {
+window.addEventListener("JIM_tagSelect", (e) => {
   tag = (e as CustomEvent).detail || "";
   changed = true;
 });
@@ -27,12 +27,14 @@ export function getSortByTagSystem(tm: ResolvedTHREEManager) {
     numPerRow: 10,
     numPerColumn: 10,
   });
+
   function sortByTagSystem(model: Model): Model {
     if (!changed) {
       return model;
     }
     changed = false;
     const currentTag = tag;
+
     const { matching, notMatching } = splitArray(model.entities, selection);
 
     const sortedByTagSimilarity = matching

@@ -54,7 +54,7 @@ export function jumpOnSelectedSystem(model: Model): Model {
                 b: 0,
               },
               scale: {
-                amt: 2,
+                amt: 4,
               },
             },
           };

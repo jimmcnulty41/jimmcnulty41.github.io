@@ -42,7 +42,7 @@ export function jumpOnSelectedSystem(model) {
                             b: 0,
                         },
                         scale: {
-                            amt: 2,
+                            amt: 4,
                         },
                     },
                 };
