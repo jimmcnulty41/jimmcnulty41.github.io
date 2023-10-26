@@ -7,7 +7,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
     <!-- Icons -->
-
+      
     <link rel="stylesheet" type="text/css" href="styles/reset.css" />
     <link rel="stylesheet" type="text/css" href="styles/style.css" />
     <link rel="stylesheet" type="text/css" href="styles/columnLayout.css" />
@@ -34,7 +34,6 @@
 
         await init();
         let pre = document.querySelector("#game-of-life")
-        bevy_main();
         const render = () => {
           setTimeout(() => requestAnimationFrame(render), 333);
         };
@@ -48,7 +47,10 @@
 
   <body>
 <div>
-      <pre style="width:100vw" id="game-of-life"></pre>
+    <div id="canvas_sizer" style="width:100vw; height: 240px;">
+      <canvas id="bevy_canvas"></canvas>
+    </div>
+    <pre style="width:100vw" id="game-of-life"></pre>
     </div>
     <div style="z-index: 2; background: white" class="container">
       <h1>Jim McNulty</h1>

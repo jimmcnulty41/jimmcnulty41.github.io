@@ -12,9 +12,55 @@ pub enum Cell {
     Alive = 1,
 }
 
-#[wasm_bindgen]
+fn setup(
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
+) {
+    commands.spawn(PbrBundle {
+        mesh: meshes.add(shape::Plane::from_size(5.0).into()),
+        material: materials.add(Color::rgb(0.3, 0.5, 0.3).into()),
+        ..default()
+    });
+    commands.spawn(PointLightBundle {
+        point_light: PointLight {
+            intensity: 1500.0,
+            shadows_enabled: true,
+            ..default()
+        },
+        transform: Transform::from_xyz(4.0, 8.0, 4.0),
+        ..default()
+    });
+    commands.spawn(Camera3dBundle {
+        transform: Transform::from_xyz(4.0, 8.0, 4.0).looking_at(
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+            },
+        ),
+        ..default()
+    });
+}
+
+#[wasm_bindgen(start)]
 pub fn bevy_main() {
-    console_log!("woot");
+    App::new()
+        .add_plugins(DefaultPlugins.set(WindowPlugin {
+            primary_window: Some(Window {
+                canvas: Some("#bevy_canvas".to_string()),
+                fit_canvas_to_parent: true,
+                ..default()
+            }),
+            ..default()
+        }))
+        .add_systems(Startup, setup)
+        .run();
 }
 
 #[wasm_bindgen]
