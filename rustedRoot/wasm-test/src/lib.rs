@@ -1,5 +1,6 @@
 mod utils;
 
+use bevy::prelude::*;
 use std::fmt;
 use wasm_bindgen::prelude::*;
 
@@ -9,6 +10,11 @@ use wasm_bindgen::prelude::*;
 pub enum Cell {
     Dead = 0,
     Alive = 1,
+}
+
+#[wasm_bindgen]
+pub fn bevy_main() {
+    console_log!("woot");
 }
 
 #[wasm_bindgen]
@@ -63,7 +69,7 @@ impl World {
 #[wasm_bindgen]
 impl World {
     pub fn new() -> World {
-        utils::set_panic_hook();
+        utils::utils::set_panic_hook();
         let width = 64;
         let height = 64;
 
