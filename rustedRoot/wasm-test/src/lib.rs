@@ -1,6 +1,6 @@
 mod utils;
 
-use bevy::prelude::*;
+use bevy::{asset::LoadState, gltf::Gltf, prelude::*};
 use std::fmt;
 use wasm_bindgen::prelude::*;
 
@@ -12,11 +12,19 @@ pub enum Cell {
     Alive = 1,
 }
 
+#[derive(Resource)]
+struct PinkSynthHandle(Handle<Gltf>);
+
 fn setup(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
+    mut asset_server: Res<AssetServer>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
+    commands.insert_resource(PinkSynthHandle(
+        asset_server.load("../../assets/models/pink_synth.glb"),
+    ));
+
     commands.spawn(PbrBundle {
         mesh: meshes.add(shape::Plane::from_size(5.0).into()),
         material: materials.add(Color::rgb(0.3, 0.5, 0.3).into()),
@@ -48,6 +56,17 @@ fn setup(
     });
 }
 
+fn sys_spawn_on_load(
+    asset_server: Res<AssetServer>,
+    gltf_assets: Res<Assets<Gltf>>,
+    synth: Res<PinkSynthHandle>,
+) {
+    if asset_server.get_load_state(&synth.0) == LoadState::Loaded {
+        let gltf = gltf_assets.get(&synth.0).unwrap();
+        info!("{:?}", gltf.meshes);
+    }
+}
+
 #[wasm_bindgen(start)]
 pub fn bevy_main() {
     App::new()
@@ -60,6 +79,7 @@ pub fn bevy_main() {
             ..default()
         }))
         .add_systems(Startup, setup)
+        .add_systems(PreUpdate, sys_spawn_on_load)
         .run();
 }
 
