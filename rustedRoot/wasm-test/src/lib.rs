@@ -1,7 +1,11 @@
 mod utils;
 
-use bevy::{asset::LoadState, gltf::Gltf, prelude::*};
-use std::fmt;
+use bevy::{
+    asset::LoadState,
+    gltf::{Gltf, GltfNode},
+    prelude::*,
+};
+use bevy_mod_picking::*;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -68,6 +72,16 @@ fn sys_spawn_on_load(
         info!("spawning scene...")
     }
 }
+
+fn sys_link_synth_keys(
+    mut commands: Commands,
+    scene_spawner: Res<SceneSpawner>,
+    gltf_nodes: Res<Assets<GltfNode>>,
+    query: Query<&Handle<GltfNode>>,
+) {
+    info!("sys_link_synth_keys");
+}
+
 #[wasm_bindgen(start)]
 pub fn bevy_main() {
     App::new()
@@ -79,7 +93,8 @@ pub fn bevy_main() {
             }),
             ..default()
         }))
+        .add_plugins(DefaultPickingPlugins)
         .add_systems(Startup, setup)
-        .add_systems(PreUpdate, sys_spawn_on_load)
+        .add_systems(PreUpdate, (sys_spawn_on_load, sys_link_synth_keys))
         .run();
 }
