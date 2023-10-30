@@ -13,7 +13,7 @@ pub enum Cell {
 }
 
 #[derive(Resource)]
-struct PinkSynthHandle(Handle<Gltf>);
+struct PinkSynthHandle(Handle<Gltf>, bool);
 
 fn setup(
     mut commands: Commands,
@@ -23,6 +23,7 @@ fn setup(
 ) {
     commands.insert_resource(PinkSynthHandle(
         asset_server.load("../../assets/models/pink_synth.glb"),
+        false,
     ));
 
     commands.spawn(PbrBundle {
@@ -39,19 +40,13 @@ fn setup(
         transform: Transform::from_xyz(4.0, 8.0, 4.0),
         ..default()
     });
-    commands.spawn(Camera3dBundle {
-        transform: Transform::from_xyz(2.0, 2.0, 2.0).looking_at(
-            Vec3 {
-                x: 0.0,
-                y: 0.0,
-                z: 0.0,
-            },
-            Vec3 {
-                x: 0.0,
-                y: 1.0,
-                z: 0.0,
-            },
-        ),
+    commands.spawn(PointLightBundle {
+        point_light: PointLight {
+            intensity: 1500.0,
+            shadows_enabled: true,
+            ..default()
+        },
+        transform: Transform::from_xyz(-4.0, 8.0, -4.0),
         ..default()
     });
 }
@@ -59,13 +54,17 @@ fn setup(
 fn sys_spawn_on_load(
     asset_server: Res<AssetServer>,
     gltf_assets: Res<Assets<Gltf>>,
-    synth: Res<PinkSynthHandle>,
+    mut synth: ResMut<PinkSynthHandle>,
     mut scene_spawner: ResMut<SceneSpawner>,
 ) {
+    if synth.1 {
+        return;
+    }
     if asset_server.get_load_state(&synth.0) == LoadState::Loaded {
         let gltf = gltf_assets.get(&synth.0).unwrap();
         let gltf_scene_handle = gltf.scenes.get(0).unwrap();
         scene_spawner.spawn(gltf_scene_handle.clone_weak());
+        synth.1 = true;
         info!("spawning scene...")
     }
 }
