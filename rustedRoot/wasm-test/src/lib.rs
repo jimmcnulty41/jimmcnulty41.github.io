@@ -18,7 +18,7 @@ struct PinkSynthHandle(Handle<Gltf>);
 fn setup(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
-    mut asset_server: Res<AssetServer>,
+    asset_server: Res<AssetServer>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
     commands.insert_resource(PinkSynthHandle(
@@ -40,7 +40,7 @@ fn setup(
         ..default()
     });
     commands.spawn(Camera3dBundle {
-        transform: Transform::from_xyz(4.0, 8.0, 4.0).looking_at(
+        transform: Transform::from_xyz(2.0, 2.0, 2.0).looking_at(
             Vec3 {
                 x: 0.0,
                 y: 0.0,
@@ -60,13 +60,15 @@ fn sys_spawn_on_load(
     asset_server: Res<AssetServer>,
     gltf_assets: Res<Assets<Gltf>>,
     synth: Res<PinkSynthHandle>,
+    mut scene_spawner: ResMut<SceneSpawner>,
 ) {
     if asset_server.get_load_state(&synth.0) == LoadState::Loaded {
         let gltf = gltf_assets.get(&synth.0).unwrap();
-        info!("{:?}", gltf.meshes);
+        let gltf_scene_handle = gltf.scenes.get(0).unwrap();
+        scene_spawner.spawn(gltf_scene_handle.clone_weak());
+        info!("spawning scene...")
     }
 }
-
 #[wasm_bindgen(start)]
 pub fn bevy_main() {
     App::new()
