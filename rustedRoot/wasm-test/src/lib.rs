@@ -57,56 +57,45 @@ fn setup(
     });
 }
 
-fn make_pickable(mut commands: Commands, query: Query<Entity, With<Handle<Mesh>>>) {
-    for blah in query.iter() {
-        commands
-            .entity(blah)
-            .insert((PickableBundle::default(), HIGHLIGHT_TINT.clone()));
-    }
-}
-
-#[derive(Resource)]
-struct KeysLinked(bool);
-
-fn sys_link_synth_keys(
+fn make_pickable(
     mut commands: Commands,
-    mut synth: ResMut<PinkSynthHandle>,
-    gltf_assets: Res<Assets<Gltf>>,
-    mut scenes: ResMut<Assets<Scene>>,
-    mut scene_spawner: ResMut<SceneSpawner>,
-    mut keys_linked: ResMut<KeysLinked>,
-    animations_q: Query<Entity, With<Handle<Mesh>>>,
+    gltf: Res<Assets<Gltf>>,
+    anims: Res<Assets<AnimationClip>>,
+    meshes: Query<(Entity, &Parent), With<Handle<Mesh>>>,
+    mut players: Query<(Entity, &mut AnimationPlayer)>,
+    mut count: Local<u32>,
 ) {
-    if keys_linked.0 {
+    if *count > 10 {
         return;
     }
-    info!("sys_link_synth_keys: BEGIN");
-    if let Some(gltf) = gltf_assets.get(&synth.gltf_handle) {
-        if let Some(scene_handle) = &gltf.default_scene {
-            if let Some(scene) = scenes.get_mut(scene_handle) {
-                // get the right entity
-                for e in animations_q.iter() {
-                    commands.entity(e).insert((
-                        PickableBundle::default(),
-                        On::<Pointer<Click>>::run(|ev: Listener<Pointer<Click>>| {
-                            info!("Clicked {:?}", ev.target);
-                        }),
-                    ));
-                }
-
-                keys_linked.0 = true;
-                info!("sys_link_synth_keys: scene is loaded and manipulated");
-            } else {
-                info!("sys_link_synth_keys: MISSING scene");
-            }
-        } else {
-            info!("sys_link_synth_keys: MISSING scene handle");
+    for (mesh, parent_id) in meshes.iter() {
+        if let Ok((_, player)) = players.get(**parent_id) {
+            commands.entity(mesh).insert((
+                PickableBundle::default(),
+                HIGHLIGHT_TINT.clone(),
+                On::<Pointer<Click>>::run(|event: Listener<Pointer<Click>>| {
+                    info!("Clicked on {:?}", event.target);
+                }),
+            ));
         }
-    } else {
-        info!("sys_link_synth_keys: MISSING GLTF");
+        *count += 1;
     }
-    info!("sys_link_synth_keys: END");
 }
+
+const HIGHLIGHT_TINT: Highlight<StandardMaterial> = Highlight {
+    hovered: Some(HighlightKind::new_dynamic(|matl| StandardMaterial {
+        base_color: matl.base_color + vec4(0.3, 0.3, 0.3, 0.3),
+        ..matl.to_owned()
+    })),
+    pressed: Some(HighlightKind::new_dynamic(|matl| StandardMaterial {
+        base_color: matl.base_color + vec4(0.5, 0.5, 0.5, 0.5),
+        ..matl.to_owned()
+    })),
+    selected: Some(HighlightKind::new_dynamic(|matl| StandardMaterial {
+        base_color: matl.base_color + vec4(0.5, 0.5, 0.5, 0.5),
+        ..matl.to_owned()
+    })),
+};
 
 #[wasm_bindgen(start)]
 pub fn bevy_main() {
@@ -121,5 +110,6 @@ pub fn bevy_main() {
         }))
         .add_plugins(DefaultPickingPlugins)
         .add_systems(Startup, setup)
+        .add_systems(PreUpdate, make_pickable)
         .run();
 }
