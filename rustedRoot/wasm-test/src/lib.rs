@@ -3,11 +3,12 @@ mod utils;
 use bevy::{
     asset::LoadState,
     gltf::{Gltf, GltfNode},
+    math::vec4,
     prelude::*,
     scene::{self, InstanceId},
 };
 use bevy_mod_picking::{
-    prelude::{Click, Listener, On, Pointer},
+    prelude::{Click, Highlight, HighlightKind, Listener, On, Pointer},
     *,
 };
 use wasm_bindgen::prelude::*;
@@ -20,23 +21,15 @@ pub enum Cell {
     Alive = 1,
 }
 
-#[derive(Resource)]
-struct PinkSynthHandle {
-    pub gltf_handle: Handle<Gltf>,
-    pub scene_spawner_id: Option<InstanceId>,
-    pub is_loaded: bool,
-}
-
 fn setup(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     asset_server: Res<AssetServer>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    commands.insert_resource(PinkSynthHandle {
-        gltf_handle: asset_server.load("../../assets/models/pink_synth.glb"),
-        scene_spawner_id: None,
-        is_loaded: false,
+    commands.spawn(SceneBundle {
+        scene: asset_server.load("../../assets/models/pink_synth.glb#Scene0"),
+        ..default()
     });
 
     commands.spawn(PbrBundle {
@@ -64,21 +57,11 @@ fn setup(
     });
 }
 
-fn sys_spawn_on_load(
-    asset_server: Res<AssetServer>,
-    gltf_assets: Res<Assets<Gltf>>,
-    mut synth: ResMut<PinkSynthHandle>,
-    mut scene_spawner: ResMut<SceneSpawner>,
-) {
-    if synth.is_loaded {
-        return;
-    }
-    if asset_server.get_load_state(&synth.gltf_handle) == LoadState::Loaded {
-        let gltf = gltf_assets.get(&synth.gltf_handle).unwrap();
-        let gltf_scene_handle = gltf.scenes.get(0).unwrap();
-        synth.scene_spawner_id = Some(scene_spawner.spawn(gltf_scene_handle.clone_weak()));
-        synth.is_loaded = true;
-        info!("spawning scene...")
+fn make_pickable(mut commands: Commands, query: Query<Entity, With<Handle<Mesh>>>) {
+    for blah in query.iter() {
+        commands
+            .entity(blah)
+            .insert((PickableBundle::default(), HIGHLIGHT_TINT.clone()));
     }
 }
 
@@ -136,9 +119,7 @@ pub fn bevy_main() {
             }),
             ..default()
         }))
-        .insert_resource(KeysLinked(false))
         .add_plugins(DefaultPickingPlugins)
         .add_systems(Startup, setup)
-        .add_systems(PreUpdate, (sys_spawn_on_load, sys_link_synth_keys))
         .run();
 }
