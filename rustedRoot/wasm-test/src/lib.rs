@@ -1,14 +1,13 @@
 mod utils;
 
-use bevy::{
-    asset::LoadState,
-    gltf::{Gltf, GltfNode},
-    math::vec4,
-    prelude::*,
-    scene::{self, InstanceId},
-};
+use std::thread::spawn;
+
+use bevy::animation::AnimationClip;
+use bevy::scene::SceneInstance;
+use bevy::{math::vec4, prelude::*};
+use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_mod_picking::{
-    prelude::{Click, Highlight, HighlightKind, Listener, On, Pointer},
+    prelude::{Click, Highlight, HighlightKind, ListenerInput, On, Pickable, Pointer},
     *,
 };
 use wasm_bindgen::prelude::*;
@@ -27,11 +26,6 @@ fn setup(
     asset_server: Res<AssetServer>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    commands.spawn(SceneBundle {
-        scene: asset_server.load("../../assets/models/pink_synth.glb#Scene0"),
-        ..default()
-    });
-
     commands.spawn(PbrBundle {
         mesh: meshes.add(shape::Plane::from_size(5.0).into()),
         material: materials.add(Color::rgb(0.3, 0.5, 0.3).into()),
@@ -57,28 +51,111 @@ fn setup(
     });
 }
 
-fn make_pickable(
+const SYNTH_PATH: &str = "../../assets/models/pink_synth.glb";
+#[derive(Event)]
+struct SynthKeyPress(Entity);
+
+impl From<ListenerInput<Pointer<Click>>> for SynthKeyPress {
+    fn from(event: ListenerInput<Pointer<Click>>) -> Self {
+        SynthKeyPress(event.target)
+    }
+}
+
+fn sys_on_synth_key_press(
     mut commands: Commands,
-    gltf: Res<Assets<Gltf>>,
-    anims: Res<Assets<AnimationClip>>,
+    mut key_event: EventReader<SynthKeyPress>,
+    anims: Res<Animations>,
+    synth_key_ents: Query<&Parent, With<Pickable>>,
+    mut an_player_ents: Query<(&Name, &mut AnimationPlayer)>,
+) {
+    for ev in key_event.iter() {
+        if let Ok(parent) = synth_key_ents.get(ev.0) {
+            if let Ok((name, mut p)) = an_player_ents.get_mut(**parent) {
+                p.resume();
+                if let Some(blah) = anims.get(name.to_string()) {
+                    p.play(blah.clone());
+                }
+            }
+        }
+    }
+}
+
+#[derive(Resource, Reflect)]
+struct Animations(Vec<(String, Handle<AnimationClip>)>);
+
+impl Animations {
+    fn get(&self, name: String) -> Option<&Handle<AnimationClip>> {
+        info!("Animations::get({})", name);
+        let mut clip = None;
+        for (n, c) in self.0.iter() {
+            info!("Clip with name {}", n);
+            if n.eq(&name) {
+                clip = Some(c);
+                break;
+            }
+        }
+        clip
+    }
+}
+
+fn sys_synth_setup(mut commands: Commands, ass: Res<AssetServer>) {
+    info!("Synth setup BEGIN");
+    commands.spawn(SceneBundle {
+        scene: ass.load(format!("{}#Scene0", SYNTH_PATH)),
+        ..default()
+    });
+    info!("Synth setup {}", format!("{}#Scene0", SYNTH_PATH));
+    commands.insert_resource(Animations(vec![
+        (
+            "key_1".to_string(),
+            ass.load(format!("{}#Animation0", SYNTH_PATH)),
+        ),
+        (
+            "key_2".to_string(),
+            ass.load(format!("{}#Animation1", SYNTH_PATH)),
+        ),
+        (
+            "key_3".to_string(),
+            ass.load(format!("{}#Animation2", SYNTH_PATH)),
+        ),
+        (
+            "key_4".to_string(),
+            ass.load(format!("{}#Animation3", SYNTH_PATH)),
+        ),
+        (
+            "key_5".to_string(),
+            ass.load(format!("{}#Animation4", SYNTH_PATH)),
+        ),
+        (
+            "key_6".to_string(),
+            ass.load(format!("{}#Animation5", SYNTH_PATH)),
+        ),
+        (
+            "key_7".to_string(),
+            ass.load(format!("{}#Animation6", SYNTH_PATH)),
+        ),
+    ]));
+    info!("Synth setup END");
+}
+
+fn sys_make_synth_keys_pickable(
+    mut commands: Commands,
     meshes: Query<(Entity, &Parent), With<Handle<Mesh>>>,
-    mut players: Query<(Entity, &mut AnimationPlayer)>,
+    players: Query<(Entity, &mut AnimationPlayer, &Name)>,
     mut count: Local<u32>,
 ) {
     if *count > 10 {
         return;
     }
     for (mesh, parent_id) in meshes.iter() {
-        if let Ok((_, player)) = players.get(**parent_id) {
+        if let Ok(_) = players.get(**parent_id) {
             commands.entity(mesh).insert((
                 PickableBundle::default(),
                 HIGHLIGHT_TINT.clone(),
-                On::<Pointer<Click>>::run(|event: Listener<Pointer<Click>>| {
-                    info!("Clicked on {:?}", event.target);
-                }),
+                On::<Pointer<Click>>::send_event::<SynthKeyPress>(),
             ));
+            *count += 1;
         }
-        *count += 1;
     }
 }
 
@@ -108,8 +185,14 @@ pub fn bevy_main() {
             }),
             ..default()
         }))
+        .add_plugins(WorldInspectorPlugin::new())
         .add_plugins(DefaultPickingPlugins)
-        .add_systems(Startup, setup)
-        .add_systems(PreUpdate, make_pickable)
+        .add_event::<SynthKeyPress>()
+        .add_systems(Startup, (setup, sys_synth_setup))
+        .add_systems(PreUpdate, sys_make_synth_keys_pickable)
+        .add_systems(
+            Update,
+            sys_on_synth_key_press.run_if(on_event::<SynthKeyPress>()),
+        )
         .run();
 }
