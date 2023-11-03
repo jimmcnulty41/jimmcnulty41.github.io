@@ -1,6 +1,7 @@
 mod utils;
 
 use std::thread::spawn;
+use std::time::Duration;
 
 use bevy::animation::AnimationClip;
 use bevy::scene::SceneInstance;
@@ -66,14 +67,14 @@ fn sys_on_synth_key_press(
     mut key_event: EventReader<SynthKeyPress>,
     anims: Res<Animations>,
     synth_key_ents: Query<&Parent, With<Pickable>>,
-    mut an_player_ents: Query<(&Name, &mut AnimationPlayer)>,
+    mut an_player_ents: Query<(&Name, &mut AnimationPlayer, Entity)>,
 ) {
     for ev in key_event.iter() {
         if let Ok(parent) = synth_key_ents.get(ev.0) {
-            if let Ok((name, mut p)) = an_player_ents.get_mut(**parent) {
-                p.resume();
-                if let Some(blah) = anims.get(name.to_string()) {
-                    p.play(blah.clone());
+            if let Ok((name, mut p, player_ent)) = an_player_ents.get_mut(**parent) {
+                if let Some(h_clip) = anims.get(name.to_string()) {
+                    p.set_elapsed(0.0);
+                    p.play_with_transition(h_clip.clone(), Duration::from_millis(33));
                 }
             }
         }
@@ -148,7 +149,7 @@ fn sys_make_synth_keys_pickable(
         return;
     }
     for (mesh, parent_id) in meshes.iter() {
-        if let Ok(_) = players.get(**parent_id) {
+        if let Ok(p) = players.get(**parent_id) {
             commands.entity(mesh).insert((
                 PickableBundle::default(),
                 HIGHLIGHT_TINT.clone(),
