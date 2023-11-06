@@ -33,12 +33,14 @@
 
 
         await init();
-        let pre = document.querySelector("#game-of-life")
-        const render = () => {
-          setTimeout(() => requestAnimationFrame(render), 333);
-        };
-        requestAnimationFrame(render);
 
+        let complete = false;
+        document.addEventListener("mousemove", () => {
+          if (!complete) {
+            complete = true;
+            bevy_main();
+          }
+        });
 
     </script>
 

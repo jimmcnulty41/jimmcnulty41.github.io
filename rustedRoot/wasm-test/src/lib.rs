@@ -7,6 +7,7 @@ use bevy::animation::AnimationClip;
 use bevy::scene::SceneInstance;
 use bevy::{math::vec4, prelude::*};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
+use bevy_mod_picking::prelude::Drag;
 use bevy_mod_picking::{
     prelude::{Click, Highlight, HighlightKind, ListenerInput, On, Pickable, Pointer},
     *,
@@ -53,6 +54,7 @@ fn setup(
 }
 
 const SYNTH_PATH: &str = "../../assets/models/pink_synth.glb";
+const AUDIO_DIR: &str = "../../assets/sounds/";
 #[derive(Event)]
 struct SynthKeyPress(Entity);
 
@@ -61,17 +63,30 @@ impl From<ListenerInput<Pointer<Click>>> for SynthKeyPress {
         SynthKeyPress(event.target)
     }
 }
+impl From<ListenerInput<Pointer<Drag>>> for SynthKeyPress {
+    fn from(event: ListenerInput<Pointer<Drag>>) -> Self {
+        SynthKeyPress(event.target)
+    }
+}
 
 fn sys_on_synth_key_press(
     mut commands: Commands,
     mut key_event: EventReader<SynthKeyPress>,
     anims: Res<Animations>,
+    ass: Res<AssetServer>,
     synth_key_ents: Query<&Parent, With<Pickable>>,
     mut an_player_ents: Query<(&Name, &mut AnimationPlayer, Entity)>,
 ) {
     for ev in key_event.iter() {
         if let Ok(parent) = synth_key_ents.get(ev.0) {
             if let Ok((name, mut p, player_ent)) = an_player_ents.get_mut(**parent) {
+                commands.entity(player_ent).insert(AudioBundle {
+                    source: ass.load(format!("{}{}.ogg", AUDIO_DIR, name)),
+                    settings: PlaybackSettings {
+                        mode: bevy::audio::PlaybackMode::Remove,
+                        ..default()
+                    },
+                });
                 if let Some(h_clip) = anims.get(name.to_string()) {
                     p.set_elapsed(0.0);
                     p.play_with_transition(h_clip.clone(), Duration::from_millis(33));
@@ -89,7 +104,6 @@ impl Animations {
         info!("Animations::get({})", name);
         let mut clip = None;
         for (n, c) in self.0.iter() {
-            info!("Clip with name {}", n);
             if n.eq(&name) {
                 clip = Some(c);
                 break;
@@ -154,6 +168,7 @@ fn sys_make_synth_keys_pickable(
                 PickableBundle::default(),
                 HIGHLIGHT_TINT.clone(),
                 On::<Pointer<Click>>::send_event::<SynthKeyPress>(),
+                On::<Pointer<Drag>>::send_event::<SynthKeyPress>(),
             ));
             *count += 1;
         }
@@ -175,7 +190,7 @@ const HIGHLIGHT_TINT: Highlight<StandardMaterial> = Highlight {
     })),
 };
 
-#[wasm_bindgen(start)]
+#[wasm_bindgen]
 pub fn bevy_main() {
     App::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
