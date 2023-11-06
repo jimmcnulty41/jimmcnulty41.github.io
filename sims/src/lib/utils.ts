@@ -193,3 +193,24 @@ export function octreeCurve(level: number, size: number): Point[] {
     return result;
   }
 }
+
+export async function n_resolved<T>(
+  n: number,
+  ps: Promise<T>[]
+): Promise<void> {
+  const results: { [i: string]: T } = {};
+
+  let unresolved = ps.map(async (p, i) => {
+    const result = await p;
+    console.log(Object.keys(results).length);
+    results[`${i}`] = result;
+    return result;
+  });
+
+  while (Object.keys(results).length < n && unresolved.length) {
+    await Promise.any(unresolved);
+    unresolved = unresolved.filter(
+      (p, i) => !Object.keys(results).includes(`${i}`)
+    );
+  }
+}

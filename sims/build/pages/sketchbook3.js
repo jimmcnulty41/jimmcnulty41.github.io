@@ -1,5 +1,5 @@
 import { dataToEnhancedUrl, dataToUrl, getFilteredImages, } from "../data/data_10.js";
-import { remap } from "../lib/utils.js";
+import { n_resolved, remap } from "../lib/utils.js";
 const loadedImages = [];
 let missingFiles = [];
 const body = document.querySelector("body");
@@ -13,7 +13,7 @@ const scrollCont = document.querySelector("#images");
 function getImages() {
     return getFilteredImages().map((imageDatum, i) => {
         const url = dataToUrl(imageDatum);
-        fetch(url)
+        return fetch(url)
             .then((resp) => {
             if (!resp.ok)
                 return;
@@ -73,18 +73,16 @@ function scaleNode(n, scroll = 0) {
         return;
     const elOffset = n.offsetTop;
     const blah = scalingFn(Math.abs(elOffset - scroll - window.innerHeight / 3));
-    console.log(blah);
     n.style.scale = `${blah}`;
 }
-addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     const imageContainer = document.querySelector("#images");
-    getImages();
-    imageContainer.childNodes.forEach((c) => c.childNodes.forEach((n) => scaleNode(n, imageContainer.scrollTop)));
     imageContainer.addEventListener("scroll", (e) => {
-        console.log(window.innerHeight);
         const currentScroll = imageContainer.scrollTop;
         imageContainer.childNodes.forEach((c) => {
             c.childNodes.forEach((n) => scaleNode(n, currentScroll));
         });
     });
+    await n_resolved(24, getImages());
+    imageContainer.childNodes.forEach((c) => c.childNodes.forEach((n) => scaleNode(n, imageContainer.scrollTop)));
 });

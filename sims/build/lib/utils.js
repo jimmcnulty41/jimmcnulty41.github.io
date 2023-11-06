@@ -151,3 +151,16 @@ export function octreeCurve(level, size) {
         return result;
     }
 }
+export async function n_resolved(n, ps) {
+    const results = {};
+    let unresolved = ps.map(async (p, i) => {
+        const result = await p;
+        console.log(Object.keys(results).length);
+        results[`${i}`] = result;
+        return result;
+    });
+    while (Object.keys(results).length < n && unresolved.length) {
+        await Promise.any(unresolved);
+        unresolved = unresolved.filter((p, i) => !Object.keys(results).includes(`${i}`));
+    }
+}

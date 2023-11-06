@@ -3,7 +3,7 @@ import {
   dataToUrl,
   getFilteredImages,
 } from "../data/data_10.js";
-import { remap } from "../lib/utils.js";
+import { n_resolved, remap } from "../lib/utils.js";
 
 const loadedImages = [];
 
@@ -22,7 +22,7 @@ const scrollCont = document.querySelector("#images");
 function getImages() {
   return getFilteredImages().map((imageDatum, i) => {
     const url = dataToUrl(imageDatum);
-    fetch(url)
+    return fetch(url)
       .then((resp) => {
         if (!resp.ok) return;
         return resp.blob();
@@ -57,6 +57,7 @@ function getImages() {
               const featureImg = document.createElement("img");
               featureImg.id = "feature";
               featureImg.src = enhObjUrl;
+
               const clickHandler = () => {
                 container.removeChild(featureImg);
                 container.classList.remove("active");
@@ -86,24 +87,20 @@ function scaleNode(n: Node, scroll: number = 0) {
 
   const elOffset = (n as HTMLImageElement).offsetTop;
   const blah = scalingFn(Math.abs(elOffset - scroll - window.innerHeight / 3));
-  console.log(blah);
   (n as HTMLImageElement).style.scale = `${blah}`;
 }
 
-addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   const imageContainer = document.querySelector("#images") as HTMLDivElement;
-
-  getImages();
-
-  imageContainer.childNodes.forEach((c) =>
-    c.childNodes.forEach((n) => scaleNode(n, imageContainer.scrollTop))
-  );
-
   imageContainer.addEventListener("scroll", (e) => {
-    console.log(window.innerHeight);
     const currentScroll = imageContainer.scrollTop;
     imageContainer.childNodes.forEach((c) => {
       c.childNodes.forEach((n) => scaleNode(n, currentScroll));
     });
   });
+
+  await n_resolved(24, getImages());
+  imageContainer.childNodes.forEach((c) =>
+    c.childNodes.forEach((n) => scaleNode(n, imageContainer.scrollTop))
+  );
 });
