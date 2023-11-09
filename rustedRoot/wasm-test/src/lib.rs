@@ -69,30 +69,63 @@ impl From<ListenerInput<Pointer<Drag>>> for SynthKeyPress {
     }
 }
 
+const DEBOUNCE_LIMIT: f32 = 0.05;
 fn sys_on_synth_key_press(
     mut commands: Commands,
     mut key_event: EventReader<SynthKeyPress>,
+    time: Res<Time>,
     anims: Res<Animations>,
-    ass: Res<AssetServer>,
+    sounds: Res<Sounds>,
     synth_key_ents: Query<&Parent, With<Pickable>>,
     mut an_player_ents: Query<(&Name, &mut AnimationPlayer, Entity)>,
+    audio_sink_ents: Query<(&Name, &mut AudioSink, Entity)>,
+    mut debounce_time: Local<f32>,
 ) {
+    if time.elapsed_seconds() - *debounce_time < DEBOUNCE_LIMIT {
+        return;
+    }
+
+    *debounce_time = time.elapsed_seconds();
     for ev in key_event.iter() {
         if let Ok(parent) = synth_key_ents.get(ev.0) {
             if let Ok((name, mut p, player_ent)) = an_player_ents.get_mut(**parent) {
-                commands.entity(player_ent).insert(AudioBundle {
-                    source: ass.load(format!("{}{}.ogg", AUDIO_DIR, name)),
-                    settings: PlaybackSettings {
-                        mode: bevy::audio::PlaybackMode::Remove,
-                        ..default()
-                    },
-                });
+                if let Ok((_, audio_sink, _)) = audio_sink_ents.get(player_ent) {
+                    audio_sink.stop();
+                }
+                if let Some(h_sound) = sounds.get(name.to_string()) {
+                    commands.entity(player_ent).insert(AudioBundle {
+                        source: h_sound.clone(),
+                        settings: PlaybackSettings {
+                            mode: bevy::audio::PlaybackMode::Remove,
+                            ..default()
+                        },
+                    });
+                } else {
+                    info!("Fuck.");
+                }
+
                 if let Some(h_clip) = anims.get(name.to_string()) {
                     p.set_elapsed(0.0);
                     p.play_with_transition(h_clip.clone(), Duration::from_millis(33));
                 }
             }
         }
+    }
+}
+#[derive(Resource, Reflect)]
+struct Sounds(Vec<(String, Handle<AudioSource>)>);
+
+impl Sounds {
+    fn get(&self, name: String) -> Option<&Handle<AudioSource>> {
+        info!("Sounds::get({})", name);
+        let mut clip = None;
+        for (n, c) in self.0.iter() {
+            if n.eq(&name) {
+                clip = Some(c);
+                break;
+            }
+        }
+        clip
     }
 }
 
@@ -150,7 +183,36 @@ fn sys_synth_setup(mut commands: Commands, ass: Res<AssetServer>) {
             ass.load(format!("{}#Animation6", SYNTH_PATH)),
         ),
     ]));
-    info!("Synth setup END");
+    commands.insert_resource(Sounds(vec![
+        (
+            "key_1".to_string(),
+            ass.load(format!("{}key_1.ogg", AUDIO_DIR)),
+        ),
+        (
+            "key_2".to_string(),
+            ass.load(format!("{}key_2.ogg", AUDIO_DIR)),
+        ),
+        (
+            "key_3".to_string(),
+            ass.load(format!("{}key_3.ogg", AUDIO_DIR)),
+        ),
+        (
+            "key_4".to_string(),
+            ass.load(format!("{}key_4.ogg", AUDIO_DIR)),
+        ),
+        (
+            "key_5".to_string(),
+            ass.load(format!("{}key_5.ogg", AUDIO_DIR)),
+        ),
+        (
+            "key_6".to_string(),
+            ass.load(format!("{}key_6.ogg", AUDIO_DIR)),
+        ),
+        (
+            "key_7".to_string(),
+            ass.load(format!("{}key_7.ogg", AUDIO_DIR)),
+        ),
+    ]));
 }
 
 fn sys_make_synth_keys_pickable(
