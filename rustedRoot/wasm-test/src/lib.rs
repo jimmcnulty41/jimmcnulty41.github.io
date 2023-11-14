@@ -186,31 +186,31 @@ fn sys_synth_setup(mut commands: Commands, ass: Res<AssetServer>) {
     commands.insert_resource(Sounds(vec![
         (
             "key_1".to_string(),
-            ass.load(format!("{}key_1.ogg", AUDIO_DIR)),
+            ass.load(format!("{}s1.wav", AUDIO_DIR)),
         ),
         (
             "key_2".to_string(),
-            ass.load(format!("{}key_2.ogg", AUDIO_DIR)),
+            ass.load(format!("{}s2.wav", AUDIO_DIR)),
         ),
         (
             "key_3".to_string(),
-            ass.load(format!("{}key_3.ogg", AUDIO_DIR)),
+            ass.load(format!("{}s3.wav", AUDIO_DIR)),
         ),
         (
             "key_4".to_string(),
-            ass.load(format!("{}key_4.ogg", AUDIO_DIR)),
+            ass.load(format!("{}s4.wav", AUDIO_DIR)),
         ),
         (
             "key_5".to_string(),
-            ass.load(format!("{}key_5.ogg", AUDIO_DIR)),
+            ass.load(format!("{}s5.wav", AUDIO_DIR)),
         ),
         (
             "key_6".to_string(),
-            ass.load(format!("{}key_6.ogg", AUDIO_DIR)),
+            ass.load(format!("{}s6.wav", AUDIO_DIR)),
         ),
         (
             "key_7".to_string(),
-            ass.load(format!("{}key_7.ogg", AUDIO_DIR)),
+            ass.load(format!("{}s7.wav", AUDIO_DIR)),
         ),
     ]));
 }
