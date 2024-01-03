@@ -1,10 +1,8 @@
 mod utils;
 
-use std::thread::spawn;
 use std::time::Duration;
 
 use bevy::animation::AnimationClip;
-use bevy::scene::SceneInstance;
 use bevy::{math::vec4, prelude::*};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_mod_picking::prelude::Drag;
@@ -254,15 +252,23 @@ const HIGHLIGHT_TINT: Highlight<StandardMaterial> = Highlight {
 
 #[wasm_bindgen]
 pub fn bevy_main() {
+    println!();
     App::new()
-        .add_plugins(DefaultPlugins.set(WindowPlugin {
-            primary_window: Some(Window {
-                canvas: Some("#bevy_canvas".to_string()),
-                fit_canvas_to_parent: true,
-                ..default()
-            }),
-            ..default()
-        }))
+        .add_plugins(
+            DefaultPlugins
+                .set(WindowPlugin {
+                    primary_window: Some(Window {
+                        canvas: Some("#bevy_canvas".to_string()),
+                        fit_canvas_to_parent: true,
+                        ..default()
+                    }),
+                    ..default()
+                })
+                .set(AssetPlugin {
+                    asset_folder: "./".into(),
+                    ..default()
+                }),
+        )
         .add_plugins(WorldInspectorPlugin::new())
         .add_plugins(DefaultPickingPlugins)
         .add_event::<SynthKeyPress>()
