@@ -23,7 +23,6 @@ pub enum Cell {
 fn setup(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
-    asset_server: Res<AssetServer>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
     commands.spawn(PbrBundle {
@@ -67,6 +66,27 @@ impl From<ListenerInput<Pointer<Drag>>> for SynthKeyPress {
     }
 }
 
+#[link(wasm_import_module = "/wasm-js-api.js")]
+extern "C" {
+    fn javascriptfunctionguy(sound_id: i8);
+}
+
+#[cfg(target_arch = "wasm32")]
+fn play_audio_web(sound_id: i8) {
+    unsafe { javascriptfunctionguy(sound_id) }
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+fn play_audio_desktop(commands: &mut Commands, sound: Handle<AudioSource>) {
+    commands.spawn(AudioBundle {
+        source: sound,
+        settings: PlaybackSettings {
+            mode: bevy::audio::PlaybackMode::Despawn,
+            ..default()
+        },
+    });
+}
+
 const DEBOUNCE_LIMIT: f32 = 0.05;
 fn sys_on_synth_key_press(
     mut commands: Commands,
@@ -75,8 +95,7 @@ fn sys_on_synth_key_press(
     anims: Res<Animations>,
     sounds: Res<Sounds>,
     synth_key_ents: Query<&Parent, With<Pickable>>,
-    mut an_player_ents: Query<(&Name, &mut AnimationPlayer, Entity)>,
-    audio_sink_ents: Query<(&Name, &mut AudioSink, Entity)>,
+    mut an_player_ents: Query<(&Name, &mut AnimationPlayer)>,
     mut debounce_time: Local<f32>,
 ) {
     if time.elapsed_seconds() - *debounce_time < DEBOUNCE_LIMIT {
@@ -86,18 +105,12 @@ fn sys_on_synth_key_press(
     *debounce_time = time.elapsed_seconds();
     for ev in key_event.iter() {
         if let Ok(parent) = synth_key_ents.get(ev.0) {
-            if let Ok((name, mut p, player_ent)) = an_player_ents.get_mut(**parent) {
-                if let Ok((_, audio_sink, _)) = audio_sink_ents.get(player_ent) {
-                    audio_sink.stop();
-                }
-                if let Some(h_sound) = sounds.get(name.to_string()) {
-                    commands.entity(player_ent).insert(AudioBundle {
-                        source: h_sound.clone(),
-                        settings: PlaybackSettings {
-                            mode: bevy::audio::PlaybackMode::Remove,
-                            ..default()
-                        },
-                    });
+            if let Ok((name, mut p)) = an_player_ents.get_mut(**parent) {
+                if let Some(sound) = sounds.get(name.to_string()) {
+                    #[cfg(target_arch = "wasm32")]
+                    play_audio_web(sound);
+                    #[cfg(not(target_arch = "wasm32"))]
+                    play_audio_desktop(&mut commands, sound.clone());
                 } else {
                     info!("Fuck.");
                 }
@@ -110,9 +123,29 @@ fn sys_on_synth_key_press(
         }
     }
 }
+#[cfg(target_arch = "wasm32")]
+#[derive(Resource, Reflect)]
+struct Sounds(Vec<(String, i8)>);
+
+#[cfg(target_arch = "wasm32")]
+impl Sounds {
+    fn get(&self, name: String) -> Option<i8> {
+        info!("Sounds::get({})", name);
+        let mut clip = None;
+        for (n, c) in self.0.iter() {
+            if n.eq(&name) {
+                clip = Some(*c);
+                break;
+            }
+        }
+        clip
+    }
+}
+#[cfg(not(target_arch = "wasm32"))]
 #[derive(Resource, Reflect)]
 struct Sounds(Vec<(String, Handle<AudioSource>)>);
 
+#[cfg(not(target_arch = "wasm32"))]
 impl Sounds {
     fn get(&self, name: String) -> Option<&Handle<AudioSource>> {
         info!("Sounds::get({})", name);
@@ -181,6 +214,19 @@ fn sys_synth_setup(mut commands: Commands, ass: Res<AssetServer>) {
             ass.load(format!("{}#Animation6", SYNTH_PATH)),
         ),
     ]));
+
+    #[cfg(target_arch = "wasm32")]
+    commands.insert_resource(Sounds(vec![
+        ("key_7".to_string(), 7),
+        ("key_6".to_string(), 6),
+        ("key_5".to_string(), 5),
+        ("key_4".to_string(), 4),
+        ("key_3".to_string(), 3),
+        ("key_2".to_string(), 2),
+        ("key_1".to_string(), 1),
+    ]));
+
+    #[cfg(not(target_arch = "wasm32"))]
     commands.insert_resource(Sounds(vec![
         (
             "key_7".to_string(),
