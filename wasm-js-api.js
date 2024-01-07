@@ -1,4 +1,6 @@
 console.log("loading our connection");
 export function javascriptfunctionguy(soundID) {
-  console.log(`hello from the javascript side! sound: ${soundID}`);
+  const path = `/assets/sounds/s2_${soundID}.wav`;
+  const a = new Audio(path);
+  a.play();
 }

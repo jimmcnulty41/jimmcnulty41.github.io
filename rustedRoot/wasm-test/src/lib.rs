@@ -217,13 +217,13 @@ fn sys_synth_setup(mut commands: Commands, ass: Res<AssetServer>) {
 
     #[cfg(target_arch = "wasm32")]
     commands.insert_resource(Sounds(vec![
-        ("key_7".to_string(), 7),
-        ("key_6".to_string(), 6),
-        ("key_5".to_string(), 5),
+        ("key_7".to_string(), 1),
+        ("key_6".to_string(), 2),
+        ("key_5".to_string(), 3),
         ("key_4".to_string(), 4),
-        ("key_3".to_string(), 3),
-        ("key_2".to_string(), 2),
-        ("key_1".to_string(), 1),
+        ("key_3".to_string(), 5),
+        ("key_2".to_string(), 6),
+        ("key_1".to_string(), 7),
     ]));
 
     #[cfg(not(target_arch = "wasm32"))]
