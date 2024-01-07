@@ -5,9 +5,10 @@ use std::time::Duration;
 use bevy::animation::AnimationClip;
 use bevy::{math::vec4, prelude::*};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
+use bevy_mod_picking::events::Down;
 use bevy_mod_picking::prelude::Drag;
 use bevy_mod_picking::{
-    prelude::{Click, Highlight, HighlightKind, ListenerInput, On, Pickable, Pointer},
+    prelude::{Highlight, HighlightKind, ListenerInput, On, Pickable, Pointer},
     *,
 };
 use wasm_bindgen::prelude::*;
@@ -55,8 +56,8 @@ const AUDIO_DIR: &str = "../../assets/sounds/";
 #[derive(Event)]
 struct SynthKeyPress(Entity);
 
-impl From<ListenerInput<Pointer<Click>>> for SynthKeyPress {
-    fn from(event: ListenerInput<Pointer<Click>>) -> Self {
+impl From<ListenerInput<Pointer<Down>>> for SynthKeyPress {
+    fn from(event: ListenerInput<Pointer<Down>>) -> Self {
         SynthKeyPress(event.target)
     }
 }
@@ -273,7 +274,7 @@ fn sys_make_synth_keys_pickable(
             commands.entity(mesh).insert((
                 PickableBundle::default(),
                 HIGHLIGHT_TINT.clone(),
-                On::<Pointer<Click>>::send_event::<SynthKeyPress>(),
+                On::<Pointer<Down>>::send_event::<SynthKeyPress>(),
                 On::<Pointer<Drag>>::send_event::<SynthKeyPress>(),
             ));
             *count += 1;
