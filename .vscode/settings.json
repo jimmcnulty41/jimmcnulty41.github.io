@@ -1,0 +1,10 @@
+{
+  "rust-analyzer.linkedProjects": [
+    "rustedRoot\\wasm-test\\Cargo.toml"
+  ],
+  "workbench.colorCustomizations": {
+    "activityBar.background": "#232075",
+    "titleBar.activeBackground": "#312CA4",
+    "titleBar.activeForeground": "#FCFCFE"
+  }
+}
