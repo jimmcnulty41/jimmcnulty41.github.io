@@ -51,7 +51,8 @@ a {
 .pane {
   width: 100vw;
   display: flex;
-  flex-wrap: wrap; }
+  flex-wrap: wrap;
+  justify-content: center; }
 
 .pane > img {
   width: 50vw; }
