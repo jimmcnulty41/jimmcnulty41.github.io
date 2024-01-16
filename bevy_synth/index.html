@@ -19,10 +19,35 @@
         });
 
     </script>
+    <style>
+        body {
+            margin: 32px;
+        }
+
+        p {
+            font-size: 20px;
+        }
+        #canvas_sizer {
+            background-image: url("/assets/images/play.jpg");
+            background-size: contain;
+        }
+    </style>
 </head>
-    <div id="canvas_sizer" style="width:100vw; height: 720px;">
+<body>
+    <h1>A Virtual Synth Toy</h1>
+    <p>Best on a desktop. Click and drag to trill a note.</p>
+    <div id="canvas_sizer" style="width:80vw; height: 720px;">
       <canvas id="bevy_canvas"></canvas>
     </div>
-<body>
+    <p>
+        This synth illustrates loading a gltf into a bevy scene running in the web via WASM.
+        The key movements are animations defined as actions in a blend file.
+        </p>
+        <img src="/assets/images/blender_cap_for_synth.jpg">
+        <p>
+        Unfortunately, using Bevy Audio created significant audio stutter,
+        so our solution dispatches the native web audio APIs in js-land.
+        The code can be found in <a href="https://github.com/jimmcnulty41/jimmcnulty41.github.io/tree/main/rustedRoot">the repo</a> for this site
+    </p>
 </body>
 </html>
