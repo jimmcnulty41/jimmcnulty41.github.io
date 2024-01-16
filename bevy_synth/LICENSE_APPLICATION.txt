@@ -1,0 +1,3 @@
+WASM starter code derived from https://rustwasm.github.io/docs/book/game-of-life/introduction.html
+
+Code within the bevy_synth directory is MIT Licensed
