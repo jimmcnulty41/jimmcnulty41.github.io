@@ -1,5 +1,5 @@
 _site/
 .sass-cache/
 node_modules/
-rustedRoot/**/target/
-rustedRoot/**/pkg/.gitignore
+bevy_synth/**/target/
+bevy_synth/**/pkg/.gitignore

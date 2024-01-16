@@ -29,35 +29,14 @@
     ></script>
     
 
-    <script type="module">
-      import init, {bevy_main} from './rustedRoot/wasm-test/pkg/wasm_test.js';
-
-
-        await init();
-
-        let complete = false;
-        document.addEventListener("click", () => {
-          if (!complete) {
-            complete = true;
-            bevy_main();
-          }
-        });
-
-    </script>
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   </head>
 
   <body>
-<div>
-    <div id="canvas_sizer" style="width:100vw; height: 720px;">
-      <canvas id="bevy_canvas"></canvas>
-    </div>
-    </div>
     <div style="z-index: 2; background: white" class="container">
-      <h1>Jim McNulty</h1>
-      <p>Traveler From the Forest Dimension</p>
-      <p>Technical artist seeking work: ✉️ jim at mcnulty dot site </p>
+        <h1>Jim McNulty</h1>
+        <p>Traveler From the Forest Dimension</p>
+        <p>Technical artist seeking work: ✉️ jim at mcnulty dot site </p>
     </div>
     <img class="hero" src="/assets/gravity_sketch_collage.png" />
     <div class="pane">
@@ -81,8 +60,14 @@
       </div>
       <div class="container">
         <img class="preview" src="/assets/images/sketchbook_preview.jpg" />
-        <a href="sims/sketchbook3.html">Sketchbook Archive</a>
+        <a href="/sims/sketchbook3.html">Sketchbook Archive</a>
       </div>
+      <div class="container">
+        <img class="preview" src="/assets/images/bevy_synth_previewjpg.jpg" />
+        <a href="/bevy_synth/index.html">Virtual Synth Toy</a>
+      </div>
+
+
     </div>
     <div class="bar">
       <a href="https://jimmcnulty.wordpress.com/"><i class="fa-brands fa-wordpress"></i></a>
