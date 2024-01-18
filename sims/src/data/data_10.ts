@@ -25797,9 +25797,9 @@ export function getMetadata(sourceName: string): ImageMetadata {
 }
 export type ImageMetadata = (typeof data.images)[0];
 
-const baseUrl = "https://sketchery-store.nyc3.cdn.digitaloceanspaces.com/";
+const baseUrl = "https://sketchery-store.nyc3.cdn.digitaloceanspaces.com";
 export function dataToUrl(imageData: ImageMetadata): string {
-  return `${baseUrl}${imageData.new}`;
+  return `${baseUrl}/${imageData.new}`;
 }
 export function dataToEnhancedUrl(imageData: ImageMetadata): string {
   return `${baseUrl}/enhanced/${imageData.new}`;
