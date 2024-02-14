@@ -1,4 +1,17 @@
 const sources = [
+  "roller_rat_attack.gif",
+  "rock_rat_solo.gif",
+
+  "scoot.gif",
+  "space_cat_3.gif",
+  "Purpswirl.gif",
+  "dance_bg.gif",
+  "foire.gif",
+  "rock_rat_2.gif",
+  "roller_rat_defeated.gif",
+  "sky_rat_peck.gif",
+  "space_cat_dash_diag.gif",
+  "spaghetti_code.gif",
   "96.gif",
   "75.gif",
   "55.gif",
@@ -83,6 +96,8 @@ const sources = [
   "81.gif",
   "82.gif",
   "83.gif",
+  "space_cat_run.gif",
+
   "84.gif",
   "85.gif",
   "86.gif",
@@ -166,5 +181,8 @@ const sources = [
 sources.forEach((s) => {
   const link = document.createElement("img");
   link.src = s;
+  if (s == "39.gif") {
+    link.classList.add("sneaky");
+  }
   document.body.appendChild(link);
 });
