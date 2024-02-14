@@ -25,9 +25,80 @@
             align-items: center;
             margin: 0 12px;
         }
+
+        .card {
+            position: relative;
+        }
+        .cardContent {
+            pointer-events: none;
+            position: absolute;
+            padding: 24px;
+            top: 0;
+            left: 0px;
+            width: 100%;
+            opacity: 0;
+            background-color: #fffA;
+            color: white;
+            transition: .2s;
+        }
+        .cardContent > a {
+            pointer-events: visible;
+        }
+
+        .cardContent > h2 {
+            margin: 24px 0;
+            font-size: 48px;
+            color:black;
+        }
+        .card:hover > .cardContent,
+        .cardContent:hover {
+           opacity: 1;
+           visibility: visible;
+        }
     </style>
 </head>
 <body>
+            <div class="card">
+                <video controls>
+                    <source src="../games/roller_rat_cycle.mp4"></source>
+                </video>
+                <div class="cardContent">
+                    <h2>Roller Rat</h2>
+                    <a href="/games/index.html">From "No Rats Were Harmed" (2024)</a>
+                </div>
+            </div>
+            <div class="card">
+                <video controls>
+                    <source src="../games/sky_rat_cycle.mp4"></source>
+                </video>
+                <div class="cardContent">
+                    <h2>Sky Rat</h2>
+                    <a href="/games/index.html">From "No Rats Were Harmed" (2024)</a>
+                </div>
+            </div>
+            <div class="card">
+                <video controls>
+                    <source src="../games/rock_rat_cycle.mp4"></source>
+                </video>
+                <div class="cardContent">
+                    <h2>Rock Rat</h2>
+                    <a href="/games/index.html">From "No Rats Were Harmed" (2024)</a>
+                </div>
+            </div>
+            <div class="card">
+                <img src="squatbot_skins2.png"/>
+                <div class="cardContent">
+                    <h2>Squatbot Skin Selection</h2>
+                    <a href="/games/index.html">From "Squabot" (2018)</a>
+                </div>
+            </div>
+            <div class="card">
+                <img src="squatbot_skins.gif"/>
+                <div class="cardContent">
+                    <h2>Squatbot Skin Selection</h2>
+                    <a href="/games/index.html">From "Squabot" (2018)</a>
+                </div>
+            </div>
     <img src="JELLY.jpg"/>
     <img src="robo_1.jpg" />
     <video src="skate_pig.mp4" controls loop autoplay muted></video>
@@ -35,8 +106,7 @@
     <img src="octo.jpg"/>
     <img src="roduram.jpg"/>
     <img src="smol_birb.jpg"/>
-    <img src="squatbot_skins.gif"/>
-    <img src="squatbot_skins2.png"/>
+
     <video src="guppy.mp4" controls loop autoplay muted></video>
     <video src="dancing_pigeon.mp4" controls loop autoplay muted></video>
     <video src="crowman.mp4" controls loop autoplay muted></video>
