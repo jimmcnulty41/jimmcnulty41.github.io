@@ -1,4 +1,5 @@
 import {
+  ImageMetadata,
   dataToEnhancedUrl,
   dataToUrl,
   getFilteredImages,
@@ -13,66 +14,68 @@ const numColumns = Math.floor(
   window.innerWidth / (256 /*max size*/ + 24) /*margin*/
 );
 const scrollCont = document.querySelector("#images");
-[...Array(numColumns)].map((x, i) => {
+[...Array(numColumns)].map((_, i) => {
   const d = document.createElement("div");
   d.id = `imageCol_${i}`;
   scrollCont?.appendChild(d);
 });
 
-function getImages() {
-  return getFilteredImages().map((imageDatum, i) => {
-    const url = dataToUrl(imageDatum);
-    return fetch(url)
-      .then((resp) => {
-        if (!resp.ok) return;
-        return resp.blob();
-      })
-      .then((blob) => {
-        if (!blob) {
-          missingFiles.push(imageDatum.new);
-          return;
-        }
-        const objectURL = URL.createObjectURL(blob);
-        const imgEl = document.createElement("img");
-        imgEl.src = objectURL;
-        imgEl.addEventListener("click", (e) => {
-          fetch(dataToEnhancedUrl(imageDatum))
-            .then((resp) => {
-              if (!resp.ok) return;
-              return resp.blob();
-            })
-            .then((enhBlob) => {
-              if (!enhBlob) {
-                missingFiles.push(imageDatum.new);
-                return;
-              }
-              const container = document.querySelector("#featureContainer");
-              if (!container) {
-                throw new Error(
-                  "feature container missing from sketchbook3.html"
-                );
-              }
+const elFromImgDatum = (imageDatum: ImageMetadata, index: number) => {
+  const url = dataToUrl(imageDatum);
+  return fetch(url)
+    .then((resp) => {
+      if (!resp.ok) return;
+      return resp.blob();
+    })
+    .then((blob) => {
+      if (!blob) {
+        missingFiles.push(imageDatum.new);
+        return;
+      }
+      const objectURL = URL.createObjectURL(blob);
+      const imgEl = document.createElement("img");
+      imgEl.src = objectURL;
+      imgEl.addEventListener("click", (e) => {
+        fetch(dataToEnhancedUrl(imageDatum))
+          .then((resp) => {
+            if (!resp.ok) return;
+            return resp.blob();
+          })
+          .then((enhBlob) => {
+            if (!enhBlob) {
+              missingFiles.push(imageDatum.new);
+              return;
+            }
+            const container = document.querySelector("#featureContainer");
+            if (!container) {
+              throw new Error(
+                "feature container missing from sketchbook3.html"
+              );
+            }
 
-              const enhObjUrl = URL.createObjectURL(enhBlob);
-              const featureImg = document.createElement("img");
-              featureImg.id = "feature";
-              featureImg.src = enhObjUrl;
+            const enhObjUrl = URL.createObjectURL(enhBlob);
+            const featureImg = document.createElement("img");
+            featureImg.id = "feature";
+            featureImg.src = enhObjUrl;
 
-              const clickHandler = () => {
-                container.removeChild(featureImg);
-                container.classList.remove("active");
-                container.removeEventListener("click", clickHandler);
-              };
-              container.addEventListener("click", clickHandler);
-              container.classList.add("active");
-              container.appendChild(featureImg);
-            });
-        });
-        const parent = document.querySelector(`#imageCol_${i % numColumns}`);
-        parent?.appendChild(imgEl);
-        return imgEl;
+            const clickHandler = () => {
+              container.removeChild(featureImg);
+              container.classList.remove("active");
+              container.removeEventListener("click", clickHandler);
+            };
+            container.addEventListener("click", clickHandler);
+            container.classList.add("active");
+            container.appendChild(featureImg);
+          });
       });
-  });
+      const parent = document.querySelector(`#imageCol_${index % numColumns}`);
+      parent?.appendChild(imgEl);
+      return imgEl;
+    });
+};
+
+function getImages() {
+  return getFilteredImages().map(elFromImgDatum);
 }
 
 setInterval(() => {
