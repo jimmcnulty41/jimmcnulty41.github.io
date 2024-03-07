@@ -25792,7 +25792,7 @@ export function getMetadata(sourceName) {
 }
 const baseUrl = "https://sketchery-store.nyc3.cdn.digitaloceanspaces.com";
 export function dataToUrl(imageData) {
-    return `${baseUrl}/${imageData.new}`;
+    return `${baseUrl}/downsized/${imageData.new}`;
 }
 export function dataToEnhancedUrl(imageData) {
     return `${baseUrl}/enhanced/${imageData.new}`;

@@ -202,15 +202,14 @@ export async function n_resolved<T>(
 
   let unresolved = ps.map(async (p, i) => {
     const result = await p;
-    console.log(Object.keys(results).length);
-    results[`${i}`] = result;
+    results[`_${i}`] = result; // weirdness can happen with holes in numeric array-likes
     return result;
   });
 
   while (Object.keys(results).length < n && unresolved.length) {
     await Promise.any(unresolved);
     unresolved = unresolved.filter(
-      (p, i) => !Object.keys(results).includes(`${i}`)
+      (p, i) => !Object.keys(results).includes(`_${i}`)
     );
   }
 }
