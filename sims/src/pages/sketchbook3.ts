@@ -6,10 +6,7 @@ import {
 } from "../data/data_10.js";
 import { n_resolved, remap } from "../lib/utils.js";
 
-const loadedImages = [];
-
 let missingFiles: string[] = [];
-const body = document.querySelector("body");
 const numColumns = Math.floor(
   window.innerWidth / (256 /*max size*/ + 24) /*margin*/
 );
