@@ -8,6 +8,58 @@ const scrollCont = document.querySelector("#images");
     d.id = `imageCol_${i}`;
     scrollCont?.appendChild(d);
 });
+const makeImgClickListener = (imageDatum) => (_e) => {
+    fetch(dataToEnhancedUrl(imageDatum))
+        .then((resp) => {
+        if (!resp.ok)
+            return;
+        return resp.blob();
+    })
+        .then((enhBlob) => {
+        if (!enhBlob) {
+            missingFiles.push(imageDatum.new);
+            return;
+        }
+        const container = document.querySelector("#featureContainer");
+        if (!container) {
+            throw new Error("feature container missing from sketchbook3.html");
+        }
+        const enhObjUrl = URL.createObjectURL(enhBlob);
+        const featureImg = document.createElement("img");
+        featureImg.id = "feature";
+        featureImg.classList.add(imageDatum.new);
+        featureImg.src = enhObjUrl;
+        const tagContainer = document.createElement("div");
+        tagContainer.id = "tagContainer";
+        tagContainer.addEventListener("click", (event) => {
+            event.stopPropagation();
+        });
+        const clickHandler = () => {
+            container.removeChild(featureImg);
+            container.removeChild(tagContainer);
+            container.classList.remove("active");
+            container.removeEventListener("click", clickHandler);
+        };
+        const listEl = document.createElement("ul");
+        imageDatum.tags.forEach((tag) => {
+            const tagEl = document.createElement("li");
+            tagEl.innerText = tag;
+            const x = document.createElement("span");
+            x.innerText = "---->";
+            x.addEventListener("click", () => {
+                console.log(`TODO ${tag}`);
+                clickHandler();
+            });
+            tagEl.appendChild(x);
+            listEl.appendChild(tagEl);
+        });
+        tagContainer.appendChild(listEl);
+        container.addEventListener("click", clickHandler);
+        container.classList.add("active");
+        container.appendChild(featureImg);
+        container.appendChild(tagContainer);
+    });
+};
 const elFromImgDatum = (imageDatum, index) => {
     const url = dataToUrl(imageDatum);
     return fetch(url)
@@ -24,36 +76,8 @@ const elFromImgDatum = (imageDatum, index) => {
         const objectURL = URL.createObjectURL(blob);
         const imgEl = document.createElement("img");
         imgEl.src = objectURL;
-        imgEl.addEventListener("click", (e) => {
-            fetch(dataToEnhancedUrl(imageDatum))
-                .then((resp) => {
-                if (!resp.ok)
-                    return;
-                return resp.blob();
-            })
-                .then((enhBlob) => {
-                if (!enhBlob) {
-                    missingFiles.push(imageDatum.new);
-                    return;
-                }
-                const container = document.querySelector("#featureContainer");
-                if (!container) {
-                    throw new Error("feature container missing from sketchbook3.html");
-                }
-                const enhObjUrl = URL.createObjectURL(enhBlob);
-                const featureImg = document.createElement("img");
-                featureImg.id = "feature";
-                featureImg.src = enhObjUrl;
-                const clickHandler = () => {
-                    container.removeChild(featureImg);
-                    container.classList.remove("active");
-                    container.removeEventListener("click", clickHandler);
-                };
-                container.addEventListener("click", clickHandler);
-                container.classList.add("active");
-                container.appendChild(featureImg);
-            });
-        });
+        imgEl.id = imageDatum.new;
+        imgEl.addEventListener("click", makeImgClickListener(imageDatum));
         const parent = document.querySelector(`#imageCol_${index % numColumns}`);
         parent?.appendChild(imgEl);
         return imgEl;
