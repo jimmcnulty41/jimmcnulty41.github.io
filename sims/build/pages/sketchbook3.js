@@ -20,44 +20,19 @@ const makeImgClickListener = (imageDatum) => (_e) => {
             missingFiles.push(imageDatum.new);
             return;
         }
-        const container = document.querySelector("#featureContainer");
+        const container = document.body;
         if (!container) {
             throw new Error("feature container missing from sketchbook3.html");
         }
         const enhObjUrl = URL.createObjectURL(enhBlob);
-        const featureImg = document.createElement("img");
-        featureImg.id = "feature";
-        featureImg.classList.add(imageDatum.new);
-        featureImg.src = enhObjUrl;
-        const tagContainer = document.createElement("div");
-        tagContainer.id = "tagContainer";
-        tagContainer.addEventListener("click", (event) => {
-            event.stopPropagation();
+        const feat = document.createElement("sketchery-feature");
+        feat.setAttribute("src", enhObjUrl);
+        feat.setAttribute("tags", imageDatum.tags.join(","));
+        feat.setAttribute("data-name", imageDatum.new);
+        feat.addEventListener("tag-click", () => {
+            container.removeChild(feat);
         });
-        const clickHandler = () => {
-            container.removeChild(featureImg);
-            container.removeChild(tagContainer);
-            container.classList.remove("active");
-            container.removeEventListener("click", clickHandler);
-        };
-        const listEl = document.createElement("ul");
-        imageDatum.tags.forEach((tag) => {
-            const tagEl = document.createElement("li");
-            tagEl.innerText = tag;
-            const x = document.createElement("span");
-            x.innerText = "---->";
-            x.addEventListener("click", () => {
-                console.log(`TODO ${tag}`);
-                clickHandler();
-            });
-            tagEl.appendChild(x);
-            listEl.appendChild(tagEl);
-        });
-        tagContainer.appendChild(listEl);
-        container.addEventListener("click", clickHandler);
-        container.classList.add("active");
-        container.appendChild(featureImg);
-        container.appendChild(tagContainer);
+        container.appendChild(feat);
     });
 };
 const elFromImgDatum = (imageDatum, index) => {
