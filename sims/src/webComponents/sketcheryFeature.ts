@@ -23,11 +23,10 @@ fetch("/sims/build/webComponents/sketcheryFeature.html")
           }
           tags?.forEach((tag: string) => {
             const tagEl = document.createElement("li");
-            tagEl.innerText = tag;
             const x = document.createElement("span");
-            x.innerText = "---->";
+            x.innerText = tag;
             x.addEventListener("click", () => {
-              console.log(`TODO emit from here? ${tag}`);
+              this.dispatchEvent(new CustomEvent("tag-click", { detail: tag }));
             });
             tagEl.appendChild(x);
             ul.appendChild(tagEl);

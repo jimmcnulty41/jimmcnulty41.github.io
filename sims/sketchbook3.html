@@ -90,34 +90,10 @@
 </head>
 <body>
 
-    <script type="module" src="./build/webComponents/ThreeShader.js"></script>
     <script type="module" src="./build/webComponents/sketcheryFeature.js"></script>
+    <script type="module" src="./build/webComponents/xitionWipe.js"></script>
     <script type="module" src="./build/pages/sketchbook3.js"></script>
-    <script id="vertexShader" type="x-shader/x-vertex">
-        void main() {
-            gl_Position = vec4( position, 1.0 );
-        }
-    </script>
-    <script id="fragmentShader" type="x-shader/x-fragment">
-        uniform vec2 u_resolution;
-        uniform vec2 u_mouse;
-        uniform float u_time;
-
-        void main() {
-            vec2 st = gl_FragCoord.xy/u_resolution.xy;
-            //vec2 mt = u_mouse.xy/u_resolution.xy;
-            float c = fract(u_time / 400.);
-            float mixamt = step(-.1, st.y - st.x + c);
-            gl_FragColor=mix(
-                vec4(st.x, st.y,0.,1.),
-                vec4(0., 0.,0.,0.),
-                mixamt
-            );
-
-        }
-    </script>
-
-    <three-shader></three-shader>
+    <xition-wipe></xition-wipe>
     <div id="images">
     </div>
 </body>

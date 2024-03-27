@@ -1,18 +1,13 @@
 <style>
     #featureContainer {
+        position: fixed;
         display: flex;
         flex-direction: column;
         width: 100vw;
         height: 100vh;
         justify-content: space-between;
         align-items: center;
-    }
-
-    #featureContainer.active {
-        position: fixed;
-        top: 0;
         background-color: #999999d4;
-        z-index: 1;
     }
 
     #feature {
@@ -35,6 +30,20 @@
         justify-content: center;
         height: 100vh;
         font-size: 34px;
+    }
+
+    #tagContainer li {
+        --outlineColor: black;
+        --outlineSize: 2px;
+        list-style: none;
+        line-height: 48px;
+        color: white;
+        text-shadow:
+            0px var(--outlineSize) var(--outlineColor),
+            0px calc(var(--outlineSize) * -1) var(--outlineColor),
+            var(--outlineSize) 0px var(--outlineColor),
+            calc(var(--outlineSize) * -1) 0px var(--outlineColor)
+        ;
     }
 
     #tagContainer span {

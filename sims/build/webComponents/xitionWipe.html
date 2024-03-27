@@ -1,0 +1,36 @@
+<style>
+    @keyframes wipe {
+        0% {
+            transform: translateX(0vw);
+        }
+
+        60% {
+            transform: translateX(-100vw);
+        }
+
+        90% {
+            transform: translateX(-200vw);
+        }
+
+        100% {
+            transform: translateX(-300vw);
+        }
+    }
+    div {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 300vw;
+
+
+        --preset-gradient: linear-gradient(90deg, #000, #000, #AAAF, #0000);
+        background: var(--preset-gradient);
+        transform: translateX(0vw);
+        height: 100vh;
+        z-index: 1000;
+        animation: 3s 1 linear wipe;
+        animation-fill-mode: forwards;
+    }
+
+</style>
+<div onclick="click"></div>

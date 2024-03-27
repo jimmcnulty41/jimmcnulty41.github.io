@@ -38,8 +38,12 @@ const makeImgClickListener = (imageDatum: ImageMetadata) => (_e: Event) => {
       feat.setAttribute("src", enhObjUrl);
       feat.setAttribute("tags", imageDatum.tags.join(","));
       feat.setAttribute("data-name", imageDatum.new);
-      feat.addEventListener("tag-click", () => {
+      feat.addEventListener("tag-click", (e) => {
         container.removeChild(feat);
+        let blah = document.createElement("xition-wipe");
+        blah.setAttribute("preset", "clr_w_clr");
+        container.appendChild(blah);
+        console.log(`closing cuz ${(e as any).detail} was clicked`);
       });
       container.appendChild(feat);
     });
