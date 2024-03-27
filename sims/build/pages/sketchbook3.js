@@ -3,11 +3,42 @@ import { n_resolved, remap } from "../lib/utils.js";
 let missingFiles = [];
 const numColumns = Math.floor(window.innerWidth / (256 /*max size*/ + 24) /*margin*/);
 const scrollCont = document.querySelector("#images");
-[...Array(numColumns)].map((_, i) => {
-    const d = document.createElement("div");
-    d.id = `imageCol_${i}`;
-    scrollCont?.appendChild(d);
-});
+if (!scrollCont)
+    throw new Error("init called before scroll cont was inited");
+function resetScrollCont() {
+    scrollCont.innerHTML = "";
+    [...Array(numColumns)].map((_, i) => {
+        const d = document.createElement("div");
+        d.id = `imageCol_${i}`;
+        scrollCont?.appendChild(d);
+    });
+    scrollCont.scrollTop = 0;
+    console.log("scroll container reset");
+}
+resetScrollCont();
+function colFromIndex(i) {
+    return document.querySelector(`#imageCol_${i % numColumns}`);
+}
+function sortByTag(tag) {
+    if (!scrollCont)
+        throw new Error("scrollCont not defined");
+    let elements = Array.from(scrollCont?.children)
+        .flatMap((c) => Array.from(c.children))
+        .map((n) => ({
+        el: n,
+        sortOrder: n.getAttribute("tags")?.split(",").includes(tag) ? 0 : 1,
+        tags: n.getAttribute("tags")?.split(","),
+    }));
+    resetScrollCont();
+    let sortedElements = [
+        ...elements.filter((x) => x.tags?.includes(tag)),
+        ...elements.filter((x) => !x.tags?.includes(tag)),
+    ];
+    sortedElements.forEach((n, i) => {
+        let parent = colFromIndex(i);
+        parent?.appendChild(n.el);
+    });
+}
 const makeImgClickListener = (imageDatum) => (_e) => {
     fetch(dataToEnhancedUrl(imageDatum))
         .then((resp) => {
@@ -30,18 +61,21 @@ const makeImgClickListener = (imageDatum) => (_e) => {
         feat.setAttribute("tags", imageDatum.tags.join(","));
         feat.setAttribute("data-name", imageDatum.new);
         feat.addEventListener("tag-click", (e) => {
-            container.removeChild(feat);
             let blah = document.createElement("xition-wipe");
             blah.setAttribute("preset", "clr_w_clr");
             container.appendChild(blah);
-            console.log(`closing cuz ${e.detail} was clicked`);
+            setTimeout(() => {
+                feat.remove();
+                sortByTag(e.detail);
+            }, 1000);
         });
+        feat.onclick = () => feat.remove();
         container.appendChild(feat);
     });
 };
-const elFromImgDatum = (imageDatum, index) => {
+const elFromImgDatum = async (imageDatum, index) => {
     const url = dataToUrl(imageDatum);
-    return fetch(url)
+    const imgEl = await fetch(url)
         .then((resp) => {
         if (!resp.ok)
             return;
@@ -50,17 +84,18 @@ const elFromImgDatum = (imageDatum, index) => {
         .then((blob) => {
         if (!blob) {
             missingFiles.push(imageDatum.new);
-            return;
+            return document.createElement("img");
         }
         const objectURL = URL.createObjectURL(blob);
         const imgEl = document.createElement("img");
         imgEl.src = objectURL;
         imgEl.id = imageDatum.new;
+        imgEl.setAttribute("tags", imageDatum.tags.join(","));
         imgEl.addEventListener("click", makeImgClickListener(imageDatum));
-        const parent = document.querySelector(`#imageCol_${index % numColumns}`);
-        parent?.appendChild(imgEl);
         return imgEl;
     });
+    const parent = document.querySelector(`#imageCol_${index % numColumns}`);
+    parent?.appendChild(imgEl);
 };
 function getImages() {
     return getFilteredImages().map(elFromImgDatum);
@@ -78,13 +113,12 @@ function scaleNode(n, scroll = 0) {
     n.style.scale = `${blah}`;
 }
 document.addEventListener("DOMContentLoaded", async () => {
-    const imageContainer = document.querySelector("#images");
-    imageContainer.addEventListener("scroll", (e) => {
-        const currentScroll = imageContainer.scrollTop;
-        imageContainer.childNodes.forEach((c) => {
+    scrollCont.addEventListener("scroll", (e) => {
+        const currentScroll = scrollCont.scrollTop;
+        scrollCont.childNodes.forEach((c) => {
             c.childNodes.forEach((n) => scaleNode(n, currentScroll));
         });
     });
     await n_resolved(24, getImages());
-    imageContainer.childNodes.forEach((c) => c.childNodes.forEach((n) => scaleNode(n, imageContainer.scrollTop)));
+    scrollCont.childNodes.forEach((c) => c.childNodes.forEach((n) => scaleNode(n, scrollCont.scrollTop)));
 });
