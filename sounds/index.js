@@ -139,14 +139,165 @@ const sources = [
   "099_2.WAV",
 ];
 
-sources.forEach((s) => {
-  const sound = new Howl({ src: s });
-  const link = document.createElement("p");
-  link.innerText = s;
-  link.onclick = (e) => {
-    e.preventDefault;
-    sound.play();
+const activeSounds = {};
+
+const parseSourceName = (n) => {
+  const [name, _ext] = n.split(".");
+  const [song, track] = name.split("_");
+  return {
+    song: Number.parseInt(song),
+    track: Number.parseInt(track),
   };
-  document.body.appendChild(link);
-  document.body.appendChild(document.createElement("br"));
+};
+
+const songs = [...Array(100)]
+  .map((_x, i) => i)
+  .reduce((m, e) => ({ ...m, [e]: null }), {});
+
+// { [song:string] : { A: string, B?: string}}
+sources.forEach((s) => {
+  const { song, _track } = parseSourceName(s);
+  const existing = songs[song];
+  if (!existing) {
+    songs[song] = {
+      A: s,
+    };
+  } else {
+    songs[song] = {
+      ...songs[song],
+      B: s,
+    };
+  }
 });
+
+const nextSongNumber = (songNumber) => {
+  let nextNum = songNumber + 1;
+  let existing = songs[nextNum];
+  while (!existing) {
+    nextNum++;
+    if (nextNum > 99) {
+      return 0;
+    }
+    existing = songs[nextNum];
+  }
+  return nextNum;
+};
+const prevSongNumber = (songNumber) => {
+  let prevNum = songNumber - 1;
+  let existing = songs[prevNum];
+  while (!existing) {
+    prevNum--;
+    if (prevNum < 0) {
+      return 99;
+    }
+    existing = songs[prevNum];
+  }
+  return prevNum;
+};
+
+let state = {
+  songNumber: 2,
+  A: false,
+  B: false,
+};
+
+const killSound = () => {
+  if (activeSounds.A) {
+    activeSounds.A.stop();
+    activeSounds.A = null;
+  }
+  if (activeSounds.B) {
+    activeSounds.B.stop();
+    activeSounds.B = null;
+  }
+};
+
+const toggle = (state, button) => {};
+
+window.onload = () => {
+  const display = document.getElementById("songDisplay");
+
+  function updateDisplay() {
+    display.textContent = String(state.songNumber).padStart(2, "0");
+    if (state.A) {
+      aButton.classList.add("active");
+      aLED.classList.add("active");
+    } else {
+      aButton.classList.remove("active");
+      aLED.classList.remove("active");
+    }
+
+    const hasB = songs[state.songNumber].B;
+    if (!hasB) {
+      bButton.classList.add("disabled");
+    } else {
+      bButton.classList.remove("disabled");
+    }
+    if (state.B) {
+      bButton.classList.add("active");
+      bLED.classList.add("active");
+    } else {
+      bButton.classList.remove("active");
+      bLED.classList.remove("active");
+    }
+  }
+
+  document.getElementById("upBtn").addEventListener("click", () => {
+    const next = nextSongNumber(state.songNumber);
+    state = { A: false, B: false, songNumber: next };
+    updateDisplay();
+    killSound();
+  });
+
+  document.getElementById("downBtn").addEventListener("click", () => {
+    const next = prevSongNumber(state.songNumber);
+    state = { A: false, B: false, songNumber: next };
+    updateDisplay();
+    killSound();
+  });
+
+  const aButton = document.getElementById("btnA");
+  const aLED = document.getElementById("ledA");
+
+  aButton.addEventListener("click", () => {
+    const next = !state.A;
+    state = { ...state, A: next };
+    aButton.classList.toggle("active");
+    aLED.classList.toggle("active");
+
+    if (next) {
+      const sound = new Howl({ src: songs[state.songNumber].A, loop: true });
+      sound.play();
+      activeSounds.A = sound;
+    } else {
+      activeSounds.A.stop();
+      activeSounds.A = null;
+    }
+  });
+
+  const bButton = document.getElementById("btnB");
+  const bLED = document.getElementById("ledB");
+
+  bButton.addEventListener("click", () => {
+    const next = !state.B;
+    state = { ...state, B: next };
+    bButton.classList.toggle("active");
+    bLED.classList.toggle("active");
+
+    if (next) {
+      const sound = new Howl({ src: songs[state.songNumber].B, loop: true });
+      if (activeSounds.A) {
+        sound.seek(activeSounds.A.seek());
+        sound.play();
+      } else {
+        sound.play();
+      }
+      activeSounds.B = sound;
+    } else {
+      activeSounds.B.stop();
+      activeSounds.B = null;
+    }
+  });
+
+  updateDisplay();
+};
