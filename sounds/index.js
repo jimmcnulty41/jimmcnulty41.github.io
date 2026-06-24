@@ -182,6 +182,17 @@ const nextSongNumber = (songNumber) => {
   }
   return nextNum;
 };
+
+const nextNumberWithSkip = (num, skips) => {
+  let todo = skips;
+  let n = nextSongNumber(num);
+  while (todo > 0) {
+    todo--;
+    n = nextSongNumber(n);
+  }
+  return n;
+};
+
 const prevSongNumber = (songNumber) => {
   let prevNum = songNumber - 1;
   let existing = songs[prevNum];
@@ -195,8 +206,18 @@ const prevSongNumber = (songNumber) => {
   return prevNum;
 };
 
+const prevNumberWithSkip = (num, skips) => {
+  let todo = skips;
+  let n = prevSongNumber(num);
+  while (todo > 0) {
+    todo--;
+    n = prevSongNumber(n);
+  }
+  return n;
+};
+
 let state = {
-  songNumber: 2,
+  songNumber: 41,
   A: false,
   B: false,
 };
@@ -214,7 +235,28 @@ const killSound = () => {
 
 const toggle = (state, button) => {};
 
+let temp = 0;
+function tempUpdate() {
+  temp *= 0.95;
+  requestAnimationFrame(tempUpdate);
+}
+function tempToSkips() {
+  if (Math.abs(temp) > 3) {
+    return 4;
+  }
+  if (Math.abs(temp) > 2) {
+    return 2;
+  }
+  return 0;
+}
+
+requestAnimationFrame(tempUpdate);
+
 window.onload = () => {
+  document.querySelector("#volume-slider").addEventListener("input", (e) => {
+    Howler.volume(e.target.value / 100);
+  });
+
   const display = document.getElementById("songDisplay");
 
   function updateDisplay() {
@@ -243,14 +285,17 @@ window.onload = () => {
   }
 
   document.getElementById("upBtn").addEventListener("click", () => {
-    const next = nextSongNumber(state.songNumber);
+    temp++;
+
+    const next = nextNumberWithSkip(state.songNumber, tempToSkips());
     state = { A: false, B: false, songNumber: next };
     updateDisplay();
     killSound();
   });
 
   document.getElementById("downBtn").addEventListener("click", () => {
-    const next = prevSongNumber(state.songNumber);
+    temp--;
+    const next = prevNumberWithSkip(state.songNumber, tempToSkips());
     state = { A: false, B: false, songNumber: next };
     updateDisplay();
     killSound();
