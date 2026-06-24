@@ -1,8 +1,51 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <script src="howler.js" ></script>
-    <script src="index.js" defer></script>
-  </head>
-  <body></body>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loops Panel</title>
+<link href="./style.css" rel="stylesheet"  />
+<script src="./howler.js"></script>
+<script src="./index.js"></script>
+</head>
+<body>
+
+<div class="panel-wrapper">
+    <div class="title">LOOPS</div>
+
+    <div class="panel">
+        <div class="labels">
+            <div>SONG</div>
+            <div>TRAX</div>
+        </div>
+
+        <div>
+            <div class="controls">
+                <div class="display" ><div id="songDisplay">02</div></div>
+
+                <div class="arrows">
+                    <button class="arrow-btn" id="upBtn"><svg width="22" height="17" viewBox="0 0 22 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M11 0.5C11.9116 0.500006 12.7703 0.930925 13.3173 1.66333L20.9205 11.8449C21.8803 13.1302 21.621 14.954 20.3414 15.918C19.0617 16.8819 17.2457 16.6215 16.2859 15.3363L11 8.25765L5.7141 15.3363C4.75427 16.6215 2.93833 16.882 1.65863 15.918C0.378985 14.954 0.119693 13.1302 1.07948 11.8449L8.6827 1.66333L8.78877 1.52981C9.33712 0.87881 10.1453 0.500033 11 0.5Z" fill="white" stroke="black" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+</button>
+                    <button class="arrow-btn" id="downBtn"><svg width="22" height="17" viewBox="0 0 22 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M11 16.5C10.0884 16.5 9.22969 16.0691 8.68268 15.3367L1.07946 5.15506C0.119704 3.86981 0.378984 2.04598 1.65862 1.082C2.93832 0.118069 4.75427 0.378474 5.71409 1.66366L11 8.74235L16.2859 1.66366C17.2457 0.37846 19.0617 0.118042 20.3414 1.082C21.621 2.04599 21.8803 3.86981 20.9205 5.15506L13.3173 15.3367L13.2112 15.4702C12.6629 16.1212 11.8547 16.5 11 16.5Z" fill="white" stroke="black" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+</button>
+                </div>
+            </div>
+
+            <div class="trax-row">
+                <button class="toggle-btn" id="btnA">A</button>
+                <button class="toggle-btn" id="btnB">B</button>
+
+                <div class="indicators">
+                    <div class="led" id="ledA"></div>
+                    <div class="led" id="ledB"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
 </html>
