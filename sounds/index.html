@@ -15,14 +15,12 @@
 
     <div class="panel">
         <div class="labels">
-            <div>SONG</div>
-            <div>TRAX</div>
         </div>
 
-        <div>
-            <div class="controls">
-                <div class="display" ><div id="songDisplay">02</div></div>
-
+        <div class="panel-grid">
+            <div class="song-row">
+                <h1>SONG</h1>
+                <div class="display" ><div id="songDisplay"></div></div>
                 <div class="arrows">
                     <button class="arrow-btn" id="upBtn"><svg width="22" height="17" viewBox="0 0 22 17" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M11 0.5C11.9116 0.500006 12.7703 0.930925 13.3173 1.66333L20.9205 11.8449C21.8803 13.1302 21.621 14.954 20.3414 15.918C19.0617 16.8819 17.2457 16.6215 16.2859 15.3363L11 8.25765L5.7141 15.3363C4.75427 16.6215 2.93833 16.882 1.65863 15.918C0.378985 14.954 0.119693 13.1302 1.07948 11.8449L8.6827 1.66333L8.78877 1.52981C9.33712 0.87881 10.1453 0.500033 11 0.5Z" fill="white" stroke="black" stroke-linecap="round" stroke-linejoin="round"/>
@@ -36,6 +34,7 @@
             </div>
 
             <div class="trax-row">
+            <h1>TRAX</h1>
                 <button class="toggle-btn" id="btnA">A</button>
                 <button class="toggle-btn" id="btnB">B</button>
 
@@ -43,6 +42,10 @@
                     <div class="led" id="ledA"></div>
                     <div class="led" id="ledB"></div>
                 </div>
+            </div>
+            <div class="vol-row">
+            <h1>VOLUME</h1>
+                <input type="range" class="slider" min="0" max="100" id="volume-slider" />
             </div>
         </div>
     </div>
