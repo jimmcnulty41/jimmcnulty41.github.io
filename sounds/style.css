@@ -46,7 +46,7 @@ button:active {
 }
 
 .labels{
-    text-align:left;
+    text-align:right;
 }
 
 .labels div{
@@ -58,6 +58,23 @@ button:active {
     display:flex;
     align-items:center;
     gap:10px;
+}
+
+.panel-grid {
+    display: flex;
+    flex-direction: column;
+}
+
+.panel-grid > div{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.panel-grid > div > h1 {
+    width:140px;
+    text-align: right;
+    margin-right: 12px;
 }
 
 .display{
@@ -144,4 +161,23 @@ button:active {
         0 0 8px #00ff44,
         0 0 16px #00ff44,
         0 0 24px #00ff44;
+}
+
+.vol-row {
+    margin-top:10px;
+}
+
+.slider {
+    height: 12px;
+}
+.vol-row {
+    align-items: center;
+}
+
+.slider::-webkit-slider-thumb,
+ .slider::-moz-range-thumb
+ {
+    width:24px;
+    height: 24px;
+    background-color: #C54C4C;
 }
