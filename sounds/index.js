@@ -217,7 +217,7 @@ const prevNumberWithSkip = (num, skips) => {
 };
 
 let state = {
-  songNumber: 41,
+  songNumber: 71,
   A: false,
   B: false,
 };
