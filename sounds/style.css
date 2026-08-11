@@ -181,3 +181,11 @@ button:active {
     height: 24px;
     background-color: #C54C4C;
 }
+
+
+.footnote
+{
+    position: absolute;
+    bottom: 0; 
+    right: 0;
+}
