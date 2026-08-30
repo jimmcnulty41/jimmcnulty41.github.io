@@ -1,0 +1,15 @@
+.disc-overlay {
+    opacity: 0;
+    transition: .2s;
+}
+
+.media-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 16px;
+    background-color: blue;
+}
+
+.media-avatar:hover ~ .disc-overlay {
+    opacity: 1;
+}
