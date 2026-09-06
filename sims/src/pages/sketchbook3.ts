@@ -136,6 +136,9 @@ const makeImgClickListener =
           container.appendChild(xition);
           scrollCont.scroll(0, 100);
 
+          (document.querySelector("#highlightedTag") as HTMLElement).innerText =
+            (e as any).detail;
+
           setTimeout(() => {
             if (feat.el) {
               feat.el.remove();

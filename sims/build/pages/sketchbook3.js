@@ -114,6 +114,8 @@ const makeImgClickListener = (imageDatum, imgEl) => (_e) => {
             xition.setAttribute("preset", "clr_w_clr");
             container.appendChild(xition);
             scrollCont.scroll(0, 100);
+            document.querySelector("#highlightedTag").innerText =
+                e.detail;
             setTimeout(() => {
                 if (feat.el) {
                     feat.el.remove();
