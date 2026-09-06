@@ -23,7 +23,7 @@ function sortByTag(tag) {
     if (!scrollCont)
         throw new Error("scrollCont not defined");
     let elements = Array.from(scrollCont?.children)
-        .flatMap((c) => Array.from(c.children))
+        .flatMap((column) => Array.from(column.children))
         .map((n) => ({
         el: n,
         sortOrder: n.getAttribute("tags")?.split(",").includes(tag) ? 0 : 1,
@@ -31,8 +31,18 @@ function sortByTag(tag) {
     }));
     resetScrollCont();
     let sortedElements = [
-        ...elements.filter((x) => x.tags?.includes(tag)),
-        ...elements.filter((x) => !x.tags?.includes(tag)),
+        ...elements
+            .filter((x) => x.tags?.includes(tag))
+            .map((x) => {
+            x.el.classList.add("highlight");
+            return { ...x };
+        }),
+        ...elements
+            .filter((x) => !x.tags?.includes(tag))
+            .map((x) => {
+            x.el.classList.remove("highlight");
+            return { ...x };
+        }),
     ];
     sortedElements.forEach((n, i) => {
         let parent = colFromIndex(i);
@@ -100,13 +110,15 @@ const makeImgClickListener = (imageDatum, imgEl) => (_e) => {
         feat.el.setAttribute("tags", imageDatum.tags.join(","));
         feat.el.setAttribute("data-name", imageDatum.new);
         feat.el.addEventListener("tag-click", (e) => {
-            let blah = document.createElement("xition-wipe");
-            blah.setAttribute("preset", "clr_w_clr");
-            container.appendChild(blah);
+            let xition = document.createElement("xition-wipe");
+            xition.setAttribute("preset", "clr_w_clr");
+            container.appendChild(xition);
+            scrollCont.scroll(0, 100);
             setTimeout(() => {
                 if (feat.el) {
                     feat.el.remove();
                 }
+                scrollCont.scroll(0, 0);
                 sortByTag(e.detail);
             }, 1000);
         });
