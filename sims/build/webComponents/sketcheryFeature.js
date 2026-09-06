@@ -13,7 +13,7 @@ fetch("/sims/build/webComponents/sketcheryFeature.html")
     // Fires when an instance was inserted into the document
     connectedCallback() {
         const tags = this.getAttribute("tags")?.split(",");
-        const ul = this.shadowRoot?.querySelector("#tagContainer > ul");
+        const ul = this.shadowRoot?.querySelector("#tagContainer");
         if (!ul) {
             throw new Error("zoinktripes!");
         }

@@ -17,7 +17,7 @@ fetch("/sims/build/webComponents/sketcheryFeature.html")
         connectedCallback() {
           const tags = this.getAttribute("tags")?.split(",");
 
-          const ul = this.shadowRoot?.querySelector("#tagContainer > ul");
+          const ul = this.shadowRoot?.querySelector("#tagContainer");
           if (!ul) {
             throw new Error("zoinktripes!");
           }
@@ -49,6 +49,6 @@ fetch("/sims/build/webComponents/sketcheryFeature.html")
 
         // Fires when an element is moved to a new document
         adoptedCallback() {}
-      }
-    )
+      },
+    ),
   );
