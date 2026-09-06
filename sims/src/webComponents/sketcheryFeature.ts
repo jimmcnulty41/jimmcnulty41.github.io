@@ -21,6 +21,13 @@ fetch("/sims/build/webComponents/sketcheryFeature.html")
           if (!ul) {
             throw new Error("zoinktripes!");
           }
+          const tagHideButton =
+            this.shadowRoot?.querySelector("#tagHideButton");
+          tagHideButton?.addEventListener("click", (e) => {
+            console.log("cherp");
+            tagHideButton.classList.toggle("active");
+            e.stopPropagation();
+          });
           tags?.forEach((tag: string) => {
             const tagEl = document.createElement("li");
             const x = document.createElement("span");
