@@ -57,6 +57,7 @@ function sortByTag(tag: string) {
   sortedElements.forEach((n, i) => {
     let parent = colFromIndex(i);
     parent?.appendChild(n.el);
+    n.el.setAttribute("data-i", `${i}`);
   });
 }
 
@@ -108,7 +109,8 @@ const makeImgClickListener =
             if (feat.el) {
               feat.el.remove();
             }
-            const nSib = imgEl.nextElementSibling;
+            const index = Number.parseInt(imgEl.getAttribute("data-i") || "0");
+            const nSib = document.querySelector(`[data-i='${index + 1}']`);
             if (nSib) {
               (nSib as any).superSpecialFunc();
             }
@@ -117,7 +119,8 @@ const makeImgClickListener =
             if (feat.el) {
               feat.el.remove();
             }
-            const pSib = imgEl.previousElementSibling;
+            const index = Number.parseInt(imgEl.getAttribute("data-i") || "0");
+            const pSib = document.querySelector(`[data-i='${index - 1}']`);
             if (pSib) {
               (pSib as any).superSpecialFunc();
             }
@@ -175,6 +178,7 @@ const elFromImgDatum = async (imageDatum: ImageMetadata, index: number) => {
       imgEl.id = imageDatum.new;
       imgEl.setAttribute("tags", imageDatum.tags.join(","));
       imgEl.addEventListener("click", makeImgClickListener(imageDatum, imgEl));
+      imgEl.setAttribute("data-i", `${index}`);
       (imgEl as any).superSpecialFunc = makeImgClickListener(imageDatum, imgEl);
       return imgEl;
     });
