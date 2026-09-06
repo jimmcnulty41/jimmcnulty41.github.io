@@ -24,7 +24,6 @@ fetch("/sims/build/webComponents/sketcheryFeature.html")
           const tagHideButton =
             this.shadowRoot?.querySelector("#tagHideButton");
           tagHideButton?.addEventListener("click", (e) => {
-            console.log("cherp");
             tagHideButton.classList.toggle("active");
             e.stopPropagation();
           });
