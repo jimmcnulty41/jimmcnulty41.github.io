@@ -2,6 +2,8 @@
 fetch("/sims/build/webComponents/sketcheryFeature.html")
     .then((stream) => stream.text())
     .then((text) => customElements.define("sketchery-feature", class SketcheryFeature extends HTMLElement {
+    tagHideButton;
+    helpButton;
     // Fires when an instance of the element is created or updated
     constructor() {
         super();
@@ -10,18 +12,34 @@ fetch("/sims/build/webComponents/sketcheryFeature.html")
         template.innerHTML = text;
         shadow.appendChild(template.content.cloneNode(true));
     }
+    connectHotkeys() {
+        document.addEventListener("keypress", (e) => {
+            if (e.key == "t") {
+                this.tagHideButton.classList.toggle("active");
+            }
+            if (e.key == "?" || e.key == "h") {
+                this.helpButton.classList.toggle("active");
+            }
+        });
+    }
     // Fires when an instance was inserted into the document
     connectedCallback() {
-        const tags = this.getAttribute("tags")?.split(",");
+        this.connectHotkeys();
         const ul = this.shadowRoot?.querySelector("#tagContainer");
         if (!ul) {
             throw new Error("zoinktripes!");
         }
-        const tagHideButton = this.shadowRoot?.querySelector("#tagHideButton");
-        tagHideButton?.addEventListener("click", (e) => {
-            tagHideButton.classList.toggle("active");
+        this.helpButton = this.shadowRoot?.querySelector("#helpButton");
+        this.helpButton?.addEventListener("click", (e) => {
+            this.helpButton.classList.toggle("active");
             e.stopPropagation();
         });
+        this.tagHideButton = this.shadowRoot?.querySelector("#tagHideButton");
+        this.tagHideButton?.addEventListener("click", (e) => {
+            this.tagHideButton.classList.toggle("active");
+            e.stopPropagation();
+        });
+        const tags = this.getAttribute("tags")?.split(",");
         tags?.forEach((tag) => {
             const tagEl = document.createElement("li");
             const x = document.createElement("span");

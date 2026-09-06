@@ -17,6 +17,10 @@
     max-width: 100vw;
   }
 
+  img {
+    transition: .1s;
+  }
+
   #featureContainer.active ~ #images {
     pointer-events: none;
   }
@@ -48,6 +52,12 @@
     margin: 12px;
   }
 
+  #helpButton {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+  }
+
   #tagHideButton {
     position: fixed;
     bottom: 0;
@@ -58,22 +68,47 @@
     height: 50px;
   }
 
-  #tagHideButton > div {
+  #tagHideButton > div,
+  #helpButton > div {
     width: 0;
     height: 0;
     border-top: 21px solid transparent;
     border-bottom: 21px solid transparent;
     border-left: 30px solid blanchedalmond;
-    transition: .4s;
+    transition: 0.4s;
   }
+
+  #helpButton > div {
+    transform: rotate(180deg);
+  }
+  #helpButton.active > div {
+    transform: rotate(0deg);
+  }
+
+  #helpMenu {
+    position: fixed;
+    top: 24px;
+    left: 0;
+    transition: .4s;
+    background-color: blanchedalmond;
+    border-radius: 4px;
+    padding: 24px;
+    max-width: calc(100vw - 48px);
+  }
+
+  #helpButton.active + #helpMenu {
+    left: -100vw;
+  }
+
 
   #tagHideButton.active > div {
     transform: rotate(180deg);
-    transition: .4s;
+    transition: 0.4s;
   }
 
+
   #tagHideButton.active + #tagContainer {
-    margin-right: -300px;
+    margin-right: -100vw;
     transition: 0.4s;
   }
 
@@ -85,9 +120,28 @@
 
 <div id="featureContainer">
   <img />
-  <div id="tagHideButton" class="active">
-    <span>tags</span>
+  <div id="helpButton" class="active">
+    <span><u>h</u>elp <u>?</u></span>
     <div></div>
   </div>
-  <ul id="tagContainer"></ul>
+  <div id="helpMenu">
+    <h1>Sketchery!</h1>
+    <p>This is an archival project consisting of Jim McNulty's sketchbooks</p>
+    <h2>Keyboard Shortcuts</h2>
+    <p>That's right, it's best on desktop</p>
+    <ul>
+        <li> t - open/close tags list </li>
+        <li> ?/h - open/close this help menu</li>
+        <li> esc - close current image</li>
+        <li> z - rotate counterclockwise</li>
+        <li> x - rotate clockwise</li>
+        <li> ⬅️ / ➡️ - prev/next image</li>
+    </ul>
+  </div>
+  <div id="tagHideButton" class="active">
+    <span><u>t</u>ags</span>
+    <div></div>
+  </div>
+ <ul id="tagContainer"></ul>
+
 </div>

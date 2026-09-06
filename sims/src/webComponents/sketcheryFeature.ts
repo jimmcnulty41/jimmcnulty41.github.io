@@ -4,6 +4,9 @@ fetch("/sims/build/webComponents/sketcheryFeature.html")
     customElements.define(
       "sketchery-feature",
       class SketcheryFeature extends HTMLElement {
+        tagHideButton?: Element | null;
+        helpButton?: Element | null;
+
         // Fires when an instance of the element is created or updated
         constructor() {
           super();
@@ -13,20 +16,39 @@ fetch("/sims/build/webComponents/sketcheryFeature.html")
           shadow.appendChild(template.content.cloneNode(true));
         }
 
+        connectHotkeys() {
+          document.addEventListener("keypress", (e) => {
+            if (e.key == "t") {
+              (this.tagHideButton as Element).classList.toggle("active");
+            }
+            if (e.key == "?" || e.key == "h") {
+              (this.helpButton as Element).classList.toggle("active");
+            }
+          });
+        }
+
         // Fires when an instance was inserted into the document
         connectedCallback() {
-          const tags = this.getAttribute("tags")?.split(",");
+          this.connectHotkeys();
 
           const ul = this.shadowRoot?.querySelector("#tagContainer");
           if (!ul) {
             throw new Error("zoinktripes!");
           }
-          const tagHideButton =
-            this.shadowRoot?.querySelector("#tagHideButton");
-          tagHideButton?.addEventListener("click", (e) => {
-            tagHideButton.classList.toggle("active");
+
+          this.helpButton = this.shadowRoot?.querySelector("#helpButton");
+          this.helpButton?.addEventListener("click", (e) => {
+            (this.helpButton as Element).classList.toggle("active");
             e.stopPropagation();
           });
+
+          this.tagHideButton = this.shadowRoot?.querySelector("#tagHideButton");
+          this.tagHideButton?.addEventListener("click", (e) => {
+            (this.tagHideButton as Element).classList.toggle("active");
+            e.stopPropagation();
+          });
+
+          const tags = this.getAttribute("tags")?.split(",");
           tags?.forEach((tag: string) => {
             const tagEl = document.createElement("li");
             const x = document.createElement("span");

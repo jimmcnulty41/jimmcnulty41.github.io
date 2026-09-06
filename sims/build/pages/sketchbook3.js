@@ -39,7 +39,13 @@ function sortByTag(tag) {
         parent?.appendChild(n.el);
     });
 }
-const makeImgClickListener = (imageDatum) => (_e) => {
+let feat = {
+    el: null,
+    next: () => { },
+    prev: () => { },
+    rotate: (amt) => { },
+};
+const makeImgClickListener = (imageDatum, imgEl) => (_e) => {
     fetch(dataToEnhancedUrl(imageDatum))
         .then((resp) => {
         if (!resp.ok)
@@ -56,21 +62,60 @@ const makeImgClickListener = (imageDatum) => (_e) => {
             throw new Error("feature container missing from sketchbook3.html");
         }
         const enhObjUrl = URL.createObjectURL(enhBlob);
-        const feat = document.createElement("sketchery-feature");
-        feat.setAttribute("src", enhObjUrl);
-        feat.setAttribute("tags", imageDatum.tags.join(","));
-        feat.setAttribute("data-name", imageDatum.new);
-        feat.addEventListener("tag-click", (e) => {
+        feat = {
+            el: document.createElement("sketchery-feature"),
+            rotate: (amt) => {
+                if (feat.el) {
+                    const imgEl = feat.el.shadowRoot?.querySelector("img");
+                    const curRotation = imgEl.style.rotate == ""
+                        ? 0
+                        : Number.parseInt(imgEl.style.rotate);
+                    imgEl.style.rotate = `${curRotation + amt}deg`;
+                }
+            },
+            next: () => {
+                if (feat.el) {
+                    feat.el.remove();
+                }
+                const nSib = imgEl.nextElementSibling;
+                if (nSib) {
+                    nSib.superSpecialFunc();
+                }
+            },
+            prev: () => {
+                if (feat.el) {
+                    feat.el.remove();
+                }
+                const pSib = imgEl.previousElementSibling;
+                if (pSib) {
+                    pSib.superSpecialFunc();
+                }
+            },
+        };
+        if (!feat.el) {
+            console.error("Element not featured");
+            return;
+        }
+        feat.el.setAttribute("src", enhObjUrl);
+        feat.el.setAttribute("tags", imageDatum.tags.join(","));
+        feat.el.setAttribute("data-name", imageDatum.new);
+        feat.el.addEventListener("tag-click", (e) => {
             let blah = document.createElement("xition-wipe");
             blah.setAttribute("preset", "clr_w_clr");
             container.appendChild(blah);
             setTimeout(() => {
-                feat.remove();
+                if (feat.el) {
+                    feat.el.remove();
+                }
                 sortByTag(e.detail);
             }, 1000);
         });
-        feat.onclick = () => feat.remove();
-        container.appendChild(feat);
+        feat.el.onclick = () => {
+            if (feat.el) {
+                feat.el.remove();
+            }
+        };
+        container.appendChild(feat.el);
     });
 };
 const elFromImgDatum = async (imageDatum, index) => {
@@ -91,7 +136,8 @@ const elFromImgDatum = async (imageDatum, index) => {
         imgEl.src = objectURL;
         imgEl.id = imageDatum.new;
         imgEl.setAttribute("tags", imageDatum.tags.join(","));
-        imgEl.addEventListener("click", makeImgClickListener(imageDatum));
+        imgEl.addEventListener("click", makeImgClickListener(imageDatum, imgEl));
+        imgEl.superSpecialFunc = makeImgClickListener(imageDatum, imgEl);
         return imgEl;
     });
     const parent = document.querySelector(`#imageCol_${index % numColumns}`);
@@ -121,4 +167,37 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
     await n_resolved(24, getImages());
     scrollCont.childNodes.forEach((c) => c.childNodes.forEach((n) => scaleNode(n, scrollCont.scrollTop)));
+});
+let lastTrigger = Date.now();
+const DEBOUNCE = 233;
+document.addEventListener("keydown", (e) => {
+    if (Date.now() - lastTrigger < DEBOUNCE) {
+        return;
+    }
+    if (e.key == "Escape") {
+        if (feat.el) {
+            feat.el.remove();
+        }
+    }
+    if (e.key == "ArrowRight") {
+        if (feat) {
+            feat.next();
+        }
+    }
+    if (e.key == "ArrowLeft") {
+        if (feat) {
+            feat.prev();
+        }
+    }
+    if (e.key == "x") {
+        if (feat) {
+            feat.rotate(90);
+        }
+    }
+    if (e.key == "z") {
+        if (feat) {
+            feat.rotate(-90);
+        }
+    }
+    lastTrigger = Date.now();
 });
