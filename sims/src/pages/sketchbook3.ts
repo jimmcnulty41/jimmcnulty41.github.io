@@ -1,3 +1,4 @@
+import { rotate } from "../components/PositionComponent.js";
 import {
   ImageMetadata,
   dataToEnhancedUrl,
@@ -9,7 +10,7 @@ import { n_resolved, remap } from "../lib/utils.js";
 
 let missingFiles: string[] = [];
 const numColumns = Math.floor(
-  window.innerWidth / (256 /*max size*/ + 24) /*margin*/
+  window.innerWidth / (256 /*max size*/ + 24) /*margin*/,
 );
 const scrollCont = document.querySelector("#images");
 if (!scrollCont) throw new Error("init called before scroll cont was inited");
@@ -32,7 +33,7 @@ function colFromIndex(i: number) {
 function sortByTag(tag: string) {
   if (!scrollCont) throw new Error("scrollCont not defined");
   let elements = Array.from(scrollCont?.children)
-    .flatMap((c) => Array.from(c.children))
+    .flatMap((column) => Array.from(column.children))
     .map((n) => ({
       el: n,
       sortOrder: n.getAttribute("tags")?.split(",").includes(tag) ? 0 : 1,
@@ -40,50 +41,124 @@ function sortByTag(tag: string) {
     }));
   resetScrollCont();
   let sortedElements = [
-    ...elements.filter((x) => x.tags?.includes(tag)),
-    ...elements.filter((x) => !x.tags?.includes(tag)),
+    ...elements
+      .filter((x) => x.tags?.includes(tag))
+      .map((x) => {
+        x.el.classList.add("highlight");
+        return { ...x };
+      }),
+    ...elements
+      .filter((x) => !x.tags?.includes(tag))
+      .map((x) => {
+        x.el.classList.remove("highlight");
+        return { ...x };
+      }),
   ];
   sortedElements.forEach((n, i) => {
     let parent = colFromIndex(i);
     parent?.appendChild(n.el);
+    n.el.setAttribute("data-i", `${i}`);
   });
 }
 
-const makeImgClickListener = (imageDatum: ImageMetadata) => (_e: Event) => {
-  fetch(dataToEnhancedUrl(imageDatum))
-    .then((resp) => {
-      if (!resp.ok) return;
-      return resp.blob();
-    })
-    .then((enhBlob) => {
-      if (!enhBlob) {
-        missingFiles.push(imageDatum.new);
-        return;
-      }
-      const container = document.body;
-      if (!container) {
-        throw new Error("feature container missing from sketchbook3.html");
-      }
-
-      const enhObjUrl = URL.createObjectURL(enhBlob);
-      const feat = document.createElement("sketchery-feature");
-      feat.setAttribute("src", enhObjUrl);
-      feat.setAttribute("tags", imageDatum.tags.join(","));
-      feat.setAttribute("data-name", imageDatum.new);
-      feat.addEventListener("tag-click", (e) => {
-        let blah = document.createElement("xition-wipe");
-
-        blah.setAttribute("preset", "clr_w_clr");
-        container.appendChild(blah);
-        setTimeout(() => {
-          feat.remove();
-          sortByTag((e as any).detail);
-        }, 1000);
-      });
-      feat.onclick = () => feat.remove();
-      container.appendChild(feat);
-    });
+let feat: {
+  el: HTMLElement | null;
+  next: () => void;
+  prev: () => void;
+  rotate: (amt: number) => void;
+} = {
+  el: null,
+  next: () => {},
+  prev: () => {},
+  rotate: (amt) => {},
 };
+
+const makeImgClickListener =
+  (imageDatum: ImageMetadata, imgEl: Element) => (_e: Event) => {
+    fetch(dataToEnhancedUrl(imageDatum))
+      .then((resp) => {
+        if (!resp.ok) return;
+        return resp.blob();
+      })
+      .then((enhBlob) => {
+        if (!enhBlob) {
+          missingFiles.push(imageDatum.new);
+          return;
+        }
+        const container = document.body;
+        if (!container) {
+          throw new Error("feature container missing from sketchbook3.html");
+        }
+
+        const enhObjUrl = URL.createObjectURL(enhBlob);
+        feat = {
+          el: document.createElement("sketchery-feature"),
+          rotate: (amt) => {
+            if (feat.el) {
+              const imgEl = feat.el.shadowRoot?.querySelector(
+                "img",
+              ) as HTMLElement;
+              const curRotation =
+                imgEl.style.rotate == ""
+                  ? 0
+                  : Number.parseInt(imgEl.style.rotate);
+              imgEl.style.rotate = `${curRotation + amt}deg`;
+            }
+          },
+          next: () => {
+            if (feat.el) {
+              feat.el.remove();
+            }
+            const index = Number.parseInt(imgEl.getAttribute("data-i") || "0");
+            const nSib = document.querySelector(`[data-i='${index + 1}']`);
+            if (nSib) {
+              (nSib as any).superSpecialFunc();
+            }
+          },
+          prev: () => {
+            if (feat.el) {
+              feat.el.remove();
+            }
+            const index = Number.parseInt(imgEl.getAttribute("data-i") || "0");
+            const pSib = document.querySelector(`[data-i='${index - 1}']`);
+            if (pSib) {
+              (pSib as any).superSpecialFunc();
+            }
+          },
+        };
+        if (!feat.el) {
+          console.error("Element not featured");
+          return;
+        }
+        feat.el.setAttribute("src", enhObjUrl);
+        feat.el.setAttribute("tags", imageDatum.tags.join(","));
+        feat.el.setAttribute("data-name", imageDatum.new);
+        feat.el.addEventListener("tag-click", (e) => {
+          let xition = document.createElement("xition-wipe");
+          xition.setAttribute("preset", "clr_w_clr");
+          container.appendChild(xition);
+          scrollCont.scroll(0, 100);
+
+          (document.querySelector("#highlightedTag") as HTMLElement).innerText =
+            (e as any).detail;
+
+          setTimeout(() => {
+            if (feat.el) {
+              feat.el.remove();
+            }
+            scrollCont.scroll(0, 0);
+            sortByTag((e as any).detail);
+          }, 1000);
+        });
+        feat.el.onclick = () => {
+          if (feat.el) {
+            feat.el.remove();
+          }
+        };
+
+        container.appendChild(feat.el);
+      });
+  };
 
 const elFromImgDatum = async (imageDatum: ImageMetadata, index: number) => {
   const url = dataToUrl(imageDatum);
@@ -102,7 +177,9 @@ const elFromImgDatum = async (imageDatum: ImageMetadata, index: number) => {
       imgEl.src = objectURL;
       imgEl.id = imageDatum.new;
       imgEl.setAttribute("tags", imageDatum.tags.join(","));
-      imgEl.addEventListener("click", makeImgClickListener(imageDatum));
+      imgEl.addEventListener("click", makeImgClickListener(imageDatum, imgEl));
+      imgEl.setAttribute("data-i", `${index}`);
+      (imgEl as any).superSpecialFunc = makeImgClickListener(imageDatum, imgEl);
       return imgEl;
     });
   const parent = document.querySelector(`#imageCol_${index % numColumns}`);
@@ -138,6 +215,42 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   await n_resolved(24, getImages());
   scrollCont.childNodes.forEach((c) =>
-    c.childNodes.forEach((n) => scaleNode(n, scrollCont.scrollTop))
+    c.childNodes.forEach((n) => scaleNode(n, scrollCont.scrollTop)),
   );
+});
+
+let lastTrigger = Date.now();
+const DEBOUNCE = 233;
+
+document.addEventListener("keydown", (e) => {
+  if (Date.now() - lastTrigger < DEBOUNCE) {
+    return;
+  }
+
+  if (e.key == "Escape") {
+    if (feat.el) {
+      feat.el.remove();
+    }
+  }
+  if (e.key == "ArrowRight") {
+    if (feat) {
+      feat.next();
+    }
+  }
+  if (e.key == "ArrowLeft") {
+    if (feat) {
+      feat.prev();
+    }
+  }
+  if (e.key == "x") {
+    if (feat) {
+      feat.rotate(90);
+    }
+  }
+  if (e.key == "z") {
+    if (feat) {
+      feat.rotate(-90);
+    }
+  }
+  lastTrigger = Date.now();
 });

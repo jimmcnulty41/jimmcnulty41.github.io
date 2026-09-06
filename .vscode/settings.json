@@ -1,10 +1,16 @@
 {
-  "rust-analyzer.linkedProjects": [
-    "rustedRoot\\wasm-test\\Cargo.toml"
-  ],
+  "rust-analyzer.linkedProjects": ["rustedRoot\\wasm-test\\Cargo.toml"],
   "workbench.colorCustomizations": {
     "activityBar.background": "#232075",
     "titleBar.activeBackground": "#312CA4",
-    "titleBar.activeForeground": "#FCFCFE"
+    "titleBar.activeForeground": "#FCFCFE",
+    "titleBar.inactiveBackground": "#232075",
+    "titleBar.inactiveForeground": "#141243",
+    "statusBar.background": "#282485",
+    "statusBar.foreground": "#FBFBFE",
+    "statusBar.debuggingBackground": "#282485",
+    "statusBar.debuggingForeground": "#FBFBFE",
+    "statusBar.noFolderBackground": "#282485",
+    "statusBar.noFolderForeground": "#FBFBFE"
   }
 }
